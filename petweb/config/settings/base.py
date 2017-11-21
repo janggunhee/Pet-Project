@@ -43,6 +43,7 @@ ALLOWED_HOSTS = []
 # auth
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
+
 # auth_password_validators
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -67,6 +68,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party app
+    # User app
+    'account',
 ]
 
 MIDDLEWARE = [
