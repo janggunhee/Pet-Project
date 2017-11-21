@@ -3,7 +3,7 @@
 .config_secret
 c.sh
 .media
-
+.static_root/
 # Front code
 /front/
 
