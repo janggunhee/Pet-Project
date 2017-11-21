@@ -52,5 +52,3 @@ class Signup(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         # 실패하면 400 에러를 띄운다
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
