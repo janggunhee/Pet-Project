@@ -96,6 +96,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         # 매직 메소드: 유저 이름은 닉네임으로
         return self.nickname
 
+    def get_full_name(self):
+        return self.nickname
+
+    def get_short_name(self):
+        return self.nickname
+
     @property
     def is_staff(self):
         "Is the user a member of staff?"
