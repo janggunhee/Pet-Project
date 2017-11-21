@@ -13,7 +13,7 @@ import json
 import os
 
 # pet_project
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # pet_project/.config_secret
@@ -31,11 +31,11 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     STATIC_DIR,
 ]
-STATIC_ROOT = os.path.join(ROOT_DIR, 'static_root')
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
 # Media paths
 MEDIA_URL = '/media/'
-MEDIA_DIR = os.path.join(BASE_DIR, 'media')
+MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 
 
 ALLOWED_HOSTS = []
