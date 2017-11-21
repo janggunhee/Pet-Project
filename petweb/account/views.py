@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model
+from django.http import Http404
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -40,7 +41,7 @@ class Login(APIView):
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
 
-# 회원가입을 위한 클래스 뷰
+# 회원 가입을 위한 클래스 뷰
 class Signup(APIView):
     # post method
     def post(self, request):
@@ -52,3 +53,21 @@ class Signup(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         # 실패하면 400 에러를 띄운다
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 회원 탈퇴를 위한 클래스 뷰
+class Delete(APIView):
+    queryset = User.objects.all()
+
+    # 삭제할 유저 인스턴스를 가져오는 메소드
+    def get_object(self):
+        try:
+            instance = self.queryset.get(email=self.request.user.email)
+            return instance
+        except User.DoesNotExist:
+            raise Http404
+
+    # 인스턴스 삭제 메소드
+    def delete(self, request, *args, **kwargs):
+        self.get_object().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
