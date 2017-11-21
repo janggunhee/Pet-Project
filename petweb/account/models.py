@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 
 class UserManager(BaseUserManager):
@@ -103,6 +104,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.nickname
 
     @property
+    def token(self):
+        # signup 후 토큰값을 받는다
+        return Token.objects.get_or_create(user=self)[0].key
+
+    @property
     def is_staff(self):
-        "Is the user a member of staff?"
+        """Is the user a member of staff?"""
         return self.is_superuser
