@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # pet_project/.config_secret
-CONFIG_SECRET_DIR = os.path.dirname(ROOT_DIR, '.config_secret')
+CONFIG_SECRET_DIR = os.path.join(ROOT_DIR, '.config_secret')
 COMMON_SECRET = os.path.join(CONFIG_SECRET_DIR, 'settings_common.json')
 
 with open(COMMON_SECRET, 'r') as settings_common:
