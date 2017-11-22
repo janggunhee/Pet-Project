@@ -14,3 +14,11 @@
 
 - 기본 User 모델 및 API View 구현
 - Elasticbeanstalk 배포 준비를 위한 Dockerfile 생성 및 테스트 완료
+
+### 17/11/22 v0.1.4
+
+- Elasticbeanstalk 배포에 따른 각종 오류 해결
+ - `.config_secret` 폴더 업로드를 위한 `.ebignore` 파일 작성
+ - Django의 Allowed_Host 옵션 추가
+ - ELB Healthcheck에 대비하기 위한 코드 추가
+ 
