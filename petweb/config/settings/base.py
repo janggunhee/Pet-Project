@@ -38,7 +38,7 @@ MEDIA_URL = '/media/'
 MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 
 # Template paths
-TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 # auth
 # auth_user_model 정의
@@ -102,7 +102,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            TEMPLATE_DIR,
+            TEMPLATES_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
