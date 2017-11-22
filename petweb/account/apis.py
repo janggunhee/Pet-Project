@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config import settings
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
 
 User = get_user_model()
@@ -70,7 +71,7 @@ class Signup(APIView):
             send_mail(
                 subject=subject,
                 message=message,
-                from_email='fastcampus.pet.service@gmail.com',
+                from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[
                     to_email,
                 ]
