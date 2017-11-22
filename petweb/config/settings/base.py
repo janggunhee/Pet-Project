@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'storages',
     # User app
     'account',
+]
 
 # rest_framework settings
 REST_FRAMEWORK = {
