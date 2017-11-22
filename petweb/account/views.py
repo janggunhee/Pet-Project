@@ -1,11 +1,10 @@
 from django.contrib.auth import authenticate, get_user_model
-from django.http import Http404
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, SignupSerializer
+from .serializers import UserSerializer, SignupSerializer, EditSerializer
 
 User = get_user_model()
 
@@ -41,33 +40,48 @@ class Login(APIView):
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
 
-# 회원 가입을 위한 클래스 뷰
-class Signup(APIView):
-    # post method
-    def post(self, request):
-        # SignupSerializer를 사용하여 유효성을 검증한다
-        serializer = SignupSerializer(data=request.data)
-        # 유효성 검증에 통과하면 DB에 저장한다
+# 회원가입을 위한 클래스 뷰
+class Signup(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = SignupSerializer
+
+
+# 유저 디테일 보기 / 닉네임 수정 / 유저 삭제를 위한 클래스 뷰
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+
+    # 유저 정보 가져오기
+    def get_object(self, user_pk):
+        return User.objects.get(pk=user_pk)
+
+    # 유저 디테일 보기 (method: get)
+    def get(self, request, user_pk):
+        user = self.get_object(user_pk)
+        serializer = UserSerializer(user)
+        data = {
+            'token': user.token,
+            'user': serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    # 유저 닉네임 수정 (method: patch)
+    def patch(self, request, user_pk):
+        user = self.get_object(user_pk)
+        serializer = EditSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # 실패하면 400 에러를 띄운다
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            data = {
+                'token': user.token,
+                'user': serializer.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        data = {
+            'message': '업데이트에 실패했습니다'
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-
-# 회원 탈퇴를 위한 클래스 뷰
-class Delete(APIView):
-    queryset = User.objects.all()
-
-    # 삭제할 유저 인스턴스를 가져오는 메소드
-    def get_object(self):
-        try:
-            instance = self.queryset.get(email=self.request.user.email)
-            return instance
-        except User.DoesNotExist:
-            raise Http404
-
-    # 인스턴스 삭제 메소드
-    def delete(self, request, *args, **kwargs):
-        self.get_object().delete()
+    # 유저 삭제 (method: delete)
+    def delete(self, request, user_pk):
+        user = self.get_object(user_pk)
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
