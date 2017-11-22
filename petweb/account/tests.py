@@ -33,7 +33,8 @@ class UserModelTest(TransactionTestCase):
         )
         c = Client()
         response = c.post('/account/login/',
-                          {'email': f'{self.DUMMY_EMAIL}', 'password': f'{self.DUMMY_PASSWORD}'})
+                          {'email': f'{self.DUMMY_EMAIL}',
+                           'password': f'{self.DUMMY_PASSWORD}'})
         self.assertEqual(response.status_code, 200)
 
     def test_user_signup(self):
@@ -45,3 +46,4 @@ class UserModelTest(TransactionTestCase):
                            'password1': f'{self.DUMMY_PASSWORD}',
                            'password2': f'{self.DUMMY_PASSWORD}'})
         self.assertEqual(response.status_code, 201)
+
