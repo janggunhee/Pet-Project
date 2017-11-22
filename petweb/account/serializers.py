@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         # 필드 목록
         fields = (
-            'id',
+            'pk',
             'user_type',
             'email',
             'nickname',
@@ -31,7 +31,7 @@ class SignupSerializer(serializers.ModelSerializer):
         model = User
         # 가입 완료 후 나타나는 결과 필드
         fields = (
-            'id',
+            'pk',
             'user_type',
             'email',
             'nickname',
