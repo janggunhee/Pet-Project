@@ -13,11 +13,11 @@ import json
 import os
 
 # pet_project
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # pet_project/.config_secret
-CONFIG_SECRET_DIR = os.path.dirname(ROOT_DIR, '.config_secret')
+CONFIG_SECRET_DIR = os.path.join(ROOT_DIR, '.config_secret')
 COMMON_SECRET = os.path.join(CONFIG_SECRET_DIR, 'settings_common.json')
 
 with open(COMMON_SECRET, 'r') as settings_common:
@@ -25,20 +25,42 @@ with open(COMMON_SECRET, 'r') as settings_common:
 
 config_secret_common = json.loads(config_secret_common_str)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
+# Static paths
+STATIC_URL = '/static/'
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config_secret_common['django']['secret_key']
+# Media paths
+MEDIA_URL = '/media/'
+MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Template paths
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
-ALLOWED_HOSTS = []
+# auth
+# auth_user_model 정의
+AUTH_USER_MODEL = 'account.User'
 
+# auth_password_validators
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,7 +68,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party app
+    'django_extensions',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'storages',
+    # User app
+    'account',
 ]
+
+# rest_framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        # TokenAuthentication
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,7 +101,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,45 +116,14 @@ TEMPLATES = [
     },
 ]
 
+# wsgi configuration
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
-# Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
+LANGUAGE_CODE = 'ko-kr'
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -122,8 +131,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Secret_key
+SECRET_KEY = config_secret_common['django']['secret_key']
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-STATIC_URL = '/static/'
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True

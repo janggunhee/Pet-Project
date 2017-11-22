@@ -1,9 +1,9 @@
 # Custom
 .idea/
-.config_secret
+.config_secret/
 c.sh
-.media
-
+.media/
+.static_root/
 # Front code
 /front/
 
