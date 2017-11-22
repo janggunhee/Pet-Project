@@ -37,6 +37,9 @@ STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 MEDIA_URL = '/media/'
 MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 
+# Template paths
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+
 # Allowed Hosts
 ALLOWED_HOSTS = []
 
@@ -100,7 +103,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            TEMPLATE_DIR,
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
