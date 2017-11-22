@@ -1,14 +1,17 @@
 from .base import *
 
+# json filepath 설정
+DEPLOY_SECRET = os.path.join(CONFIG_SECRET_DIR, 'settings_deploy.json')
+with open(DEPLOY_SECRET, 'r') as settings_deploy:
+
 # databases
 with open(CONFIG_SECRET_DIR, 'r') as settings_deploy:
     deploy_secret_common_str = settings_deploy.read()
 
 deploy_secret_common = json.loads(deploy_secret_common_str)
 
-
+# databases
 DATABASES = deploy_secret_common['django']['databases']
-
 
 # AWS
 AWS_ACCESS_KEY_ID = deploy_secret_common['aws']['access_key_id']
