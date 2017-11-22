@@ -40,9 +40,6 @@ MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 # Template paths
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
-# Allowed Hosts
-ALLOWED_HOSTS = []
-
 # auth
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
