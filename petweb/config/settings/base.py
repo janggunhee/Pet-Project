@@ -38,9 +38,6 @@ MEDIA_URL = '/media/'
 MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,6 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'storages',
+
 ]
 
 MIDDLEWARE = [
@@ -80,8 +80,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+# wsgi configuration
 
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
