@@ -8,4 +8,3 @@ ALLOWED_HOSTS = [
 
 # databases
 DATABASES = config_secret_common['django']['databases']
-
