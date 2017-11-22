@@ -51,12 +51,12 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     # 유저 정보 가져오기
-    def get_object(self, pk):
-        return User.objects.get(pk=pk)
+    def get_object(self, user_pk):
+        return User.objects.get(pk=user_pk)
 
     # 유저 디테일 보기 (method: get)
-    def get(self, request, pk):
-        user = self.get_object(pk)
+    def get(self, request, user_pk):
+        user = self.get_object(user_pk)
         serializer = UserSerializer(user)
         data = {
             'token': user.token,
@@ -65,8 +65,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
     # 유저 닉네임 수정 (method: patch)
-    def patch(self, request, pk):
-        user = self.get_object(pk)
+    def patch(self, request, user_pk):
+        user = self.get_object(user_pk)
         serializer = EditSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -81,7 +81,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     # 유저 삭제 (method: delete)
-    def delete(self, request, pk):
-        user = self.get_object(pk)
+    def delete(self, request, user_pk):
+        user = self.get_object(user_pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
