@@ -67,3 +67,23 @@ class SignupSerializer(serializers.ModelSerializer):
             'user': ret,
         }
         return data
+
+
+class EditSerializer(serializers.ModelSerializer):
+    nickname = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'pk',
+            'user_type',
+            'email',
+            'nickname',
+            'is_active',
+            'date_joined',
+        )
+
+    def update(self, instance, validated_data):
+        instance.nickname = validated_data['nickname']
+        instance.save()
+        return instance
