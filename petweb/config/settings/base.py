@@ -60,6 +60,24 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# email
+EMAIL_SECRET = os.path.join(CONFIG_SECRET_DIR, 'settings_email.json')
+with open(EMAIL_SECRET, 'r') as settings_email:
+    config_secret_email_str = settings_email.read()
+
+config_secret_email = json.loads(config_secret_email_str)
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+# 지메일 서버 사용
+EMAIL_HOST = 'smtp.gmail.com'
+# 보내는 사람 아이디/비밀번호 (secret 정보로 빼야 한다)
+EMAIL_HOST_USER = config_secret_email['gmail']['username']
+EMAIL_HOST_PASSWORD = config_secret_email['gmail']['password']
+# 통신 포트
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
