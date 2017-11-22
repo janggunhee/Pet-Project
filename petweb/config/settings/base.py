@@ -75,9 +75,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'storages',
     # User app
     'account',
-]
 
 # rest_framework settings
 REST_FRAMEWORK = {
@@ -118,11 +118,11 @@ TEMPLATES = [
     },
 ]
 
+# wsgi configuration
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
-
 LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
