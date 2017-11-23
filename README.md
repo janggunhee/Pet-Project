@@ -21,4 +21,9 @@
  - `.config_secret` 폴더 업로드를 위한 `.ebignore` 파일 작성
  - Django의 Allowed_Host 옵션 추가
  - ELB Healthcheck에 대비하기 위한 코드 추가
+
+### 17/11/23 v0.2.1
+
+- 이메일 회원가입 인증 프로세스 추가
+    - celery & rabbitMQ를 이용한 비동기 태스크 구현
  
