@@ -1,14 +1,8 @@
-import io
-from contextlib import redirect_stdout
-
-from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase, Client
 from django.urls import reverse, resolve
 from rest_framework.test import APILiveServerTestCase
 
 from .apis import Signup
-from .tasks import send_mail_task
 
 User = get_user_model()
 
@@ -110,4 +104,12 @@ class UserSignupTest(APILiveServerTestCase):
     #         ))
     #         s = f.getvalue()
     #     self.assertEqual(s, 1)
+
+        # with redirect_stdout(sys.stderr):
+        #     send_mail_task(
+        #         subject='hello',
+        #         message='content',
+        #         from_email='hostdummy@email.com',
+        #         recipient='dummy@email.com',
+        #     )
 
