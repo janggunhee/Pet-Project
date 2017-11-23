@@ -11,4 +11,4 @@ install:
 before_script:
 - cd petweb
 script:
-- DJANGO_SETTINGS_MODULE=config.settings.deploy python manage.py test
+- DJANGO_SETTINGS_MODULE=config.settings.deploy python manage.py test -y
