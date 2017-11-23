@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from account import tasks
 from config import settings
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
 
@@ -52,7 +53,8 @@ class Signup(APIView):
         serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # 이메일 전송 프로세스
+            # 이메일 전송 프로세스의 시작
+            # user = 시리얼라이저된 데이터
             user = serializer.data
             # 현재 사이트의 메인 도메인을 가져온다
             current_site = get_current_site(request)
@@ -68,13 +70,12 @@ class Signup(APIView):
                 'token': user['token']
             })
             # 이메일 전송 메소드
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[
-                    to_email,
-                ]
+            # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
+            tasks.send_mail_task(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                to_email,
             )
             return Response(user, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
