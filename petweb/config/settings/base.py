@@ -158,5 +158,3 @@ USE_TZ = True
 
 # Secret_key
 SECRET_KEY = config_secret_common['django']['secret_key']
-
-

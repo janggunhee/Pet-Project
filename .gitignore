@@ -1,6 +1,7 @@
 # Custom
 .idea/
 .config_secret/
+secrets.tar
 c.sh
 .media/
 .static_root/
