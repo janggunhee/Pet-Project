@@ -1,15 +1,13 @@
 language: python
 python:
-  - 3.6
-  - nightly
-# command to install dependencies
+- 3.6
+- nightly
+before_install:
+- openssl aes-256-cbc -K $encrypted_975395b113c8_key -iv $encrypted_975395b113c8_iv
+  -in secrets.tar.enc -out secrets.tar -d
 install:
-  - pip install -r requirements.txt
-
-# 스크립트가 실행되기 전에 디렉터리를 변경한다
+- pip install -r requirements.txt
 before_script:
-  - cd petweb
-
+- cd petweb
 script:
-  - python manage.py test
-
+- python manage.py test
