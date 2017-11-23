@@ -71,7 +71,7 @@ class Signup(APIView):
             })
             # 이메일 전송 메소드
             # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
-            tasks.send_mail_task(
+            tasks.send_mail_task.delay(
                 subject,
                 message,
                 settings.EMAIL_HOST_USER,
