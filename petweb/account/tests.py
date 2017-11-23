@@ -1,3 +1,7 @@
+import io
+from contextlib import redirect_stdout
+
+import sys
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase, Client
@@ -5,6 +9,7 @@ from django.urls import reverse, resolve
 from rest_framework.test import APILiveServerTestCase
 
 from .apis import Signup
+from .tasks import send_mail_task
 
 User = get_user_model()
 
@@ -96,4 +101,24 @@ class UserSignupTest(APILiveServerTestCase):
                            'password1': '1234',
                            'password2': '1234'})
         self.assertEqual(response.status_code, 201)
+
+        # with redirect_stdout(sys.stderr):
+        #     send_mail_task(
+        #         subject='hello',
+        #         message='content',
+        #         from_email='hostdummy@email.com',
+        #         recipient='dummy@email.com',
+        #     )
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            help(send_mail_task(
+                subject='hello',
+                message='content',
+                from_email='hostdummy@gmail.com',
+                recipient='dummy@email.com',
+            ))
+
+        s = f.getvalue()
+        self.assertEqual(print(s), 1)
 

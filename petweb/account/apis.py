@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from . import tasks
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
-from config.settings.base import *
+from config.settings.deploy import *
 
 User = get_user_model()
 
@@ -73,6 +73,7 @@ class Signup(APIView):
             tasks.send_mail_task.delay(
                 subject,
                 message,
+                # 'fastcampus.pet.service@gmail.com',
                 EMAIL_HOST_USER,
                 to_email,
             )
