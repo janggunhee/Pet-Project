@@ -1,12 +1,7 @@
 from .base import *
 
-# Allowed hosts
-ALLOWED_HOSTS = [
-    '.elasticbeanstalk.com',
-]
-
 # debug
-DEBUG = False
+DEBUG = True
 
 # json filepath 설정
 DEPLOY_SECRET = os.path.join(CONFIG_SECRET_DIR, 'settings_deploy.json')

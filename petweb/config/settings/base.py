@@ -40,6 +40,13 @@ MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
 # Template paths
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
+# Allowed hosts
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.elasticbeanstalk.com',
+]
+
 # auth
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
