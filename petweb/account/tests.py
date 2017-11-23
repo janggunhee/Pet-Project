@@ -1,3 +1,6 @@
+import io
+from contextlib import redirect_stdout
+
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase, Client
@@ -5,6 +8,7 @@ from django.urls import reverse, resolve
 from rest_framework.test import APILiveServerTestCase
 
 from .apis import Signup
+from .tasks import send_mail_task
 
 User = get_user_model()
 
@@ -88,12 +92,22 @@ class UserSignupTest(APILiveServerTestCase):
         self.assertTrue(query.exists())
 
     # 테스트 4. 유저를 생성해 이메일이 전송되는지 확인한다
-    def test_send_email(self):
-        c = Client()
-        response = c.post(self.URL_API_SIGNUP,
-                          {'email': 'dummy@email.com',
-                           'nickname': 'dummy',
-                           'password1': '1234',
-                           'password2': '1234'})
-        self.assertEqual(response.status_code, 201)
+    # def test_send_email_task(self):
+    #     # c = Client()
+    #     # response = c.post(self.URL_API_SIGNUP,
+    #     #                   {'email': 'dummy@email.com',
+    #     #                    'nickname': 'dummy',
+    #     #                    'password1': '1234',
+    #     #                    'password2': '1234'})
+    #     # self.assertEqual(response.status_code, 201)
+    #     f = io.StringIO()
+    #     with redirect_stdout(f):
+    #         help(send_mail_task(
+    #             subject='hello',
+    #             message='내용',
+    #             from_email='hostdummy@email.com',
+    #             recipient='dummy@email.com',
+    #         ))
+    #         s = f.getvalue()
+    #     self.assertEqual(s, 1)
 
