@@ -38,6 +38,7 @@ class UserManager(BaseUserManager):
 
         user.is_superuser = True
         # 관리자 권한 부여
+        user.is_active = True
         user.save(using=self._db)
         # DB에 저장
         return user

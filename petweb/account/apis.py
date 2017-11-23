@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -9,9 +8,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from account import tasks
-from config import settings
+from . import tasks
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
+from config.settings.base import *
 
 User = get_user_model()
 
@@ -74,7 +73,7 @@ class Signup(APIView):
             tasks.send_mail_task.delay(
                 subject,
                 message,
-                settings.EMAIL_HOST_USER,
+                EMAIL_HOST_USER,
                 to_email,
             )
             return Response(user, status=status.HTTP_201_CREATED)
