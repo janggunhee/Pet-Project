@@ -28,6 +28,10 @@ RUN         ln -sf /etc/nginx/sites-available/app.conf \
 # uWSGI
 RUN         mkdir -p /var/log/uwsgi/app
 
+# rabbitMQ install
+RUN         apt-get -y update
+RUN         apt-get -y install rabbitmq-server
+
 # supervisor
 RUN         cp /srv/app/.config/local/supervisor/* \
                 /etc/supervisor/conf.d/
@@ -35,3 +39,4 @@ CMD         supervisord -n
 
 # port open
 EXPOSE      80
+EXPOSE      5432

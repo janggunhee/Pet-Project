@@ -1,8 +1,11 @@
+amqp==2.2.2
 appnope==0.1.0
 awsebcli==3.12.1
+billiard==3.5.0.3
 blessed==1.14.2
 boto3==1.4.7
 botocore==1.7.48
+celery==4.1.0
 cement==2.8.2
 colorama==0.3.7
 decorator==4.1.2
@@ -18,6 +21,7 @@ ipython==6.2.1
 ipython-genutils==0.2.0
 jedi==0.11.0
 jmespath==0.9.3
+kombu==4.1.0
 parso==0.1.0
 pathspec==0.5.0
 pexpect==4.3.0
@@ -38,5 +42,6 @@ tabulate==0.7.5
 termcolor==1.1.0
 traitlets==4.3.2
 typing==3.6.2
+vine==1.1.4
 wcwidth==0.1.7
 websocket-client==0.44.0

@@ -38,6 +38,7 @@ class UserManager(BaseUserManager):
 
         user.is_superuser = True
         # 관리자 권한 부여
+        user.is_active = True
         user.save(using=self._db)
         # DB에 저장
         return user
@@ -69,7 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 활성화 여부 필드
     is_active = models.BooleanField(
         verbose_name='활성화',
-        default=True
+        default=False
     )
     # 가입 날짜 필드
     date_joined = models.DateTimeField(
