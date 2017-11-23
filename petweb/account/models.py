@@ -69,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 활성화 여부 필드
     is_active = models.BooleanField(
         verbose_name='활성화',
-        default=True
+        default=False
     )
     # 가입 날짜 필드
     date_joined = models.DateTimeField(
