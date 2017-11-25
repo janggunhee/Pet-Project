@@ -1,3 +1,6 @@
+from typing import NamedTuple
+
+import requests
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -5,9 +8,11 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status, generics, permissions
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config import settings
 from . import tasks
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
 from config.settings.base import *
@@ -44,6 +49,88 @@ class Login(APIView):
             'message': '인증에 실패하였습니다'
         }
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+
+# 페이스북 로그인을 위한 클래스 뷰
+class FacebookLogin(APIView):
+    def post(self, request):
+        # request.data에
+        # access_token과 user_id가 들어온다
+        # debug 결과의 NamedTuple
+        class DebugTokenInfo(NamedTuple):
+            app_id: str
+            type: str
+            application: str
+            expires_at: int
+            is_valid: bool
+            issued_at: int
+            scopes: list
+            user_id: str
+
+        # user info의 NamedTuple
+        class UserInfo(NamedTuple):
+            id: str
+            name: str
+            email: str
+
+        # token(access_token)을 받아 해당 토큰을 debug
+        def get_debug_token_info(token):
+            app_id = settings.FACEBOOK_APP_ID
+            secret_code = settings.FACEBOOK_APP_SECRET_CODE
+            app_access_token = f'{app_id}|{secret_code}'
+            # 액세스 토큰 검사
+            url_debug_token = 'https://graph.facebook.com/debug_token'
+            params_debug_token = {
+                'input_token': token,
+                'access_token': app_access_token,
+            }
+            # 이제 유저 정보가 들어온다
+            response = requests.get(url_debug_token, params=params_debug_token)
+            return DebugTokenInfo(**response.json()['data'])
+
+        # 유저 정보를 받아온다
+        def get_user_info(token):
+            # 유저 정보를 받아온다
+            user_info_fields = [
+                'id',
+                'name',
+                'email',
+            ]
+            url_graph_user_info = 'https://graph.facebook.com/me'
+            params = {
+                'fields': ','.join(user_info_fields),
+                'access_token': token
+            }
+            response = requests.get(url_graph_user_info, params=params)
+            return UserInfo(**response.json())
+
+        # request.data로 전달된 access_token값으로 debug 요청 결과를 받아옴
+        debug_token_info = get_debug_token_info(request.data['access_token'])
+        # access_token 값으로 user_info 결과를 받아옴
+        user_info = get_user_info(request.data['access_token'])
+
+        # 페이스북이 전달한 user_id와 프론트에서 전달받은 user_id가 일치하지 않으면 오류 발생
+        if debug_token_info.user_id != request.data['facebook_user_id']:
+            raise APIException('페이스북 사용자와 전달받은 id값이 일치하지 않음')
+
+        # 디버그 토큰값이 비정상이라면 오류 발생
+        if not debug_token_info.is_valid:
+            raise APIException('페이스북 토큰이 유효하지 않음')
+
+        # 유저에 대한 인증 과정을 거친다
+        user = authenticate(facebook_user_id=request.data['facebook_user_id'])
+        # 만일 유저가 있다면 serializer data를 리턴한다
+        if not user:
+            # 유저가 없다면 유저 생성
+            user = User.objects.create_facebook_user(
+                email=user_info.email,
+                nickname=user_info.name,
+                user_type=User.USER_TYPE_FACEBOOK,
+                social_id=user_info.id,
+            )
+
+        # 유저가 있다면 serialize 데터 전달
+        return Response(UserSerializer(user).data)
 
 
 # 회원가입을 위한 클래스 뷰

@@ -10,14 +10,14 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm
 
     # 어드민 화면에 표시되는 내용
-    list_display = ['user_type', 'email', 'nickname', 'is_active', 'is_superuser', 'date_joined']
+    list_display = ['user_type', 'social_id', 'email', 'nickname', 'is_active', 'is_superuser', 'date_joined']
     # 클릭 링크
     list_display_links = ['email']
     # 순서 필터링 기준
     list_filter = ['is_superuser', 'is_active']
     # 유저 보기 필드셋
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'social_id')}),
         ('personal info', {'fields': ('nickname', )}),
         ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type', )}),
     )
