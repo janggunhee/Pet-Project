@@ -18,6 +18,15 @@ class UserSignupTest(APILiveServerTestCase):
     def create_user(email='dummy@email.com'):
         return User.objects.create_user(email=email, nickname='dummy')
 
+    @staticmethod
+    def create_facebook_user(email='facebookdummy@email.com'):
+        return User.objects.create_facebook_user(
+            email=email,
+            nickname='facebook_dummy',
+            user_type=User.USER_TYPE_FACEBOOK,
+            social_id='dummy_number',
+        )
+
     # 테스트 1. signup url이 reverse name과 매치되는가
     def test_signup_url_name_reverse(self):
         url = reverse(self.URL_API_SIGNUP_NAME)
@@ -41,3 +50,9 @@ class UserSignupTest(APILiveServerTestCase):
         query = User.objects.filter(pk=dummy_pk)
         self.assertTrue(query.exists())
 
+    # 테스트 4. 페이스북 유저가 생성되고 DB에 존재하는가
+    def test_facebook_user_is_exist(self):
+        dummy_facebook_user = self.create_facebook_user()
+        dummy_pk = dummy_facebook_user.pk
+        query = User.objects.filter(pk=dummy_pk)
+        self.assertTrue(query.exists())
