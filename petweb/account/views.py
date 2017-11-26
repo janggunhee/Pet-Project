@@ -1,12 +1,11 @@
 from typing import NamedTuple
 
 import requests
+from django.contrib.auth import settings
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
-
-from config import settings
 
 
 # 첫 화면
