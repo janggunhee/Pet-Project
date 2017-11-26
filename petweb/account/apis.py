@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
 import requests
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate, get_user_model, settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
@@ -12,10 +12,8 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config import settings
 from . import tasks
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
-from config.settings.base import *
 
 User = get_user_model()
 
@@ -160,7 +158,7 @@ class Signup(APIView):
             tasks.send_mail_task.delay(
                 subject,
                 message,
-                EMAIL_HOST_USER,
+                settings.EMAIL_HOST_USER,
                 to_email,
             )
             return Response(user, status=status.HTTP_201_CREATED)

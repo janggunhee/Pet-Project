@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='social_id',
-            field=models.CharField(blank=True, max_length=255, unique=True, verbose_name='소셜 아이디'),
+            field=models.CharField(blank=True, max_length=255, verbose_name='소셜 아이디'),
         ),
         migrations.AlterField(
             model_name='user',
