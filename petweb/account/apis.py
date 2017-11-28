@@ -6,12 +6,13 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import status, generics, permissions
+from rest_framework import status, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from utils import permissions
 from . import tasks
 from .serializers import UserSerializer, SignupSerializer, EditSerializer
 
@@ -196,7 +197,7 @@ class Activate(APIView):
 
 # 유저 디테일 보기 / 닉네임 수정 / 유저 삭제를 위한 클래스 뷰
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthorOrReadOnly, )
 
     # 유저 정보 가져오기
     def get_object(self, user_pk):
