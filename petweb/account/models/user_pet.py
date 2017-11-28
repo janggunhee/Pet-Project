@@ -21,7 +21,6 @@ class PetSpecies(models.Model):
     pet_type = models.CharField(max_length=20, choices=CHOICE_TYPE)
 
     # 매직 메소드: 품종이 출력되는 방식
-    # 예: '(강아지) 시츄', '(고양이) 코리안 숏헤어', 등등..
     def __str__(self):
         return self.get_pet_type_display()
 
