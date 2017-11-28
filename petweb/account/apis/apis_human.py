@@ -161,7 +161,7 @@ class Signup(APIView):
                 # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
-                'token': user['token']
+                'token': urlsafe_base64_encode(force_bytes(user['token']))
             })
             # 이메일 전송 메소드
             # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
@@ -182,6 +182,7 @@ class Activate(APIView):
         try:
             # 암호화된 user primary key를 복호화
             uid = force_text(urlsafe_base64_decode(uidb64))
+            decode_token = force_text(urlsafe_base64_decode(token))
             # uid 값으로 user 객체 불러오기
             user = User.objects.get(pk=uid)
         # 예외처리
@@ -189,7 +190,7 @@ class Activate(APIView):
             user = None
         # 만일 user가 생성되어 있고
         # url에 담겨온 token 값과 user 객체 안에 담겨 있던 token 값이 일치한다면
-        if user is not None and token == Token.objects.get(user=user).key:
+        if user is not None and decode_token == Token.objects.get(user=user).key:
             # 유저를 활성화 시킨 뒤 저장한다
             user.is_active = True
             user.save()
@@ -199,7 +200,7 @@ class Activate(APIView):
             }
             return Response(data, status=status.HTTP_200_OK)
         data = {
-            'message': '회원 활성화에 실패하였습니다'
+            'message': 'Activation is failed'
         }
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
