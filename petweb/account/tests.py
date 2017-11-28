@@ -6,50 +6,6 @@ from .apis import Signup
 
 User = get_user_model()
 
-# class UserModelTest(TransactionTestCase):
-#     DUMMY_EMAIL = 'dummy@email.com'
-#     DUMMY_NICKNAME = 'nickname'
-#     DUMMY_PASSWORD = 'password'
-#
-#     def test_fields_default_value(self):
-#         # 유저가 정상적으로 생성되는지 테스트
-#         user = User.objects.create_user(
-#             email=self.DUMMY_EMAIL,
-#             nickname=self.DUMMY_NICKNAME,
-#             password=self.DUMMY_PASSWORD,
-#         )
-#         self.assertEqual(user.email, self.DUMMY_EMAIL)
-#         self.assertEqual(user.nickname, self.DUMMY_NICKNAME)
-#
-#         self. assertEqual(user, authenticate(
-#             email=self.DUMMY_EMAIL,
-#             password=self.DUMMY_PASSWORD,
-#         ))
-#
-#     def test_user_login(self):
-#         # 유저 로그인 테스트
-#         User.objects.create_user(
-#             email=self.DUMMY_EMAIL,
-#             nickname=self.DUMMY_NICKNAME,
-#             password=self.DUMMY_PASSWORD,
-#         )
-#         c = Client()
-#         response = c.post('/account/login/',
-#                           {'email': f'{self.DUMMY_EMAIL}',
-#                            'password': f'{self.DUMMY_PASSWORD}'})
-#         self.assertEqual(response.status_code, 200)
-#
-#     def test_user_signup(self):
-#         # 유저 회원가입 테스트
-#         c = Client()
-#         response = c.post('/account/signup/',
-#                           {'email': f'{self.DUMMY_EMAIL}',
-#                            'nickname': f'{self.DUMMY_NICKNAME}',
-#                            'password1': f'{self.DUMMY_PASSWORD}',
-#                            'password2': f'{self.DUMMY_PASSWORD}'})
-#         self.assertEqual(response.status_code, 201)
-#
-
 
 class UserSignupTest(APILiveServerTestCase):
     # DB를 쓸 때는 LiveServerTestCase 사용
@@ -61,6 +17,15 @@ class UserSignupTest(APILiveServerTestCase):
     @staticmethod
     def create_user(email='dummy@email.com'):
         return User.objects.create_user(email=email, nickname='dummy')
+
+    @staticmethod
+    def create_facebook_user(email='facebookdummy@email.com'):
+        return User.objects.create_facebook_user(
+            email=email,
+            nickname='facebook_dummy',
+            user_type=User.USER_TYPE_FACEBOOK,
+            social_id='dummy_number',
+        )
 
     # 테스트 1. signup url이 reverse name과 매치되는가
     def test_signup_url_name_reverse(self):
@@ -85,31 +50,9 @@ class UserSignupTest(APILiveServerTestCase):
         query = User.objects.filter(pk=dummy_pk)
         self.assertTrue(query.exists())
 
-    # 테스트 4. 유저를 생성해 이메일이 전송되는지 확인한다
-    # def test_send_email_task(self):
-    #     # c = Client()
-    #     # response = c.post(self.URL_API_SIGNUP,
-    #     #                   {'email': 'dummy@email.com',
-    #     #                    'nickname': 'dummy',
-    #     #                    'password1': '1234',
-    #     #                    'password2': '1234'})
-    #     # self.assertEqual(response.status_code, 201)
-    #     f = io.StringIO()
-    #     with redirect_stdout(f):
-    #         help(send_mail_task(
-    #             subject='hello',
-    #             message='내용',
-    #             from_email='hostdummy@email.com',
-    #             recipient='dummy@email.com',
-    #         ))
-    #         s = f.getvalue()
-    #     self.assertEqual(s, 1)
-
-        # with redirect_stdout(sys.stderr):
-        #     send_mail_task(
-        #         subject='hello',
-        #         message='content',
-        #         from_email='hostdummy@email.com',
-        #         recipient='dummy@email.com',
-        #     )
-
+    # 테스트 4. 페이스북 유저가 생성되고 DB에 존재하는가
+    def test_facebook_user_is_exist(self):
+        dummy_facebook_user = self.create_facebook_user()
+        dummy_pk = dummy_facebook_user.pk
+        query = User.objects.filter(pk=dummy_pk)
+        self.assertTrue(query.exists())

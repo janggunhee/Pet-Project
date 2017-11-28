@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 class UserManager(BaseUserManager):
     def create_user(self, email, nickname, password=None):
         """
-        주어진 정보로 User 인스턴스 생성
+        주어진 정보로 일반 User 인스턴스 생성
         """
         if not email:
             # 이메일 정보가 들어오지 않으면 오류 발생
@@ -23,6 +23,20 @@ class UserManager(BaseUserManager):
         # 패스워드 세팅
         user.save(using=self._db)
         # 유저를 DB에 세이브
+        return user
+
+    def create_facebook_user(self, email, nickname, user_type, social_id):
+        """
+        주어진 정보로 facebook_user 인스턴스 생성
+        """
+        user = self.model(
+            email=self.normalize_email(email),
+            nickname=nickname,
+            user_type=user_type,
+            social_id=social_id,
+        )
+        user.is_active = True
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, email, nickname, password=None):
@@ -60,11 +74,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name='이메일 주소',
         max_length=255,
         unique=True,
+        blank=True,
+    )
+    social_id = models.CharField(
+        verbose_name='소셜 아이디',
+        max_length=255,
+        blank=True,
     )
     # 닉네임 필드
     nickname = models.CharField(
         verbose_name='닉네임',
-        max_length=30,
+        max_length=255,
         unique=True,
     )
     # 활성화 여부 필드

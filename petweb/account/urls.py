@@ -1,10 +1,14 @@
 from django.conf.urls import url
 
-from . import apis
+from . import apis, views
 
 urlpatterns = [
     # 유저 로그인
     url(r'^login/$', apis.Login.as_view()),
+    # 프론트 페이스북 로그인
+    url(r'^front-facebook-login/$', views.FrontFacebookLogin.as_view(), name='front-facebook-login'),
+    # 페이스북 로그인
+    url(r'^facebook-login/$', apis.FacebookLogin.as_view(), name='api-facebook-login'),
     # 유저 회원가입
     url(r'^signup/$', apis.Signup.as_view(), name='signup'),
     # 유저 디테일 뷰 / 닉네임 수정 / 유저 삭제
