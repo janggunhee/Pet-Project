@@ -4,7 +4,7 @@ from . import apis, views
 
 urlpatterns = [
     # 유저 로그인
-    url(r'^login/$', apis.Login.as_view()),
+    url(r'^login/$', apis.Login.as_view(), name='login'),
     # 프론트 페이스북 로그인
     url(r'^front-facebook-login/$', views.FrontFacebookLogin.as_view(), name='front-facebook-login'),
     # 페이스북 로그인
