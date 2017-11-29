@@ -5,14 +5,20 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 
+__all__ = (
+    'UserManager',
+    'User',
+)
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, nickname, password=None):
         """
-        주어진 정보로 User 인스턴스 생성
+        주어진 정보로 일반 User 인스턴스 생성
         """
         if not email:
             # 이메일 정보가 들어오지 않으면 오류 발생
-            raise ValueError('이메일 정보는 반드시 필요합니다')
+            raise ValueError('Email information is required')
 
         user = self.model(
             # 유저에 들어갈 정보: 이메일, 닉네임
@@ -23,6 +29,20 @@ class UserManager(BaseUserManager):
         # 패스워드 세팅
         user.save(using=self._db)
         # 유저를 DB에 세이브
+        return user
+
+    def create_facebook_user(self, email, nickname, user_type, social_id):
+        """
+        주어진 정보로 facebook_user 인스턴스 생성
+        """
+        user = self.model(
+            email=self.normalize_email(email),
+            nickname=nickname,
+            user_type=user_type,
+            social_id=social_id,
+        )
+        user.is_active = True
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, email, nickname, password=None):
@@ -57,24 +77,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_type = models.CharField(max_length=1, choices=CHOICES_USER_TYPE, default=USER_TYPE_DJANGO)
     # 이메일 필드
     email = models.EmailField(
-        verbose_name='이메일 주소',
+        verbose_name='email_address',
         max_length=255,
         unique=True,
+        blank=True,
+    )
+    social_id = models.CharField(
+        verbose_name='social_id',
+        max_length=255,
+        blank=True,
     )
     # 닉네임 필드
     nickname = models.CharField(
-        verbose_name='닉네임',
-        max_length=30,
+        verbose_name='nickname',
+        max_length=255,
         unique=True,
     )
     # 활성화 여부 필드
     is_active = models.BooleanField(
-        verbose_name='활성화',
+        verbose_name='is_active',
         default=False
     )
     # 가입 날짜 필드
     date_joined = models.DateTimeField(
-        verbose_name='가입 날짜',
+        verbose_name='date_joined',
         # 현재 시간 기준
         default=timezone.now
     )
@@ -89,8 +115,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         # 어드민 페이지에서 보여줄 설명 필드
-        verbose_name = '사용자'
-        verbose_name_plural = f'{verbose_name} 목록'
+        verbose_name = 'User'
+        verbose_name_plural = f'{verbose_name}s'
         # 보여주는 순서: 가입 일시
         ordering = ('-date_joined',)
 

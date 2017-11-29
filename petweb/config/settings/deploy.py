@@ -1,7 +1,7 @@
 from .base import *
 
 # debug
-DEBUG = True
+DEBUG = False
 
 # json filepath 설정
 DEPLOY_SECRET = os.path.join(CONFIG_SECRET_DIR, 'settings_deploy.json')

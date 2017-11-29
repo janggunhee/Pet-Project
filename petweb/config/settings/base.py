@@ -45,11 +45,18 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     '.elasticbeanstalk.com',
+    '.wooltari.co.kr',
 ]
 
 # auth
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
+
+# facebook authentication 추가
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'account.backends.FacebookBackend',
+]
 
 # auth_password_validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -85,6 +92,20 @@ EMAIL_HOST_PASSWORD = config_secret_email['gmail']['password']
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Facebook
+# app_id (공개 키)
+FACEBOOK_APP_ID = config_secret_common['facebook']['app_id']
+# secret_code (암호화 키)
+FACEBOOK_APP_SECRET_CODE = config_secret_common['facebook']['secret_code']
+# 요청할 개인정보 범위
+# 참고: https://developers.facebook.com/docs/facebook-login/overview
+# 로그인 검수 : 검수 절차를 받지 않은 앱에서 사용자에게 요청할 수 있는 권한은 다음과 같습니다.
+FACEBOOK_SCOPE = [
+    'public_profile',
+    'email',
+    'user_friends',
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -104,6 +125,8 @@ INSTALLED_APPS = [
 
 # rest_framework settings
 REST_FRAMEWORK = {
+    # test할 때 default 포맷을 json으로 세팅한다
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         # TokenAuthentication
@@ -146,7 +169,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
-LANGUAGE_CODE = 'ko-kr'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Asia/Seoul'
 
@@ -158,5 +181,3 @@ USE_TZ = True
 
 # Secret_key
 SECRET_KEY = config_secret_common['django']['secret_key']
-
-
