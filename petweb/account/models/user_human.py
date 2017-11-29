@@ -18,7 +18,7 @@ class UserManager(BaseUserManager):
         """
         if not email:
             # 이메일 정보가 들어오지 않으면 오류 발생
-            raise ValueError('이메일 정보는 반드시 필요합니다')
+            raise ValueError('Email information is required')
 
         user = self.model(
             # 유저에 들어갈 정보: 이메일, 닉네임
