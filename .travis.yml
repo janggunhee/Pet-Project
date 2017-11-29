@@ -17,6 +17,5 @@ before_script:
 - psql -c "CREATE DATABASE pet" -U postgres
 - cd petweb
 script:
-- service rabbitmq-server start
 - python manage.py migrate --noinput
-- python manage.py test mailqueue -x
+- python manage.py test
