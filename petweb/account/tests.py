@@ -16,8 +16,8 @@ User = get_user_model()
 
 class UserSignupTest(APILiveServerTestCase):
     # DB를 쓸 때는 LiveServerTestCase 사용
-    URL_API_SIGNUP_NAME = 'account:signup'
-    URL_API_SIGNUP = '/account/signup/'
+    URL_API_SIGNUP_NAME = 'account:user:signup'
+    URL_API_SIGNUP = '/account/user/signup/'
     VIEW_CLASS = Signup
 
     @staticmethod
@@ -81,8 +81,8 @@ class UserSignupTest(APILiveServerTestCase):
 
 
 class UserLoginTest(APILiveServerTestCase):
-    URL_API_LOGIN_NAME = 'account:login'
-    URL_API_LOGIN = '/account/login/'
+    URL_API_LOGIN_NAME = 'account:user:login'
+    URL_API_LOGIN = '/account/user/login/'
     VIEW_CLASS = Login
     client = APIClient()
 
