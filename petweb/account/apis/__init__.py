@@ -1,2 +1,2 @@
-from .apis_human import *
-from .apis_pet import *
+from .api_human import *
+from .api_pet import *

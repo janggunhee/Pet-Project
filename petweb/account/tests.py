@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient
 
-from account.serializers import UserSerializer, SignupSerializer
+from .serializers import UserSerializer, SignupSerializer
 from .apis import Signup, Login
 
 User = get_user_model()
