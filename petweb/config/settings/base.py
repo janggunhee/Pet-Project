@@ -124,6 +124,8 @@ INSTALLED_APPS = [
 
 # rest_framework settings
 REST_FRAMEWORK = {
+    # test할 때 default 포맷을 json으로 세팅한다
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         # TokenAuthentication
