@@ -12,10 +12,19 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from . import tasks
-from .serializers import UserSerializer, SignupSerializer, EditSerializer
+from utils.permissions import IsUserOrReadOnly
+from .. import tasks
+from ..serializers import UserSerializer, SignupSerializer, EditSerializer
 
 User = get_user_model()
+
+__all__ = (
+    'Login',
+    'FacebookLogin',
+    'Signup',
+    'Activate',
+    'UserDetailUpdateDestroy',
+)
 
 
 # 로그인을 위한 클래스 뷰
@@ -44,7 +53,7 @@ class Login(APIView):
             return Response(data, status=status.HTTP_200_OK)
         # authenticate가 실패하면 data에 실패 메시지를 보낸다
         data = {
-            'message': '인증에 실패하였습니다'
+            'message': 'Invalid credentials'
         }
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -151,7 +160,7 @@ class Signup(APIView):
                 # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
-                'token': user['token']
+                'token': urlsafe_base64_encode(force_bytes(user['token']))
             })
             # 이메일 전송 메소드
             # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
@@ -172,6 +181,7 @@ class Activate(APIView):
         try:
             # 암호화된 user primary key를 복호화
             uid = force_text(urlsafe_base64_decode(uidb64))
+            decode_token = force_text(urlsafe_base64_decode(token))
             # uid 값으로 user 객체 불러오기
             user = User.objects.get(pk=uid)
         # 예외처리
@@ -179,7 +189,7 @@ class Activate(APIView):
             user = None
         # 만일 user가 생성되어 있고
         # url에 담겨온 token 값과 user 객체 안에 담겨 있던 token 값이 일치한다면
-        if user is not None and token == Token.objects.get(user=user).key:
+        if user is not None and decode_token == Token.objects.get(user=user).key:
             # 유저를 활성화 시킨 뒤 저장한다
             user.is_active = True
             user.save()
@@ -189,47 +199,25 @@ class Activate(APIView):
             }
             return Response(data, status=status.HTTP_200_OK)
         data = {
-            'message': '회원 활성화에 실패하였습니다'
+            'message': 'Activation is failed'
         }
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 유저 디테일 보기 / 닉네임 수정 / 유저 삭제를 위한 클래스 뷰
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticated, )
+# 유저 디테일 보기 / 닉네임 수정 / 삭제 뷰
+class UserDetailUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    # 쿼리셋: 유저 쿼리셋 전체
+    queryset = User.objects.all()
+    # 권한: utils.permissons.py에 작성한 커스텀 퍼미션.
+    # SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS') 외에는 본인만이 건드릴 수 있도록 권한 조정
+    permission_classes = (IsUserOrReadOnly, )
+    # url에서 받는 키워드 인자 값: 'user_pk'
+    lookup_url_kwarg = 'user_pk'
 
-    # 유저 정보 가져오기
-    def get_object(self, user_pk):
-        return User.objects.get(pk=user_pk)
-
-    # 유저 디테일 보기 (method: get)
-    def get(self, request, user_pk):
-        user = self.get_object(user_pk)
-        serializer = UserSerializer(user)
-        data = {
-            'token': user.token,
-            'user': serializer.data
-        }
-        return Response(data, status=status.HTTP_200_OK)
-
-    # 유저 닉네임 수정 (method: patch)
-    def patch(self, request, user_pk):
-        user = self.get_object(user_pk)
-        serializer = EditSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            data = {
-                'token': user.token,
-                'user': serializer.data
-            }
-            return Response(data, status=status.HTTP_200_OK)
-        data = {
-            'message': '업데이트에 실패했습니다'
-        }
-        return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-    # 유저 삭제 (method: delete)
-    def delete(self, request, user_pk):
-        user = self.get_object(user_pk)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # 어떤 요청이 오느냐에 따라 시리얼라이저 클래스를 다르게 적용한다
+    def get_serializer_class(self):
+        # SAFE METHOD는 일반 UserSerializer를 적용
+        if self.request.method in permissions.SAFE_METHODS:
+            return UserSerializer
+        # 그 외에는 EditSerializer 적
+        return EditSerializer
