@@ -10,6 +10,8 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '5432',
         'NAME': 'pet',
-        'USER': 'postgres'
+        'USER': 'lanark'
     }
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
