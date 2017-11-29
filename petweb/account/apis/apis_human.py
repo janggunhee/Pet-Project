@@ -9,7 +9,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status, generics, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import APIException
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -54,7 +53,7 @@ class Login(APIView):
             return Response(data, status=status.HTTP_200_OK)
         # authenticate가 실패하면 data에 실패 메시지를 보낸다
         data = {
-            'message': 'authentication is failed'
+            'message': 'Invalid credentials'
         }
         return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
