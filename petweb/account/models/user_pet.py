@@ -6,7 +6,7 @@ User = get_user_model()
 
 __all__ = (
     'PetSpecies',
-    'PetBreeds,'
+    'PetBreeds',
     'Pet',
 )
 
@@ -74,7 +74,7 @@ class CommonInfo(models.Model):
 
 
 class Pet(CommonInfo):
-    # 주인
+    # 주인lea
     owner = models.ForeignKey(User, default=True)
 
     def __str__(self):
