@@ -74,7 +74,7 @@ class CommonInfo(models.Model):
 
 
 class Pet(CommonInfo):
-    # 주인lea
+    # 주인
     owner = models.ForeignKey(User, default=True)
 
     def __str__(self):

@@ -106,4 +106,3 @@ class UserLoginTest(APILiveServerTestCase):
             resolver_match.func.view_class,
             self.VIEW_CLASS
         )
-
