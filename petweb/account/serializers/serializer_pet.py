@@ -12,13 +12,14 @@ __all__ = (
 
 
 class PetSerializer(serializers.ModelSerializer):
-    owner = UserSerializer()
+    owner = UserSerializer(read_only=True)
+    # species = serializers.CharField
 
     class Meta:
         model = Pet
         fields = (
-            'pk',
             'owner',
+            'pk',
             'species',
             'breeds',
             'name',
