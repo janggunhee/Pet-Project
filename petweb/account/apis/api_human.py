@@ -23,7 +23,7 @@ __all__ = (
     'FacebookLogin',
     'Signup',
     'Activate',
-    'UserDetailUpdateDestroy',
+    'UserProfileUpdateDestroy',
 )
 
 
@@ -205,7 +205,7 @@ class Activate(APIView):
 
 
 # 유저 디테일 보기 / 닉네임 수정 / 삭제 뷰
-class UserDetailUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     # 쿼리셋: 유저 쿼리셋 전체
     queryset = User.objects.all()
     # 권한: utils.permissons.py에 작성한 커스텀 퍼미션.

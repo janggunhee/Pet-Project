@@ -1,7 +1,4 @@
-from pprint import pprint
-
 from django.contrib.auth import get_user_model, authenticate
-from django.contrib.sites.shortcuts import get_current_site
 from django.test import Client
 from django.urls import reverse, resolve
 from rest_framework import status
@@ -9,7 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient
 
 from .serializers import UserSerializer, SignupSerializer
-from .apis import Signup, Login
+from .apis import Signup, Login, UserProfileUpdateDestroy
 
 User = get_user_model()
 
@@ -109,3 +106,26 @@ class UserLoginTest(APILiveServerTestCase):
 
     # 테스트 7. login url로 유저가 로그인 되는가
     # def test_user_login(self):
+
+
+class UserProfileTest(APILiveServerTestCase):
+    dummy_user_pk = '1'
+    URL_API_PROFILE_NAME = 'profile:user'
+    URL_API_PROFILE = '/profile/' + dummy_user_pk + '/'
+    VIEW_CLASS = UserProfileUpdateDestroy
+
+    # 테스트 8. profile url이 reverse name과 일치하는가
+    def test_detail_url_name_reserve(self):
+        url = reverse(self.URL_API_PROFILE_NAME, args=self.dummy_user_pk, )
+        self.assertEqual(url, self.URL_API_PROFILE)
+
+    # 테스트 9. account.apis.Detail view에 대해
+    # URL, reverse, resolve, view 함수가 같은지 확인
+    def test_login_url_resolve_view_class(self):
+        resolver_match = resolve(self.URL_API_PROFILE)
+        self.assertEqual(resolver_match.view_name,
+                         self.URL_API_PROFILE_NAME)
+        self.assertEqual(
+            resolver_match.func.view_class,
+            self.VIEW_CLASS
+        )
