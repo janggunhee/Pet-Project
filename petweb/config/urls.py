@@ -18,8 +18,18 @@ from django.contrib import admin
 
 from account import views
 
+
+# 메인 화면 및 관리자 페이지
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^account/', include('account.urls.url_human', namespace='account'))
+    url(r'^$', views.index, name='main'),
+    url(r'^admin/', admin.site.urls, name='admin'),
 ]
+
+# 나머지 페이지의 시작 분기점
+urlpatterns += [
+    # 회원 관리 url
+    url(r'auth/', include('account.urls.url_auth', namespace='auth')),
+    # 회원 프로필 url
+    url(r'profile/', include('account.urls.url_profile', namespace='profile')),
+]
+
