@@ -48,7 +48,7 @@ class UserSignupTest(APILiveServerTestCase):
     # 테스트 3. signup url로 user가 생성되는가
     def test_signup_dummy_user(self):
         # 더미 유저 데이터 생성
-        data = {
+        input_data = {
             'email': 'dummy1@email.com',
             'nickname': 'pycharm_dummy',
             'password1': '123456789',
@@ -56,21 +56,21 @@ class UserSignupTest(APILiveServerTestCase):
 
         }
         # signup url에 더미 유저 데이터로 회원가입 요청
-        response = self.client.post(self.URL_API_SIGNUP, data)
+        response = self.client.post(self.URL_API_SIGNUP, input_data)
         # 회원가입이 201 코드로 성사되었는지 검사
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # 생성된 더미 유저
         dummy_user = User.objects.get(email='dummy1@email.com')
         # 더미 유저를 시리얼라이징
         serializer = SignupSerializer(dummy_user).data
-        # 콘솔 창에 회원가입 결과를 띄워 줌
-        result = pprint(serializer)
+        # 토큰 가져오기
+        dummy_token = Token.objects.get(user__email='dummy1@email.com')
         # 토큰 일치 검사
-        self.assertEqual(serializer['token'], dummy_user.token)
+        self.assertEqual(serializer['token'], dummy_token.key)
         # 처음 입력한 이메일과 DB에 저장된 이메일이 일치하는지 검사
-        self.assertEqual(serializer['user']['email'], data['email'])
+        self.assertEqual(serializer['user']['email'], input_data['email'])
         # 처음 입력한 닉네임과 DB에 저장된 닉네임이 일치하는지 검사
-        self.assertEqual(serializer['user']['nickname'], data['nickname'])
+        self.assertEqual(serializer['user']['nickname'], input_data['nickname'])
 
     # 테스트 4. 페이스북 유저가 생성되고 DB에 존재하는가
     def test_facebook_user_is_exist(self):
@@ -106,3 +106,6 @@ class UserLoginTest(APILiveServerTestCase):
             resolver_match.func.view_class,
             self.VIEW_CLASS
         )
+
+    # 테스트 7. login url로 유저가 로그인 되는가
+    # def test_user_login(self):
