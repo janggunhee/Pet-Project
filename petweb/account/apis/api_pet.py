@@ -1,10 +1,8 @@
 from django.shortcuts import get_list_or_404
-from rest_framework import generics, status, permissions, filters, mixins
-from rest_framework.generics import get_object_or_404
+from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from utils.permissions import IsOwnerOrReadOnly, IsUserOrReadOnly
+from utils.permissions import IsOwnerOrReadOnly
 from ..pagination import StandardPetViewPagination
 from ..models import Pet
 from ..serializers import PetSerializer
