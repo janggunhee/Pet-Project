@@ -219,5 +219,5 @@ class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         # SAFE METHOD는 일반 UserSerializer를 적용
         if self.request.method in permissions.SAFE_METHODS:
             return UserSerializer
-        # 그 외에는 EditSerializer 적
+        # 그 외에는 EditSerializer 적용
         return EditSerializer
