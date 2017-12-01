@@ -2,10 +2,10 @@ from django.shortcuts import get_list_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from utils.permissions import IsOwnerOrReadOnly
-from utils.pagination import StandardPetViewPagination
+from utils import pagination, permissions
 from ..models import Pet
 from ..serializers import PetSerializer
+
 
 __all__ = (
     'PetListCreate',
@@ -39,9 +39,9 @@ class PetListCreate(generics.ListCreateAPIView):
     # 시리얼라이저: 펫 시리얼라이저
     serializer_class = PetSerializer
     # 페이지네이션: utils.pagination에 있는 pagination 사용
-    pagination_class = StandardPetViewPagination
+    pagination_class = pagination.StandardPetViewPagination
     # 권한: 소유주 이외에는 읽기만 가능
-    permission_classes = (IsOwnerOrReadOnly, )
+    permission_classes = (permissions.IsOwnerOrReadOnly, )
     # url 키워드 인자: user_pk
     lookup_url_kwarg = 'user_pk'
 
