@@ -154,7 +154,7 @@ class Signup(APIView):
             # 이메일 수신자: 가입한 회원
             to_email = user['user']['email']
             # 이메일 제목
-            subject = '[Pet Service] 회원가입 인증 이메일'
+            subject = '[Wooltari] 회원가입 인증 이메일'
             # 이메일 내용: 템플릿을 렌더링해 전송한다
             message = render_to_string('user_activate_email.html', {
                 # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다

@@ -33,7 +33,7 @@ urlpatterns += [
     # 회원가입, 로그인, 페이스북 로그인 기능 수행
     url(r'auth/', include('account.urls.url_auth', namespace='auth')),
     # 회원 프로필 url → account.urls.url_profile로 연결됨
-    # 회원 프로필, 닉네임 수정, 회원 삭제 기능 수행
+    # 회원 프로필, 정보(닉네임/비밀번호) 수정, 회원 삭제 기능 수행
     url(r'profile/', include('account.urls.url_profile', namespace='profile')),
 ]
 

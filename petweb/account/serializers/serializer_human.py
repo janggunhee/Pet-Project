@@ -29,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 class SignupSerializer(serializers.ModelSerializer):
     # 유저 가입 시 필드를 생성하는 모델 시리얼라이저
     # 패스워드 1, 2는 추가로 설정해준다
+    email = serializers.CharField(required=True)
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
@@ -50,7 +51,7 @@ class SignupSerializer(serializers.ModelSerializer):
     # 기본 모델 시리얼라이저는 password1, 2에 대한 validate가 없으므로 만들어준다
     def validate(self, data):
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError('비밀번호가 일치하지 않습니다')
+            raise serializers.ValidationError('Passwords do not match')
         return data
 
     # 유저를 생성하는 메소드
@@ -101,7 +102,7 @@ class EditSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # 비밀번호가 입력되었을 경우 비밀번호 1과 2가 같은지 검사한다
         if data['password1'] != data['password2']:
-            raise serializers.ValidationError('비밀번호가 일치하지 않습니다')
+            raise serializers.ValidationError('Passwords do not match')
         return data
 
     def update(self, instance, validated_data):
