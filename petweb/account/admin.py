@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserChangeForm, UserCreationForm
-from .models import User, PetSpecies, PetBreeds, Pet
+from .models import User, PetSpecies, PetBreed, Pet
 
 
 class UserAdmin(BaseUserAdmin):
@@ -38,5 +38,5 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(PetSpecies)
-admin.site.register(PetBreeds)
+admin.site.register(PetBreed)
 admin.site.register(Pet)

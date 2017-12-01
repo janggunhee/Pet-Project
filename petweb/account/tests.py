@@ -1,23 +1,20 @@
-from pprint import pprint
-
 from django.contrib.auth import get_user_model, authenticate
-from django.contrib.sites.shortcuts import get_current_site
 from django.test import Client
 from django.urls import reverse, resolve
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient
 
-from account.serializers import UserSerializer, SignupSerializer
-from .apis import Signup, Login
+from .serializers import UserSerializer, SignupSerializer
+from .apis import Signup, Login, UserProfileUpdateDestroy
 
 User = get_user_model()
 
 
 class UserSignupTest(APILiveServerTestCase):
     # DB를 쓸 때는 LiveServerTestCase 사용
-    URL_API_SIGNUP_NAME = 'account:signup'
-    URL_API_SIGNUP = '/account/signup/'
+    URL_API_SIGNUP_NAME = 'auth:signup'
+    URL_API_SIGNUP = '/auth/signup/'
     VIEW_CLASS = Signup
 
     @staticmethod
@@ -48,7 +45,7 @@ class UserSignupTest(APILiveServerTestCase):
     # 테스트 3. signup url로 user가 생성되는가
     def test_signup_dummy_user(self):
         # 더미 유저 데이터 생성
-        data = {
+        input_data = {
             'email': 'dummy1@email.com',
             'nickname': 'pycharm_dummy',
             'password1': '123456789',
@@ -56,21 +53,21 @@ class UserSignupTest(APILiveServerTestCase):
 
         }
         # signup url에 더미 유저 데이터로 회원가입 요청
-        response = self.client.post(self.URL_API_SIGNUP, data)
+        response = self.client.post(self.URL_API_SIGNUP, input_data)
         # 회원가입이 201 코드로 성사되었는지 검사
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         # 생성된 더미 유저
         dummy_user = User.objects.get(email='dummy1@email.com')
         # 더미 유저를 시리얼라이징
         serializer = SignupSerializer(dummy_user).data
-        # 콘솔 창에 회원가입 결과를 띄워 줌
-        result = pprint(serializer)
+        # 토큰 가져오기
+        dummy_token = Token.objects.get(user__email='dummy1@email.com')
         # 토큰 일치 검사
-        self.assertEqual(serializer['token'], dummy_user.token)
+        self.assertEqual(serializer['token'], dummy_token.key)
         # 처음 입력한 이메일과 DB에 저장된 이메일이 일치하는지 검사
-        self.assertEqual(serializer['user']['email'], data['email'])
+        self.assertEqual(serializer['user']['email'], input_data['email'])
         # 처음 입력한 닉네임과 DB에 저장된 닉네임이 일치하는지 검사
-        self.assertEqual(serializer['user']['nickname'], data['nickname'])
+        self.assertEqual(serializer['user']['nickname'], input_data['nickname'])
 
     # 테스트 4. 페이스북 유저가 생성되고 DB에 존재하는가
     def test_facebook_user_is_exist(self):
@@ -81,8 +78,8 @@ class UserSignupTest(APILiveServerTestCase):
 
 
 class UserLoginTest(APILiveServerTestCase):
-    URL_API_LOGIN_NAME = 'account:login'
-    URL_API_LOGIN = '/account/login/'
+    URL_API_LOGIN_NAME = 'auth:login'
+    URL_API_LOGIN = '/auth/login/'
     VIEW_CLASS = Login
     client = APIClient()
 
@@ -102,6 +99,32 @@ class UserLoginTest(APILiveServerTestCase):
         resolver_match = resolve(self.URL_API_LOGIN)
         self.assertEqual(resolver_match.view_name,
                          self.URL_API_LOGIN_NAME)
+        self.assertEqual(
+            resolver_match.func.view_class,
+            self.VIEW_CLASS
+        )
+
+    # 테스트 7. login url로 유저가 로그인 되는가
+    # def test_user_login(self):
+
+
+class UserProfileTest(APILiveServerTestCase):
+    dummy_user_pk = '1'
+    URL_API_PROFILE_NAME = 'profile:user'
+    URL_API_PROFILE = '/profile/' + dummy_user_pk + '/'
+    VIEW_CLASS = UserProfileUpdateDestroy
+
+    # 테스트 8. profile url이 reverse name과 일치하는가
+    def test_detail_url_name_reserve(self):
+        url = reverse(self.URL_API_PROFILE_NAME, args=self.dummy_user_pk, )
+        self.assertEqual(url, self.URL_API_PROFILE)
+
+    # 테스트 9. account.apis.Detail view에 대해
+    # URL, reverse, resolve, view 함수가 같은지 확인
+    def test_login_url_resolve_view_class(self):
+        resolver_match = resolve(self.URL_API_PROFILE)
+        self.assertEqual(resolver_match.view_name,
+                         self.URL_API_PROFILE_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
             self.VIEW_CLASS

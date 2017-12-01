@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -6,7 +7,7 @@ User = get_user_model()
 
 __all__ = (
     'PetSpecies',
-    'PetBreeds',
+    'PetBreed',
     'Pet',
 )
 
@@ -24,8 +25,11 @@ class PetSpecies(models.Model):
     def __str__(self):
         return self.get_pet_type_display()
 
+    class Meta:
+        verbose_name_plural = "Pet species"
 
-class PetBreeds(models.Model):
+
+class PetBreed(models.Model):
     species = models.ForeignKey(
         PetSpecies
     )
@@ -35,15 +39,22 @@ class PetBreeds(models.Model):
         return self.breeds_name
 
 
-class CommonInfo(models.Model):
-    # 개별 pet에 대한 필드가 담긴 추상 클래스
+class Pet(models.Model):
+    # 동물의 주인
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
+
+    # 동물의 종류
+    # 예: 강아지, 고양이
     species = models.ForeignKey(
         PetSpecies,
         default=True
     )
     # 동물의 품종
+    # 에: 시츄, 코리안 숏헤어 등등
     breeds = models.ForeignKey(
-        PetBreeds,
+        PetBreed,
         default=True
     )
     # 동물 이름
@@ -69,17 +80,5 @@ class CommonInfo(models.Model):
     )
     body_color = models.CharField(max_length=10, choices=CHOICE_COLOR)
 
-    class Meta:
-        abstract = True
-
-
-class Pet(CommonInfo):
-    # 주인
-    owner = models.ForeignKey(User, default=True)
-
     def __str__(self):
         return self.name
-
-
-
-
