@@ -21,15 +21,19 @@ from account import views
 
 # 메인 화면 및 관리자 페이지
 urlpatterns = [
+    # 메인 페이지
     url(r'^$', views.index, name='main'),
+    # 어드민 페이지
     url(r'^admin/', admin.site.urls, name='admin'),
 ]
 
 # 나머지 페이지의 시작 분기점
 urlpatterns += [
-    # 회원 관리 url
+    # 회원 관리 url → account.urls.url_auth로 연결됨
+    # 회원가입, 로그인, 페이스북 로그인 기능 수행
     url(r'auth/', include('account.urls.url_auth', namespace='auth')),
-    # 회원 프로필 url
+    # 회원 프로필 url → account.urls.url_profile로 연결됨
+    # 회원 프로필, 닉네임 수정, 회원 삭제 기능 수행
     url(r'profile/', include('account.urls.url_profile', namespace='profile')),
 ]
 
