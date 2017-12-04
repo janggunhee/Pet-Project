@@ -1,6 +1,7 @@
 from django.shortcuts import get_list_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from utils import pagination, permissions
 from ..models import Pet
@@ -9,20 +10,11 @@ from ..serializers import PetSerializer
 
 __all__ = (
     'PetListCreate',
+    'PetProfile',
 )
 
 
-"""
-TO_DO:
-generics.RetrieveUpdateDestroyAPIView
-3. 하나의 펫을 디테일하게 보는 뷰 (get)
-4. 펫의 내용을 수정하는 뷰 (patch)
-    1. 수정용 시리얼라이저 필요
-5. 펫을 삭제하는 뷰 (delete)
-
-"""
-
-
+# 펫 리스트 / 생성 뷰
 class PetListCreate(generics.ListCreateAPIView):
     """
     펫의 리스트를 보고 펫을 생성하는 뷰
@@ -103,3 +95,9 @@ class PetListCreate(generics.ListCreateAPIView):
         }
 
         return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 펫 디테일 보기 뷰 (사람 나이 환산)
+class PetProfile(APIView):
+    def get(self, request, *args, **kwargs):
+        pass
