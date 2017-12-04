@@ -1,14 +1,11 @@
-import base64
-
-from django.contrib.auth import get_user_model, authenticate
-from django.test import Client, override_settings, TestCase
+from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
-from rest_framework import status, HTTP_HEADER_ENCODING
+from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient, force_authenticate
+from rest_framework.test import APILiveServerTestCase, APIClient
 
-from .serializers import UserSerializer, SignupSerializer
-from .apis import Signup, Login, UserProfileUpdateDestroy
+from .serializers import SignupSerializer
+from .apis import Signup, Login, UserProfileUpdateDestroy, Logout
 
 User = get_user_model()
 
@@ -80,17 +77,23 @@ class UserSignupTest(APILiveServerTestCase):
 
 
 class UserLoginTest(APILiveServerTestCase):
-
     def setUp(self):
+        # URL
         self.URL_API_LOGIN_NAME = 'auth:login'
         self.URL_API_LOGIN = '/auth/login/'
-        self.VIEW_CLASS = Login
+        self.LOGIN_VIEW_CLASS = Login
+        # 클라이언트 메소드
         self.client = APIClient(enforce_csrf_checks=True)
 
     # 유저 생성 메소드
     @staticmethod
     def create_user(email='dummy2@email.com'):
-        return User.objects.create_user(email=email, nickname='dummy2', password='123456789')
+        user = User.objects.create_user(email=email, nickname='dummy2', password='123456789')
+        user.is_active = True
+        user.save()
+        return user
+
+    # --- 로그인 테스트 --- #
 
     # 테스트 5. login url이 reverse name과 일치하는가
     def test_login_url_name_reverse(self):
@@ -105,34 +108,70 @@ class UserLoginTest(APILiveServerTestCase):
                          self.URL_API_LOGIN_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
-            self.VIEW_CLASS
+            self.LOGIN_VIEW_CLASS
         )
 
     # 테스트 7. login url로 유저가 로그인 되는가
-    # def test_user_login(self):
+    def test_user_login(self):
         dummy_user = self.create_user()
-        dummy_user.is_active = True
-        login = self.client.login(email='dummy2@email.com', password='123456789')
-        self.assertTrue(login)
+        data = {
+            'email': 'dummy2@email.com',
+            'password': '123456789'
+        }
+        response = self.client.post(self.URL_API_LOGIN, data=data)
+        self.assertEqual(response.status_code, 200)
 
-    #     credentials = (f'{dummy_user.email}:{dummy_user.password}')
-    #     base64_credentials = base64.b64encode(
-    #         credentials.encode(HTTP_HEADER_ENCODING)
-    #     ).decode(HTTP_HEADER_ENCODING)
-    #     auth = f'Basic {base64_credentials}'
-    #     response = self.client.login(
-    #         email='dummy2@email.com',
-    #         password='123456789',
-    #         HTTP_AUTHORIZATION=auth,
-    #     )
-    #     self.assertEqual(response.status_code, 200)
+    # --- 로그아웃 테스트 ---#
+
+
+class UserLogoutTest(APILiveServerTestCase):
+    def setUp(self):
+        # URL
+        self.URL_API_LOGOUT_NAME = 'auth:logout'
+        self.URL_API_LOGOUT = '/auth/logout/'
+        self.LOGOUT_VIEW_CLASS = Logout
+        # 클라이언트 메소드
+        self.client = APIClient()
+
+    # 유저 생성 메소드
+    @staticmethod
+    def create_user(email='dummy3@email.com'):
+        user = User.objects.create_user(email=email, nickname='dummy3', password='123456789')
+        user.is_active = True
+        user.save()
+        return user
+
+    # 테스트 8. logout url이 reverse name과 일치하는가
+    def test_logout_url_name_reverse(self):
+        url = reverse(self.URL_API_LOGOUT_NAME)
+        self.assertEqual(url, self.URL_API_LOGOUT)
+
+    # 테스트 9. account.apis.Logout view에 대해
+    # URL, reverse, resolve, view 함수가 같은지 확인
+    def test_logout_url_resolve_view_class(self):
+        resolver_match = resolve(self.URL_API_LOGOUT)
+        self.assertEqual(resolver_match.view_name,
+                         self.URL_API_LOGOUT_NAME)
+        self.assertEqual(
+            resolver_match.func.view_class,
+            self.LOGOUT_VIEW_CLASS
+        )
+
+    # 테스트 10. login url로 유저가 로그아웃 되는가
+    def test_user_logout(self):
+        dummy_user = self.create_user()
+        token = dummy_user.token
+        credentials = self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post(self.URL_API_LOGOUT, data=credentials)
+        self.assertEqual(response.status_code, 200)
 
 
 class UserProfileTest(APILiveServerTestCase):
-    dummy_user_pk = '1'
-    URL_API_PROFILE_NAME = 'profile:user'
-    URL_API_PROFILE = '/profile/' + dummy_user_pk + '/'
-    VIEW_CLASS = UserProfileUpdateDestroy
+    def setUp(self):
+        self.dummy_user_pk = '1'
+        self.URL_API_PROFILE_NAME = 'profile:user'
+        self.URL_API_PROFILE = '/profile/' + self.dummy_user_pk + '/'
+        self.PROFILE_VIEW_CLASS = UserProfileUpdateDestroy
 
     # 테스트 8. profile url이 reverse name과 일치하는가
     def test_detail_url_name_reserve(self):
@@ -147,5 +186,5 @@ class UserProfileTest(APILiveServerTestCase):
                          self.URL_API_PROFILE_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
-            self.VIEW_CLASS
+            self.PROFILE_VIEW_CLASS
         )

@@ -9,5 +9,6 @@ urlpatterns = [
 
 urlpatterns += [
     # 펫 리스트 / 펫 생성
-    url(r'^(?P<user_pk>\d+)/pets/', apis.PetListCreate.as_view(), name='pet'),
+    url(r'^(?P<user_pk>\d+)/pets/$', apis.PetListCreate.as_view(), name='pet'),
+    url(r'^(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/', apis.PetProfile.as_view(), name='pet-profile'),
 ]
