@@ -3,6 +3,7 @@ from typing import NamedTuple
 import requests
 from django.contrib.auth import authenticate, get_user_model, settings
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -207,7 +208,21 @@ class FacebookLogin(APIView):
 
 # 로그아웃을 위한 클래스 뷰
 class Logout(APIView):
-    pass
+    def post(self, request, *args, **kwargs):
+        try:
+            # 사용자의 토큰을 삭제하려고 시도한다
+            request.user.auth_token.delete()
+            # 성공하면 로그아웃 성공 메시지를 띄운다
+            data = {
+                "message": "Successfully logout"
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        # 예외처리: 실패하면 다음과 같은 메시지가 뜬다
+        except (AttributeError, ObjectDoesNotExist):
+            data = {
+                "detail": "You are not signed in or have no tokens provided"
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 유저 디테일 보기 / 정보 수정 / 삭제 뷰
