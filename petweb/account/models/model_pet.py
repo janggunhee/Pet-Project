@@ -46,8 +46,6 @@ class PetBreed(models.Model):
 #         return self.filter()
 #
 #
-class PetManager(models.Manager):
-    pass
 
 
 class Pet(models.Model):

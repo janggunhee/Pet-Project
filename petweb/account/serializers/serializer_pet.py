@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from ..models import Pet
+from utils import pet_age
+from ..models import Pet, PetSpecies, PetBreed
 from . import UserSerializer
 
 User = get_user_model()
