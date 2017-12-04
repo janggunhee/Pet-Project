@@ -121,8 +121,6 @@ class UserLoginTest(APILiveServerTestCase):
         response = self.client.post(self.URL_API_LOGIN, data=data)
         self.assertEqual(response.status_code, 200)
 
-    # --- 로그아웃 테스트 ---#
-
 
 class UserLogoutTest(APILiveServerTestCase):
     def setUp(self):
@@ -161,30 +159,65 @@ class UserLogoutTest(APILiveServerTestCase):
     def test_user_logout(self):
         dummy_user = self.create_user()
         token = dummy_user.token
-        credentials = self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        response = self.client.post(self.URL_API_LOGOUT, data=credentials)
+        # http_authorization 인증
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post(self.URL_API_LOGOUT)
         self.assertEqual(response.status_code, 200)
 
 
 class UserProfileTest(APILiveServerTestCase):
     def setUp(self):
+        # URL
         self.dummy_user_pk = '1'
         self.URL_API_PROFILE_NAME = 'profile:user'
-        self.URL_API_PROFILE = '/profile/' + self.dummy_user_pk + '/'
+        self.URL_API_PROFILE_DUMMY = '/profile/' + self.dummy_user_pk + '/'
+        self.URL_API_PROFILE = '/profile/'
         self.PROFILE_VIEW_CLASS = UserProfileUpdateDestroy
+        # 클라이언트 메소드
+        self.client = APIClient()
 
-    # 테스트 8. profile url이 reverse name과 일치하는가
+    # 유저 생성 메소드
+    @staticmethod
+    def create_user(email='dummy4@email.com'):
+        user = User.objects.create_user(email=email, nickname='dummy4', password='123456789')
+        user.is_active = True
+        user.save()
+        return user
+
+    # 테스트 11. profile url이 reverse name과 일치하는가
     def test_detail_url_name_reserve(self):
         url = reverse(self.URL_API_PROFILE_NAME, args=self.dummy_user_pk, )
-        self.assertEqual(url, self.URL_API_PROFILE)
+        self.assertEqual(url, self.URL_API_PROFILE_DUMMY)
 
-    # 테스트 9. account.apis.Detail view에 대해
+    # 테스트 12. account.apis.Detail view에 대해
     # URL, reverse, resolve, view 함수가 같은지 확인
-    def test_login_url_resolve_view_class(self):
-        resolver_match = resolve(self.URL_API_PROFILE)
+    def test_detail_url_resolve_view_class(self):
+        resolver_match = resolve(self.URL_API_PROFILE_DUMMY)
         self.assertEqual(resolver_match.view_name,
                          self.URL_API_PROFILE_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
             self.PROFILE_VIEW_CLASS
         )
+
+    # 테스트 13. profile url에 접속 가능한가
+    def test_user_connect_profile_view(self):
+        dummy_user = self.create_user()
+        token = dummy_user.token
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get(self.URL_API_PROFILE + str(dummy_user.pk) + '/')
+        self.assertEqual(response.status_code, 200)
+
+    # 테스트 14. profile url로 닉네임 변경
+    def test_user_nickname_modify(self):
+        dummy_user = self.create_user()
+        token = dummy_user.token
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        data = {
+            'nickname': 'hello',
+            'password1': '',
+            'password2': '',
+        }
+        response = self.client.patch(self.URL_API_PROFILE + str(dummy_user.pk) + '/', data=data)
+        # 응답 코드가 정상인가
+        self.assertEqual(response.status_code, 200)
