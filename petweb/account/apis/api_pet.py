@@ -1,15 +1,18 @@
+from datetime import datetime
+
 from django.shortcuts import get_list_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils import pagination, permissions
-from ..models import Pet
+from utils import pagination, permissions, pet_age
+from ..models import Pet, PetSpecies, PetBreed
 from ..serializers import PetSerializer
 
 
 __all__ = (
     'PetListCreate',
+    'PetAge',
     'PetProfile',
 )
 
@@ -95,6 +98,48 @@ class PetListCreate(generics.ListCreateAPIView):
         }
 
         return Response(error, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 펫 사람 나이 환산 뷰
+class PetAge(APIView):
+    def get(self, request, *args, **kwargs):
+        pet = Pet.objects.filter(owner_id=request.user.pk).get(pk=request.resolver_match.kwargs['pet_pk'])
+        serializer = PetSerializer(pet)
+
+        def pet_datetime_birth_date(serializer):
+            # 반려동물의 생년월일을
+            # 입력값에서 birth_date를 가져온다
+            raw_birth_date = serializer.data['birth_date']
+            # 문자열 값인 raw_birth_date를 datetime 객체로 바꾼다
+            datetime_birth_date = datetime.strptime(raw_birth_date, '%Y-%M-%d').date()
+            return datetime_birth_date
+
+        def calculate_pet_age(birth_date):
+            # 반려동물의 나이를 환산하는 함수
+            # birth_date를 입력받아 나이를 리턴한다
+            return pet_age.calculate_age(birth_date)
+
+        def human_age_conversion(serializer):
+            # 반려동물의 사람 나이 환산 함수
+            # 입력값에서 species와 breed 값을 가져와 각 모델에서 객체를 꺼낸다
+            object_pet_type = PetSpecies.objects.get(pk=serializer.data['species'])
+            object_pet_breed = PetBreed.objects.get(pk=serializer.data['breeds'])
+            # 각 객체의 이름을 문자열로 꺼낸다
+            str_pet_type = object_pet_type.pet_type
+            str_pet_breed = object_pet_breed.breeds_name
+            birth_date = pet_datetime_birth_date(serializer)
+            conversed_age = pet_age.age_conversion(str_pet_type, str_pet_breed, birth_date)
+            return conversed_age
+
+        pet_birth_date = pet_datetime_birth_date(serializer)
+        result_pet_age = calculate_pet_age(pet_birth_date).years
+
+        data = {
+            'pet_age': result_pet_age,
+            'conversed_age': human_age_conversion(serializer)
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 # 펫 디테일 보기 뷰 (사람 나이 환산)
