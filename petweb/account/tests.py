@@ -1,9 +1,11 @@
+import base64
+
 from django.contrib.auth import get_user_model, authenticate
-from django.test import Client
+from django.test import Client, override_settings, TestCase
 from django.urls import reverse, resolve
-from rest_framework import status
+from rest_framework import status, HTTP_HEADER_ENCODING
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient
+from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient, force_authenticate
 
 from .serializers import UserSerializer, SignupSerializer
 from .apis import Signup, Login, UserProfileUpdateDestroy
@@ -78,10 +80,12 @@ class UserSignupTest(APILiveServerTestCase):
 
 
 class UserLoginTest(APILiveServerTestCase):
-    URL_API_LOGIN_NAME = 'auth:login'
-    URL_API_LOGIN = '/auth/login/'
-    VIEW_CLASS = Login
-    client = APIClient()
+
+    def setUp(self):
+        self.URL_API_LOGIN_NAME = 'auth:login'
+        self.URL_API_LOGIN = '/auth/login/'
+        self.VIEW_CLASS = Login
+        self.client = APIClient(enforce_csrf_checks=True)
 
     # 유저 생성 메소드
     @staticmethod
@@ -106,6 +110,22 @@ class UserLoginTest(APILiveServerTestCase):
 
     # 테스트 7. login url로 유저가 로그인 되는가
     # def test_user_login(self):
+        dummy_user = self.create_user()
+        dummy_user.is_active = True
+        login = self.client.login(email='dummy2@email.com', password='123456789')
+        self.assertTrue(login)
+
+    #     credentials = (f'{dummy_user.email}:{dummy_user.password}')
+    #     base64_credentials = base64.b64encode(
+    #         credentials.encode(HTTP_HEADER_ENCODING)
+    #     ).decode(HTTP_HEADER_ENCODING)
+    #     auth = f'Basic {base64_credentials}'
+    #     response = self.client.login(
+    #         email='dummy2@email.com',
+    #         password='123456789',
+    #         HTTP_AUTHORIZATION=auth,
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
 
 class UserProfileTest(APILiveServerTestCase):
