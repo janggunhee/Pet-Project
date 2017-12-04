@@ -31,6 +31,7 @@ __all__ = (
 
 # 회원가입을 위한 클래스 뷰
 class Signup(APIView):
+    # method: post
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
@@ -95,7 +96,7 @@ class Activate(APIView):
 
 # 로그인을 위한 클래스 뷰
 class Login(APIView):
-    # post method
+    # method: post
     def post(self, request, *args, **kwargs):
         email = request.data['email']
         password = request.data['password']

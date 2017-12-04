@@ -100,4 +100,8 @@ class PetListCreate(generics.ListCreateAPIView):
 # 펫 디테일 보기 뷰 (사람 나이 환산)
 class PetProfile(APIView):
     def get(self, request, *args, **kwargs):
-        pass
+        pet = Pet.objects.filter(owner_id=request.user.pk).get(pk=request.resolver_match.kwargs['pet_pk'])
+        serializer = PetSerializer(pet)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
