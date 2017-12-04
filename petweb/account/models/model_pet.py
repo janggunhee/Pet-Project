@@ -80,5 +80,11 @@ class Pet(models.Model):
     )
     body_color = models.CharField(max_length=10, choices=CHOICE_COLOR)
 
+    # 동물 비활성화 여부
+    is_active = models.BooleanField(
+        verbose_name='is_active',
+        default=True
+    )
+
     def __str__(self):
         return self.name
