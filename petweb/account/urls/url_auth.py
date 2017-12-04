@@ -15,5 +15,4 @@ urlpatterns = [
     url(r'^facebook-login/$', apis.FacebookLogin.as_view(), name='api-facebook-login'),
     # 유저 로그아웃
     url(r'logout/$', apis.Logout.as_view(), name='logout'),
-
 ]
