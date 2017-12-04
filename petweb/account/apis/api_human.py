@@ -19,12 +19,77 @@ from ..serializers import UserSerializer, SignupSerializer, EditSerializer
 User = get_user_model()
 
 __all__ = (
-    'Login',
-    'FacebookLogin',
     'Signup',
     'Activate',
+    'Login',
+    'FacebookLogin',
+    'Logout',
     'UserProfileUpdateDestroy',
 )
+
+
+# 회원가입을 위한 클래스 뷰
+class Signup(APIView):
+    def post(self, request):
+        serializer = SignupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # 이메일 전송 프로세스의 시작
+            # user = 시리얼라이저된 데이터
+            user = serializer.data
+            # 현재 사이트의 메인 도메인을 가져온다
+            current_site = get_current_site(request)
+            # 이메일 수신자: 가입한 회원
+            to_email = user['user']['email']
+            # 이메일 제목
+            subject = '[Wooltari] 회원가입 인증 이메일'
+            # 이메일 내용: 템플릿을 렌더링해 전송한다
+            message = render_to_string('user_activate_email.html', {
+                # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
+                'token': urlsafe_base64_encode(force_bytes(user['token']))
+            })
+            # 이메일 전송 메소드
+            # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
+            tasks.send_mail_task.delay(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                to_email,
+            )
+            return Response(user, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 이메일 인증 링크를 클릭하면 활성화되는 뷰
+class Activate(APIView):
+    # method: get
+    def get(self, request, uidb64, token):
+        try:
+            # 암호화된 user primary key를 복호화
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            decode_token = force_text(urlsafe_base64_decode(token))
+            # uid 값으로 user 객체 불러오기
+            user = User.objects.get(pk=uid)
+        # 예외처리
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        # 만일 user가 생성되어 있고
+        # url에 담겨온 token 값과 user 객체 안에 담겨 있던 token 값이 일치한다면
+        if user is not None and decode_token == Token.objects.get(user=user).key:
+            # 유저를 활성화 시킨 뒤 저장한다
+            user.is_active = True
+            user.save()
+            data = {
+                'token': token,
+                'user': UserSerializer(user).data
+            }
+            return Response(data, status=status.HTTP_200_OK)
+        data = {
+            'message': 'Activation is failed'
+        }
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 로그인을 위한 클래스 뷰
@@ -140,68 +205,9 @@ class FacebookLogin(APIView):
         return Response(UserSerializer(user).data)
 
 
-# 회원가입을 위한 클래스 뷰
-class Signup(APIView):
-    def post(self, request):
-        serializer = SignupSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            # 이메일 전송 프로세스의 시작
-            # user = 시리얼라이저된 데이터
-            user = serializer.data
-            # 현재 사이트의 메인 도메인을 가져온다
-            current_site = get_current_site(request)
-            # 이메일 수신자: 가입한 회원
-            to_email = user['user']['email']
-            # 이메일 제목
-            subject = '[Wooltari] 회원가입 인증 이메일'
-            # 이메일 내용: 템플릿을 렌더링해 전송한다
-            message = render_to_string('user_activate_email.html', {
-                # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
-                'token': urlsafe_base64_encode(force_bytes(user['token']))
-            })
-            # 이메일 전송 메소드
-            # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
-            tasks.send_mail_task.delay(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                to_email,
-            )
-            return Response(user, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# 이메일 인증 링크를 클릭하면 활성화되는 뷰
-class Activate(APIView):
-    # method: get
-    def get(self, request, uidb64, token):
-        try:
-            # 암호화된 user primary key를 복호화
-            uid = force_text(urlsafe_base64_decode(uidb64))
-            decode_token = force_text(urlsafe_base64_decode(token))
-            # uid 값으로 user 객체 불러오기
-            user = User.objects.get(pk=uid)
-        # 예외처리
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-        # 만일 user가 생성되어 있고
-        # url에 담겨온 token 값과 user 객체 안에 담겨 있던 token 값이 일치한다면
-        if user is not None and decode_token == Token.objects.get(user=user).key:
-            # 유저를 활성화 시킨 뒤 저장한다
-            user.is_active = True
-            user.save()
-            data = {
-                'token': token,
-                'user': UserSerializer(user).data
-            }
-            return Response(data, status=status.HTTP_200_OK)
-        data = {
-            'message': 'Activation is failed'
-        }
-        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+# 로그아웃을 위한 클래스 뷰
+class Logout(APIView):
+    pass
 
 
 # 유저 디테일 보기 / 정보 수정 / 삭제 뷰
