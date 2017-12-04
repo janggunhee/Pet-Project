@@ -101,7 +101,7 @@ class EditSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         # 비밀번호가 입력되었을 경우 비밀번호 1과 2가 같은지 검사한다
-        if data['password1'] != data['password2']:
+        if data.get('password1') != data.get('password2'):
             raise serializers.ValidationError('Passwords do not match')
         return data
 
@@ -118,4 +118,3 @@ class EditSerializer(serializers.ModelSerializer):
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance
-

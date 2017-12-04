@@ -1,12 +1,11 @@
-from django.contrib.auth import get_user_model, authenticate
-from django.test import Client
+from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APILiveServerTestCase, APIRequestFactory, APIClient
+from rest_framework.test import APILiveServerTestCase, APIClient
 
-from .serializers import UserSerializer, SignupSerializer
-from .apis import Signup, Login, UserProfileUpdateDestroy
+from .serializers import SignupSerializer
+from .apis import Signup, Login, UserProfileUpdateDestroy, Logout
 
 User = get_user_model()
 
@@ -78,15 +77,23 @@ class UserSignupTest(APILiveServerTestCase):
 
 
 class UserLoginTest(APILiveServerTestCase):
-    URL_API_LOGIN_NAME = 'auth:login'
-    URL_API_LOGIN = '/auth/login/'
-    VIEW_CLASS = Login
-    client = APIClient()
+    def setUp(self):
+        # URL
+        self.URL_API_LOGIN_NAME = 'auth:login'
+        self.URL_API_LOGIN = '/auth/login/'
+        self.LOGIN_VIEW_CLASS = Login
+        # 클라이언트 메소드
+        self.client = APIClient(enforce_csrf_checks=True)
 
     # 유저 생성 메소드
     @staticmethod
     def create_user(email='dummy2@email.com'):
-        return User.objects.create_user(email=email, nickname='dummy2', password='123456789')
+        user = User.objects.create_user(email=email, nickname='dummy2', password='123456789')
+        user.is_active = True
+        user.save()
+        return user
+
+    # --- 로그인 테스트 --- #
 
     # 테스트 5. login url이 reverse name과 일치하는가
     def test_login_url_name_reverse(self):
@@ -101,31 +108,116 @@ class UserLoginTest(APILiveServerTestCase):
                          self.URL_API_LOGIN_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
-            self.VIEW_CLASS
+            self.LOGIN_VIEW_CLASS
         )
 
     # 테스트 7. login url로 유저가 로그인 되는가
-    # def test_user_login(self):
+    def test_user_login(self):
+        dummy_user = self.create_user()
+        data = {
+            'email': 'dummy2@email.com',
+            'password': '123456789'
+        }
+        response = self.client.post(self.URL_API_LOGIN, data=data)
+        self.assertEqual(response.status_code, 200)
+
+
+class UserLogoutTest(APILiveServerTestCase):
+    def setUp(self):
+        # URL
+        self.URL_API_LOGOUT_NAME = 'auth:logout'
+        self.URL_API_LOGOUT = '/auth/logout/'
+        self.LOGOUT_VIEW_CLASS = Logout
+        # 클라이언트 메소드
+        self.client = APIClient()
+
+    # 유저 생성 메소드
+    @staticmethod
+    def create_user(email='dummy3@email.com'):
+        user = User.objects.create_user(email=email, nickname='dummy3', password='123456789')
+        user.is_active = True
+        user.save()
+        return user
+
+    # 테스트 8. logout url이 reverse name과 일치하는가
+    def test_logout_url_name_reverse(self):
+        url = reverse(self.URL_API_LOGOUT_NAME)
+        self.assertEqual(url, self.URL_API_LOGOUT)
+
+    # 테스트 9. account.apis.Logout view에 대해
+    # URL, reverse, resolve, view 함수가 같은지 확인
+    def test_logout_url_resolve_view_class(self):
+        resolver_match = resolve(self.URL_API_LOGOUT)
+        self.assertEqual(resolver_match.view_name,
+                         self.URL_API_LOGOUT_NAME)
+        self.assertEqual(
+            resolver_match.func.view_class,
+            self.LOGOUT_VIEW_CLASS
+        )
+
+    # 테스트 10. login url로 유저가 로그아웃 되는가
+    def test_user_logout(self):
+        dummy_user = self.create_user()
+        token = dummy_user.token
+        # http_authorization 인증
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.post(self.URL_API_LOGOUT)
+        self.assertEqual(response.status_code, 200)
 
 
 class UserProfileTest(APILiveServerTestCase):
-    dummy_user_pk = '1'
-    URL_API_PROFILE_NAME = 'profile:user'
-    URL_API_PROFILE = '/profile/' + dummy_user_pk + '/'
-    VIEW_CLASS = UserProfileUpdateDestroy
+    def setUp(self):
+        # URL
+        self.dummy_user_pk = '1'
+        self.URL_API_PROFILE_NAME = 'profile:user'
+        self.URL_API_PROFILE_DUMMY = '/profile/' + self.dummy_user_pk + '/'
+        self.URL_API_PROFILE = '/profile/'
+        self.PROFILE_VIEW_CLASS = UserProfileUpdateDestroy
+        # 클라이언트 메소드
+        self.client = APIClient()
 
-    # 테스트 8. profile url이 reverse name과 일치하는가
+    # 유저 생성 메소드
+    @staticmethod
+    def create_user(email='dummy4@email.com'):
+        user = User.objects.create_user(email=email, nickname='dummy4', password='123456789')
+        user.is_active = True
+        user.save()
+        return user
+
+    # 테스트 11. profile url이 reverse name과 일치하는가
     def test_detail_url_name_reserve(self):
         url = reverse(self.URL_API_PROFILE_NAME, args=self.dummy_user_pk, )
-        self.assertEqual(url, self.URL_API_PROFILE)
+        self.assertEqual(url, self.URL_API_PROFILE_DUMMY)
 
-    # 테스트 9. account.apis.Detail view에 대해
+    # 테스트 12. account.apis.Detail view에 대해
     # URL, reverse, resolve, view 함수가 같은지 확인
-    def test_login_url_resolve_view_class(self):
-        resolver_match = resolve(self.URL_API_PROFILE)
+    def test_detail_url_resolve_view_class(self):
+        resolver_match = resolve(self.URL_API_PROFILE_DUMMY)
         self.assertEqual(resolver_match.view_name,
                          self.URL_API_PROFILE_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
-            self.VIEW_CLASS
+            self.PROFILE_VIEW_CLASS
         )
+
+    # 테스트 13. profile url에 접속 가능한가
+    def test_user_connect_profile_view(self):
+        dummy_user = self.create_user()
+        token = dummy_user.token
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.get(self.URL_API_PROFILE + str(dummy_user.pk) + '/')
+        self.assertEqual(response.status_code, 200)
+
+    # 테스트 14. profile url로 닉네임 변경
+    def test_user_nickname_modify(self):
+        dummy_user = self.create_user()
+        token = dummy_user.token
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        data = {
+            'nickname': 'hello',
+            'password1': '',
+            'password2': '',
+        }
+        response = self.client.patch(self.URL_API_PROFILE + str(dummy_user.pk) + '/', data=data)
+        # 응답 코드가 정상인가
+        self.assertEqual(response.status_code, 200)

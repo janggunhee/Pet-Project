@@ -75,10 +75,13 @@ def calculate_age(birth_date):
     days = (date.today() - birth_date).days
     years = days // 365
     months = (days % 365) // 30
-    return Age(
-        years=years,
-        months=months
-    )
+    Age.years = years
+    Age.months = months
+    ret = {
+        'years': years,
+        'months': months,
+    }
+    return Age(**ret)
 
 
 def breed_classification(breed):

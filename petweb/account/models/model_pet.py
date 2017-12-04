@@ -38,6 +38,15 @@ class PetBreed(models.Model):
     def __str__(self):
         return self.breeds_name
 
+#
+# # 참고
+# # https://docs.djangoproject.com/ko/1.11/topics/db/managers/#calling-custom-queryset-methods-from-the-manager
+# class PetQuerySet(models.QuerySet):
+#     def dogs(self):
+#         return self.filter()
+#
+#
+
 
 class Pet(models.Model):
     # 동물의 주인
@@ -70,7 +79,9 @@ class Pet(models.Model):
     # 동물등록번호
     identified_number = models.CharField(max_length=20, blank=True)
     # 중성화 여부
-    is_neutering = models.BooleanField()
+    is_neutering = models.BooleanField(
+        default=False
+    )
     # 개체별 색상
     CHOICE_COLOR = (
         ('black', '검정색'),
@@ -79,6 +90,11 @@ class Pet(models.Model):
         ('gold', '황금색'),
     )
     body_color = models.CharField(max_length=10, choices=CHOICE_COLOR)
+
+    # 동물 비활성화 여부
+    is_active = models.BooleanField(
+        default=True
+    )
 
     def __str__(self):
         return self.name
