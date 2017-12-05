@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}[Wooltari] Get Facebook access token{% endblock %}
+
+{% block content %}
+    <div class="ui divided selection list">
+        <a class="item">
+            <div class="ui blue horizontal label">Facebook User ID</div>
+            <span>{{ facebook_user_id }}</span>
+        </a>
+        <a class="item">
+            <div class="ui horizontal label">Access Token</div>
+            <p style="word-break: break-all">{{ access_token }}</p>
+        </a>
+
+    </div>
+{% endblock %}

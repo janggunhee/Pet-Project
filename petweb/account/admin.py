@@ -36,7 +36,34 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
+class PetSpeciesAdmin(BaseUserAdmin):
+    list_display = ['pk', 'pet_type']
+    list_display_links = ['pet_type']
+    list_filter = ['pet_type']
+
+    ordering = ('-pk', )
+    filter_horizontal = ()
+
+
+class PetBreedAdmin(BaseUserAdmin):
+    list_display = ['pk', 'breeds_name', 'species']
+    list_display_links = ['breeds_name']
+    list_filter = ['breeds_name']
+
+    ordering = ('-pk', )
+    filter_horizontal = ()
+
+
+class PetAdmin(BaseUserAdmin):
+    list_display = ['pk', 'name', 'owner', 'species', 'breeds']
+    list_display_links = ['name']
+    list_filter = ['name', 'owner']
+
+    ordering= ('-pk', )
+    filter_horizontal = ()
+
+
 admin.site.register(User, UserAdmin)
-admin.site.register(PetSpecies)
-admin.site.register(PetBreed)
-admin.site.register(Pet)
+admin.site.register(PetSpecies, PetSpeciesAdmin)
+admin.site.register(PetBreed, PetBreedAdmin)
+admin.site.register(Pet, PetAdmin)

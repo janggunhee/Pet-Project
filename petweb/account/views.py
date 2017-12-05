@@ -126,4 +126,4 @@ class FrontFacebookLogin(View):
             'access_token': access_token_info,
         }
 
-        return JsonResponse(data)
+        return render(request, 'guide/front-facebook-login.html', data)

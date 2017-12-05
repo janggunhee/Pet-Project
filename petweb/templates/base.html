@@ -23,6 +23,10 @@
         <a class="item" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/admin/" target="_blank">
             Admin Page
         </a>
+        <a class="item" href="https://www.facebook.com/v2.11/dialog/oauth?
+  client_id={{ facebook_app_id }}
+  &scope={{ facebook_user_scope }}
+  &redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'auth:front-facebook-login' %}">Get Facebook access token</a>
     </div>
 </div>
 <div class="ui grid">
@@ -38,10 +42,6 @@
 </div>
 <div class="ui black inverted vertical footer segment" style="margin-top: 600px; height: 200px;">
 </div>
-{#<a href="https://www.facebook.com/v2.11/dialog/oauth?#}
-{#  client_id={{ facebook_app_id }}#}
-{#  &scope={{ facebook_user_scope }}#}
-{#  &redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'auth:front-facebook-login' %}">페이스북 로그인</a>#}
 <script
         src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="

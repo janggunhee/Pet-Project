@@ -7,6 +7,27 @@
     <h2 class="ui header">Getting Start</h2>
     <h3 class="ui header">테스트 서버 사용하기</h3>
 
+    <div class="ui divided selection list">
+        <a class="item" href="#connect-databases">
+            <div class="ui olive horizontal label">step 1</div>
+            데이터베이스 접근
+        </a>
+        <a class="item" href="#create-test-user">
+            <div class="ui green horizontal label">step 2</div>
+            테스터 유저 생성
+        </a>
+        <a class="item" href="#create-pet-user">
+            <div class="ui teal horizontal label">step 3</div>
+            테스트 펫 생성
+        </a>
+        <a class="item">
+            <div class="ui blue horizontal label">step 4</div>
+            Poodle
+        </a>
+    </div>
+
+
+
     <h3 class="ui header" id="connect-databases">
         데이터베이스 접근
         <a class="ui tiny header" href="#connect-databases" title="제목 주소">¶</a>
@@ -84,7 +105,7 @@
     <p>만세! 이제 여러분은 데이터베이스에 더미 데이터를 넣고 뺄 수 있는 테스터 유저를 갖게 되셨습니다.</p>
 
     <h3 class="ui header" id="create-pet-user">
-        펫 유저 생성하기
+        테스트 펫 생성
         <a class="ui tiny header" href="#create-pet-user" title="제목 주소">¶</a>
     </h3>
 
@@ -121,6 +142,8 @@
     </div>
 
     <p>'SAVE' 버튼을 눌러 펫을 생성하면 다음과 같은 화면이 나타납니다.</p>
+    <img src="{% static 'guide/admin_pet_list.png' %}" alt="" class="ui centered huge image">
 
+    <p>생성된 펫은 이곳에서 리스트로 나타납니다. 포스트맨으로 테스트하신 뒤 이곳에서 확인하시면 되겠습니다.</p>
 
 {% endblock %}
