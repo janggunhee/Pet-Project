@@ -24,10 +24,10 @@
         <a class="item" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/admin/" target="_blank">
             Admin Page
         </a>
-        <a class="item" href="https://www.facebook.com/v2.11/dialog/oauth?
-  client_id={{ facebook_app_id }}
-  &scope={{ facebook_user_scope }}
-  &redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'auth:front-facebook-login' %}">Get Facebook access token</a>
+{#        <a class="item" href="https://www.facebook.com/v2.11/dialog/oauth?#}
+{#  client_id={{ facebook_app_id }}#}
+{#  &scope={{ facebook_user_scope }}#}
+{#  &redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'auth:front-facebook-login' %}">Get Facebook access token</a>#}
     </div>
 </div>
 <div class="ui grid">
