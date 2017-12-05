@@ -119,9 +119,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
+    'corsheaders',
     # User app
     'account',
 ]
+
+# 프론트에서 요청이 들어올 때 장고가 허용해주는 도메인들
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8000',
+    'wooltari-test-server-dev.ap-northeast-2.elasticbeanstalk.com',
+    'wooltari.co.kr',
+)
 
 # rest_framework settings
 REST_FRAMEWORK = {
@@ -142,6 +150,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # cors middleware
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
