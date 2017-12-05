@@ -165,8 +165,8 @@
     <p>이 id와 액세스 토큰으로 포스트맨을 통해서 로그인해보도록 하겠습니다. 여기서부터는 포스트맨을 사용하시는 편이 훨씬 편리합니다.</p>
 
     <h3 class="ui header" id="facebook-login-with-postman">
-    포스트맨으로 페이스북 로그인
-    <a class="ui tiny header" href="#facebook-login-with-postman" title="제목 주소">¶</a>
+        포스트맨으로 페이스북 로그인
+        <a class="ui tiny header" href="#facebook-login-with-postman" title="제목 주소">¶</a>
     </h3>
 
     <p>포스트맨은 API 개발자를 위한 어플리케이션입니다. 개발 중인 서버에 여러 가지 요청을 보내서 어떤 결과가 돌아오는지를 GUI 환경에서 체크할 수 있습니다.</p>
@@ -177,10 +177,25 @@
         <a href="https://www.getpostman.com/" target="_blank">https://www.getpostman.com/</a>
     </div>
 
-    <p>설치 과정은 생략하고, 제가 제공해드리는 포스트맨 환경 설정 파일을 임포트하는 법부터 알려드리겠습니다.</p>
+    <p>모두 포스트맨을 설치하셨다는 전제 하에, 제가 제공해드리는 포스트맨 환경 설정 파일을 임포트하는 법을 알려드리겠습니다.</p>
 
+    <div class="ui red message">
+        <span><strong>포스트맨 환경 설정 파일 다운로드: </strong></span>
+    <div class="postman-run-button"
+         data-postman-action="collection/import"
+         data-postman-var-1="e2ef1d33475d42e8ad8c"
+         data-postman-param="env%5Bwooltari-test-server%5D=W3siZW5hYmxlZCI6dHJ1ZSwia2V5IjoiaG9zdCIsInZhbHVlIjoid29vbHRhcmktcHJvamVjdC10ZXN0c2VydmVyLmFwLW5vcnRoZWFzdC0yLmVsYXN0aWNiZWFuc3RhbGsuY29tIiwidHlwZSI6InRleHQifV0="></div>
+    <script type="text/javascript">
+        (function (p,o,s,t,m,a,n) {
+            !p[s] && (p[s] = function () { (p[t] || (p[t] = [])).push(arguments); });
+            !o.getElementById(s+t) && o.getElementsByTagName("head")[0].appendChild((
+                (n = o.createElement("script")),
+                    (n.id = s+t), (n.async = 1), (n.src = m), n
+            ));
+        }(window, document, "_pm", "PostmanRunObject", "https://run.pstmn.io/button.js"));
+    </script>
+    </div>
 
-
-
-
+    <p>'Run In Postman' 버튼을 누르시면 환경 설정 파일이 자동으로 포스트맨에 임포트됩니다.</p>
+    
 {% endblock %}
