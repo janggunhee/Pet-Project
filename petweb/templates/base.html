@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+    <title>{% block title %}[Wooltari] Test Server v1.0{% endblock %}</title>
+</head>
+<body>
+<div class="ui fluid-container">
+    <div class="ui menu">
+        <a class="header item" href="{% url 'main' %}">
+            Wooltari
+        </a>
+        <a class="item" href="{% url 'getting-start' %}">
+            Getting Start
+        </a>
+        <a class="item" href="https://ehfgk78.gitbooks.io/pet-project/content/" target="_blank">
+            Gitbook
+        </a>
+        <a class="item" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}/admin/" target="_blank">
+            Admin Page
+        </a>
+    </div>
+</div>
+<div class="ui grid">
+    <div class="sixteen wide column" style="height: 100px;"></div>
+</div>
+<div class="ui text container">
+    {% block content %}
+        <h1 class="ui header">울타리. 당신의 동물을 지키는 든든한 친구</h1>
+        <p>울타리 테스트 서버에 오신 것을 환영합니다.</p>
+        <p>사용법을 익히시려면 <a href="{% url 'getting-start' %}">getting-start</a> 버튼을 눌러주세요.</p>
+        <p>Gitbook을 보시려면 <a href="https://ehfgk78.gitbooks.io/pet-project/content/" target="_blank">Gitbook</a> 버튼을 눌러주세요.</p>
+    {% endblock %}
+</div>
+<div class="ui black inverted vertical footer segment" style="margin-top: 600px; height: 200px;">
+</div>
+{#<a href="https://www.facebook.com/v2.11/dialog/oauth?#}
+{#  client_id={{ facebook_app_id }}#}
+{#  &scope={{ facebook_user_scope }}#}
+{#  &redirect_uri={{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'auth:front-facebook-login' %}">페이스북 로그인</a>#}
+<script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+</body>
+</html>

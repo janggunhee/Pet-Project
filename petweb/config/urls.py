@@ -27,6 +27,11 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls, name='admin'),
 ]
 
+# 가이드 페이지
+urlpatterns += [
+    url(r'^guide/getting-start/', views.getting_start, name='getting-start')
+]
+
 # 나머지 페이지의 시작 분기점
 urlpatterns += [
     # 회원 관리 url → account.urls.url_auth로 연결됨

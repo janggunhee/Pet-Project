@@ -15,7 +15,12 @@ def index(request):
         'facebook_secret_code': settings.FACEBOOK_APP_SECRET_CODE,
         'facebook_user_scope': settings.FACEBOOK_SCOPE
     }
-    return render(request, 'index.html', context)
+    return render(request, 'base.html', context)
+
+
+# 소개 화면
+def getting_start(request):
+    return render(request, 'guide/getting_start.html')
 
 
 # 프론트엔드 페이스북 로그인을 파이썬으로 구현
