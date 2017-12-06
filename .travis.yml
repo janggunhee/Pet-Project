@@ -6,7 +6,7 @@ python:
 - 3.6
 - nightly
 addons:
-  postgresql: "9.6"
+  postgresql: '9.6'
 env:
 - DJANGO_SETTINGS_MODULE=config.settings.test
 before_install:
