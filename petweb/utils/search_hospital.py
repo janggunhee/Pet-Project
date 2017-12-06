@@ -4,17 +4,22 @@ from typing import NamedTuple
 import os
 import json
 
+__all__ = [
+    'nearbysearch',
+]
+
+
 # 실험값 :  모두 string으로 가정하지만  int, float에 대비하여
+# lat, lng = 37.50146079999999, 127.0532418
+# lat = str(lat)
+# lng = str(lng)
 
 
-lat, lng = 37.50146079999999, 127.0532418
-lat = str(lat)
-lng = str(lng)
-
-# 나중에 .config_secret에 들어갈 내용
+# .config_secret
 google_apis_path = open(os.path.join(settings.ROOT_DIR, '.config_secret',
                     'settings_googlemaps.json')).read()
 google_api_keys = json.loads(google_apis_path)
+
 
 # key_place
 key_place = google_api_keys['googlemaps']['places']
