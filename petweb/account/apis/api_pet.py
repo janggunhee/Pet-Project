@@ -122,11 +122,6 @@ class PetAge(generics.GenericAPIView):
         return obj
 
     def get(self, request, *args, **kwargs):
-        # 펫 객체 구하고 시리얼라이저 데이터 생성
-        instance = self.get_object()
-        pet = instance.get(pk=request.resolver_match.kwargs['pet_pk'])
-        serializer = PetSerializer(pet)
-
         # 반려동물의 생년월일을 datetime 객체로 리턴하는 함수
         def pet_datetime_birth_date(serializer):
             # 입력값에서 birth_date를 가져온다
@@ -152,6 +147,22 @@ class PetAge(generics.GenericAPIView):
             conversed_age = pet_age.age_conversion(str_pet_type, str_pet_breed, birth_date)
             return conversed_age
 
+        # user_pk에 맞는 펫 쿼리셋 호출
+        instance = self.get_object()
+        # url에 입력된 pet_pk 넘버를 받아옴
+        pet_query = request.resolver_match.kwargs['pet_pk']
+        try:
+            # pet_query 값으로 instance에서 객체 하나를 구하려고 시도
+            pet_instance = instance.get(pk=pet_query)
+        except ObjectDoesNotExist:
+            # pet_query 값에 이상이 있어 객체가 생성되지 않으면 404에러를 발생시킴
+            data = {
+                "detail": "Not found"
+            }
+            return Response(data, status=status.HTTP_404_NOT_FOUND)
+
+        # 이상 없으면 펫 객체 디테일을 생성
+        serializer = PetSerializer(pet_instance)
         # 펫의 생년월일
         pet_birth_date = pet_datetime_birth_date(serializer)
         # 펫의 나이에서 개월 수 제외하고 년도만 출력
@@ -192,7 +203,7 @@ class PetProfile(generics.GenericAPIView):
         # url에 입력된 pet_pk 넘버를 받아옴
         pet_query = request.resolver_match.kwargs['pet_pk']
         try:
-            # pet_query 값으로 instance에서 객체 하나를 구함
+            # pet_query 값으로 instance에서 객체 하나를 구하려고 시도
             pet_instance = instance.get(pk=pet_query)
         except ObjectDoesNotExist:
             # pet_query 값에 이상이 있어 객체가 생성되지 않으면 404에러를 발생시킴
