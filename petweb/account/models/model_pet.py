@@ -58,13 +58,11 @@ class Pet(models.Model):
     # 예: 강아지, 고양이
     species = models.ForeignKey(
         PetSpecies,
-        default=True
     )
     # 동물의 품종
     # 에: 시츄, 코리안 숏헤어 등등
     breeds = models.ForeignKey(
         PetBreed,
-        default=True
     )
     # 동물 이름
     name = models.CharField(max_length=100)
