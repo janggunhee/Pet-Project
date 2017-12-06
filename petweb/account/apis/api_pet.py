@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_list_or_404, get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -186,8 +187,19 @@ class PetProfile(generics.GenericAPIView):
         return obj
 
     def get(self, request, *args, **kwargs):
-        # 펫 객체 구하고 시리얼라이저 데이터 생성
+        # user_pk에 맞는 펫 쿼리셋 호출
         instance = self.get_object()
-        pet = instance.get(pk=request.resolver_match.kwargs['pet_pk'])
-        serializer = PetSerializer(pet)
+        # url에 입력된 pet_pk 넘버를 받아옴
+        pet_query = request.resolver_match.kwargs['pet_pk']
+        try:
+            # pet_query 값으로 instance에서 객체 하나를 구함
+            pet_instance = instance.get(pk=pet_query)
+        except ObjectDoesNotExist:
+            # pet_query 값에 이상이 있어 객체가 생성되지 않으면 404에러를 발생시킴
+            data = {
+                "detail": "Not found"
+            }
+            return Response(data, status=status.HTTP_404_NOT_FOUND)
+        # 이상 없으면 펫 객체 디테일을 생성
+        serializer = PetSerializer(pet_instance)
         return Response(serializer.data, status=status.HTTP_200_OK)
