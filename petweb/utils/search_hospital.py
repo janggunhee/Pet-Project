@@ -1,8 +1,10 @@
 import requests
-from config import settings
+
 from typing import NamedTuple
 import os
 import json
+
+from django.conf import settings
 
 __all__ = [
     'nearbysearch',
