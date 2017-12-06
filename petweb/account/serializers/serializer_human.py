@@ -81,8 +81,8 @@ class SignupSerializer(serializers.ModelSerializer):
 
 class EditSerializer(serializers.ModelSerializer):
     # 유저 정보 수정을 도와주는 모델 시리얼라이저
-    # 닉네임 수정: 반드시 입력되어야 하는 정보(required=True)
-    nickname = serializers.CharField(required=True)
+    # 닉네임 수정: 반드시 입력될 필요는 없음(allow_blank=True)
+    nickname = serializers.CharField(allow_blank=True)
     # 패스워드 수정
     # 입력하더라도 출력값에 변경된 패스워드가 나오지는 않음(write_only=True)
     # 반드시 입력될 필요는 없음(allow_blank=True)
@@ -111,13 +111,15 @@ class EditSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # 업데이트 함수
         # 닉네임을 user 인스턴스에 반영한다
-        instance.nickname = validated_data['nickname']
+        new_nickname = validated_data.get('nickname')
+        if new_nickname:
+            instance.nickname = new_nickname
         # 패스워드는 입력될 수도 있고 안될 수도 있기 때문에 get으로 받아서 변수 'password'에 담아둔다
-        password = validated_data.get('password1')
+        new_password = validated_data.get('password1')
         # 만일 변경된 패스워드가 입력되었다면
-        if password:
+        if new_password:
             # user 인스턴스에 변경된 패스워드를 hash값으로 변환해 입력한다
-            instance.set_password(password)
+            instance.set_password(new_password)
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance
