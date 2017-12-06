@@ -13,9 +13,15 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from account.serializers.serializer_human import ResetPasswordSerializer
 from utils.permissions import IsUserOrReadOnly
 from .. import tasks
 from ..serializers import UserSerializer, SignupSerializer, EditSerializer
+
+import random
+import string
+from django.http import HttpResponse
+
 
 User = get_user_model()
 
@@ -26,6 +32,8 @@ __all__ = (
     'FacebookLogin',
     'Logout',
     'UserProfileUpdateDestroy',
+
+    'ResetPassword',
 )
 
 
@@ -254,3 +262,61 @@ class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
             return UserSerializer
         # 그 외에는 EditSerializer 적용
         return EditSerializer
+
+
+
+
+
+class ResetPassword(APIView):
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user_email = serializer.validated_data['email']
+
+            # user_email에 해당하는 User가 DB에 존재하는지 여부
+            user = User.objects.get(email=user_email)
+
+            if user is not None:
+                # 존재하면 새 비밀번호 생성
+                # NEW_PASSWORD는 raw_password이고,
+                # set_password(NEW_PASSWORD)는 헤시값
+                # NEW_PASSWORD :  아스키코드 중 8글자
+                NEW_PASSWORD = ''.join(
+                    [random.choice(string.ascii_lowercase) for i in range(8)]
+                )
+                user.set_password(NEW_PASSWORD)
+                # DB에 저장
+                user.save()
+
+                # 현재 사이트의 로그인 화면
+                domain_site = get_current_site(request)
+
+                # 이메일 전송 프로세스 시작
+                # 이메일 수신자: 임시 비밀번호를 요청한 사람
+                to_email = user_email
+                # 이메일 제목
+                subject = '[Wooltari] 임시 비밀번호를 부여합니다.'
+
+                # 이메일 내용 : 템플릿을 랜더링하여 전송
+                message = render_to_string(
+                    'reset_password_email.html', {
+                        # 현재 사이트의 로그인 화면
+                        'domain': domain_site,
+                        'new_password': NEW_PASSWORD,
+                    }
+                )
+                # 이메일 전송 메서드
+                # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
+                tasks.send_mail_task.delay(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    to_email,
+                )
+                return Response(user_email, status=status.HTTP_201_CREATED)
+
+            else:
+                # 없으면 "가입 회원의 이메일이 아닙니다."
+                return Response(serializer.errors, status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
