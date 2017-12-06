@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .forms import UserChangeForm, UserCreationForm
+from .forms import UserChangeForm, UserCreationForm, PetChangeForm
 from .models import User, PetSpecies, PetBreed, Pet
 
 
@@ -41,6 +41,10 @@ class PetSpeciesAdmin(BaseUserAdmin):
     list_display_links = ['pet_type']
     list_filter = ['pet_type']
 
+    fieldsets = (
+        (None, {'fields': ('pet_type', )}),
+    )
+
     ordering = ('-pk', )
     filter_horizontal = ()
 
@@ -50,16 +54,28 @@ class PetBreedAdmin(BaseUserAdmin):
     list_display_links = ['breeds_name']
     list_filter = ['breeds_name']
 
+    fieldsets = (
+        (None, {'fields': ('species', 'breeds_name')}),
+    )
+
     ordering = ('-pk', )
     filter_horizontal = ()
 
 
 class PetAdmin(BaseUserAdmin):
+    form = PetChangeForm
     list_display = ['pk', 'name', 'owner', 'species', 'breeds']
     list_display_links = ['name']
     list_filter = ['name', 'owner']
 
-    ordering= ('-pk', )
+    fieldsets = (
+        (None, {'fields': ('owner', 'name')}),
+        ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
+        ('medical info', {'fields': ('is_neutering', 'identified_number')}),
+        ('activation', {'fields': ('is_active', )}),
+    )
+
+    ordering = ('-pk', )
     filter_horizontal = ()
 
 

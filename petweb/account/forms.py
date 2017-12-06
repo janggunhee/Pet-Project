@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import User, UserManager
+from .models import User, UserManager, Pet
 
 
 class UserCreationForm(forms.ModelForm):
@@ -83,3 +83,18 @@ class UserChangeForm(forms.ModelForm):
 
     def clean_password(self):
         return self.initial['password']
+
+
+class PetChangeForm(forms.ModelForm):
+    class Meta:
+        model = Pet
+        fields = ('owner',
+                  'name',
+                  'birth_date',
+                  'species',
+                  'breeds',
+                  'body_color',
+                  'identified_number',
+                  'is_neutering',
+                  'is_active',
+                  )
