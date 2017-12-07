@@ -1,3 +1,7 @@
+
+import random
+import string
+
 from typing import NamedTuple
 
 import requests
@@ -13,15 +17,9 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from account.serializers.serializer_human import ResetPasswordSerializer
 from utils.permissions import IsUserOrReadOnly
 from .. import tasks
-from ..serializers import UserSerializer, SignupSerializer, EditSerializer
-
-import random
-import string
-from django.http import HttpResponse
-
+from ..serializers import *
 
 User = get_user_model()
 
@@ -32,7 +30,6 @@ __all__ = (
     'FacebookLogin',
     'Logout',
     'UserProfileUpdateDestroy',
-
     'ResetPassword',
 )
 
@@ -264,9 +261,7 @@ class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         return EditSerializer
 
 
-
-
-
+# 비밀번호를 잊었을 때 새 비밀번호 이메일 보내는 뷰
 class ResetPassword(APIView):
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
