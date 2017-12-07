@@ -183,6 +183,7 @@ USE_TZ = True
 # Secret_key
 SECRET_KEY = config_secret_common['django']['secret_key']
 
+
 # AWS elasticbeanstalk HealthCheck
 def is_ec2_linux():
     """Detect if we are running on an EC2 Linux Instance
