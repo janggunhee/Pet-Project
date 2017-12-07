@@ -1,6 +1,5 @@
 from django.conf.urls import url
 
-import utils
 from .. import apis, views
 
 urlpatterns = [
@@ -16,7 +15,6 @@ urlpatterns = [
     url(r'^facebook-login/$', apis.FacebookLogin.as_view(), name='api-facebook-login'),
     # 유저 로그아웃
     url(r'^logout/$', apis.Logout.as_view(), name='logout'),
-
     # 임시 비밀번호 부여
-    url(r'^reset-password', apis.ResetPassword.as_view(), name='reset-password'),
+    url(r'^reset-password/$', apis.ResetPassword.as_view(), name='reset-password'),
 ]

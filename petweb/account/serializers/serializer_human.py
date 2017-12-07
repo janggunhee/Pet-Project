@@ -8,6 +8,7 @@ __all__ = (
     'UserSerializer',
     'SignupSerializer',
     'EditSerializer',
+    'ResetPasswordSerializer',
 )
 
 
@@ -125,6 +126,11 @@ class EditSerializer(serializers.ModelSerializer):
         return instance
 
 
-
 class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
+    def validate(self, data):
+        user_email = data['email']
+        if not User.objects.filter(email=user_email).exists():
+            raise serializers.ValidationError('Email does not exist.')
+        return data
