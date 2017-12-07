@@ -63,3 +63,51 @@ RAVEN_CONFIG = {
     # release based on the git info.
     'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': [
+            'sentry'
+        ],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s '
+                      '%(process)d %(thread)d %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(ROOT_DIR, '.log', 'django.log'),
+            'when': 'midnight',
+            'interval': 1,
+        },
+        'sentry': {
+            'level': 'INFO',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'tags': {
+                'custom-tag': 'x'
+            },
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': [
+                'console',
+                'file',
+            ],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
