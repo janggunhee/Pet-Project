@@ -2,14 +2,12 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_list_or_404, get_object_or_404
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from utils import pagination, permissions, pet_age
+from utils import pagination, pet_age, permissions as custom_permissions
 from ..models import Pet, PetSpecies, PetBreed
-from ..serializers import PetSerializer
-
+from ..serializers import PetSerializer, EditPetSerializer
 
 __all__ = (
     'PetListCreate',
@@ -37,7 +35,7 @@ class PetListCreate(generics.GenericAPIView):
     # 페이지네이션: utils.pagination에 있는 pagination 사용
     pagination_class = pagination.StandardPetViewPagination
     # 권한: 소유주 이외에는 읽기만 가능
-    permission_classes = (permissions.IsOwnerOrReadOnly, )
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
     # url 키워드 인자: user_pk
     lookup_url_kwarg = 'user_pk'
 
@@ -45,7 +43,7 @@ class PetListCreate(generics.GenericAPIView):
     def perform_create(self, serializer):
         # AbstractBaseUser가 is_active=False 로 설정되어 있어서
         # Pet도 이 설정을 그대로 상속받는 이슈가 있었다
-        # 그래서 시리얼라이저를 저장하기 전에 is_active=True 옵션을 강제로 준
+        # 그래서 시리얼라이저를 저장하기 전에 is_active=True 옵션을 강제로 준다
         serializer.validated_data['is_active'] = True
         # 커스텀 세팅: owner 값을 현재 로그인한 유저로 설정한다
         serializer.save(owner=self.request.user)
@@ -108,7 +106,7 @@ class PetListCreate(generics.GenericAPIView):
 class PetAge(generics.GenericAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
-    permission_classes = (permissions.IsOwnerOrReadOnly, )
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
     lookup_url_kwarg = 'user_pk'
 
     # 쿼리셋에서 객체를 가져오는 메소드
@@ -184,7 +182,7 @@ class PetAge(generics.GenericAPIView):
 class PetProfile(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
-    permission_classes = (permissions.IsOwnerOrReadOnly, )
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
     lookup_url_kwarg = 'user_pk'
 
     # 쿼리셋에서 객체를 가져오는 메소드
@@ -208,3 +206,7 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
         return obj
 
     # 메소드마다 시리얼라이저 다르게 선택하는 메소드
+    def get_serializer_class(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return PetSerializer
+        return EditPetSerializer
