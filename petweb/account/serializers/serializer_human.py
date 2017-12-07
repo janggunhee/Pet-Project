@@ -8,6 +8,7 @@ __all__ = (
     'UserSerializer',
     'SignupSerializer',
     'EditSerializer',
+    'ResetPasswordSerializer',
 )
 
 
@@ -123,7 +124,6 @@ class EditSerializer(serializers.ModelSerializer):
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance
-
 
 
 class ResetPasswordSerializer(serializers.Serializer):
