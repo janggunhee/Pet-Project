@@ -1,5 +1,6 @@
 # ebignore
 !.config_secret/
+!.log/
 
 # Custom
 .idea/
