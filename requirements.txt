@@ -34,6 +34,7 @@ Pygments==2.2.0
 python-dateutil==2.6.1
 pytz==2017.3
 PyYAML==3.12
+raven==6.3.0
 requests==2.9.1
 s3transfer==0.1.11
 semantic-version==2.5.0

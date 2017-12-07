@@ -1,3 +1,5 @@
+import raven
+
 from .base import *
 
 # debug
@@ -29,34 +31,35 @@ STATICFILES_LOCATION = 'static'
 MEDIAFILES_LOCATION = 'media'
 
 
-# AWS elasticbeanstalk HealthCheck
-def is_ec2_linux():
-    """Detect if we are running on an EC2 Linux Instance
-       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-    """
-    if os.path.isfile("/sys/hypervisor/uuid"):
-        with open("/sys/hypervisor/uuid") as f:
-            uuid = f.read()
-            return uuid.startswith("ec2")
-    return False
-
-
-def get_linux_ec2_private_ip():
-    """Get the private IP Address of the machine if running on an EC2 linux server"""
-    from urllib.request import urlopen
-    if not is_ec2_linux():
-        return None
-    try:
-        response = urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
-        ec2_ip = response.read().decode('utf-8')
-        if response:
-            response.close()
-        return ec2_ip
-    except Exception as e:
-        print(e)
-        return None
-
-
+# AWS Healthchecker
 private_ip = get_linux_ec2_private_ip()
 if private_ip:
     ALLOWED_HOSTS.append(private_ip)
+
+
+# Installed Apps
+INSTALLED_APPS += [
+    'corsheaders',
+    'raven.contrib.django.raven_compat',
+]
+
+# 프론트에서 요청이 들어올 때 장고가 허용해주는 도메인들
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8000',
+    'wooltari-test-server-dev.ap-northeast-2.elasticbeanstalk.com',
+    'wooltari.co.kr',
+)
+
+# MiddleWare CORS Settings
+MIDDLEWARE += [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+# Raven Logging Settings
+RAVEN_CONFIG = {
+    'dsn': 'https://700ba3478d9944f385c16338e2c10976:15a82e91d9d64be9b099ae466f9d974f@sentry.io/256077',
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
+}
