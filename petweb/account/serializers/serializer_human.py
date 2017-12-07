@@ -8,6 +8,7 @@ __all__ = (
     'UserSerializer',
     'SignupSerializer',
     'EditSerializer',
+    'ResetPasswordSerializer',
 )
 
 
@@ -123,3 +124,13 @@ class EditSerializer(serializers.ModelSerializer):
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate(self, data):
+        user_email = data['email']
+        if not User.objects.filter(email=user_email).exists():
+            raise serializers.ValidationError('Email does not exist.')
+        return data
