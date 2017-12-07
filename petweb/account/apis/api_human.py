@@ -104,8 +104,8 @@ class Activate(APIView):
 class Login(APIView):
     # method: post
     def post(self, request, *args, **kwargs):
-        email = request.data['email']
-        password = request.data['password']
+        email = request.data.get('email', '')
+        password = request.data.get('password', '')
         # 장고가 기본으로 제공하는 authenticate
         user = authenticate(
             email=email,
