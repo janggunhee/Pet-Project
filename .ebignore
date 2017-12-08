@@ -1,5 +1,6 @@
 # ebignore
 !.config_secret/
+!.log/
 
 # Custom
 .idea/
@@ -13,7 +14,7 @@ c.sh
 # Created by https://www.gitignore.io/api/linux,macos,python,django,pycharm
 
 ### Django ###
-*.log
+# *.log
 *.pot
 *.pyc
 __pycache__/
