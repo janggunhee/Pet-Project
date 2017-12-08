@@ -10,7 +10,8 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+from raven.contrib.django.middleware.wsgi import Sentry
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.test")
 
-application = get_wsgi_application()
+application = Sentry(get_wsgi_application())
