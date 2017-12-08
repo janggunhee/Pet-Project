@@ -106,8 +106,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': [
-                'console',
-                'file',
+                'sentry'
             ],
             'level': 'DEBUG',
             'propagate': True,
