@@ -45,6 +45,13 @@ class PetSpeciesAdmin(BaseUserAdmin):
         (None, {'fields': ('pet_type', )}),
     )
 
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide', ),
+            'fields': ('pet_type', )}
+         ),
+    )
+
     ordering = ('-pk', )
     filter_horizontal = ()
 
@@ -56,6 +63,13 @@ class PetBreedAdmin(BaseUserAdmin):
 
     fieldsets = (
         (None, {'fields': ('species', 'breeds_name')}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide', ),
+            'fields': ('species', 'breeds_name')}
+         ),
     )
 
     ordering = ('-pk', )
@@ -73,6 +87,15 @@ class PetAdmin(BaseUserAdmin):
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active', )}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide', ),
+            'fields': ('owner', 'name')}),
+        ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
+        ('medical info', {'fields': ('is_neutering', 'identified_number')}),
+        ('activation', {'fields': ('is_active',)}),
     )
 
     ordering = ('-pk', )
