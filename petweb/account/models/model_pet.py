@@ -56,6 +56,7 @@ class Pet(models.Model):
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='pets',
         on_delete=models.CASCADE)
 
     # 동물의 종류
@@ -75,7 +76,7 @@ class Pet(models.Model):
     # 성별
     CHOICE_GENDER = (
         ('male', '수컷'),
-        ('female', '암컷')
+        ('female', '암컷'),
     )
     gender = models.CharField(max_length=10, choices=CHOICE_GENDER)
     # 동물등록번호
@@ -99,6 +100,9 @@ class Pet(models.Model):
     )
 
     USERNAME_FIELD = 'name'
+
+    class Meta:
+        ordering = ('-pk', )
 
     def __str__(self):
         return self.name
