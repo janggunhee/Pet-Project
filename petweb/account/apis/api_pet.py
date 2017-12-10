@@ -133,14 +133,13 @@ class PetAge(generics.GenericAPIView):
         # 쿼리셋: 위에서 정의한 펫 쿼리셋
         queryset = self.filter_queryset(self.get_queryset())
 
-        filter_kwargs = {}
-        # lookup_url_kwarg를 인덱스 값을 남기며 순회한다
-        for idx, field in enumerate(self.lookup_url_kwarg):
-            # 펫 쿼리셋의 전체 키워드 인자 묶음 중에 user_pk, pet_pk에 해당하는 값이 있다면
-            if self.kwargs[field]:
-                # filter_kwargs 딕셔너리의 key에는 lookup_field의 인덱스 값을 주고,
-                # value에는 user_pk의 값을 넣는다
-                filter_kwargs[self.lookup_field[idx]] = self.kwargs[field]
+        filter_kwargs = {
+            key: self.kwargs[value]
+            # lookup_field와 lookup_url_kwarg를 동시에 순회하면서
+            # key에는 lookup_field의 값을,
+            # value에는 전체 키워드 인자 묶음 중 lookup_url_kwarg를 key로 하는 값을 넣는다
+            for key, value in zip(self.lookup_field, self.lookup_url_kwarg)
+        }
 
         # 쿼리셋과 키워드 인자 묶음으로 펫 인스턴스를 받는다
         obj = get_object_or_404(queryset, **filter_kwargs)
@@ -178,6 +177,8 @@ class PetAge(generics.GenericAPIView):
         # user_pk에 맞는 펫 쿼리셋 호출
         instance = self.get_object()
         # 이상 없으면 펫 객체 디테일을 생성
+        # PetSerializer가 HyperlinkedidentifyField를 갖게 되어서
+        # 시리얼라이저에 request를 전달해준다
         serializer = PetSerializer(instance, context={'request': request})
         # 펫의 생년월일
         pet_birth_date = pet_datetime_birth_date(serializer)
@@ -210,6 +211,9 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
         # 딕셔너리 컴프리헨션
         filter_kwargs = {
             key: self.kwargs[value]
+            # lookup_field와 lookup_url_kwarg를 동시에 순회하면서
+            # key에는 lookup_field의 값을,
+            # value에는 전체 키워드 인자 묶음 중 lookup_url_kwarg를 key로 하는 값을 넣는다
             for key, value in zip(self.lookup_field, self.lookup_url_kwarg)
         }
 
@@ -220,9 +224,13 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+    # 펫 디테일 보기 뷰
+    # method: get
     def retrieve(self, request, *args, **kwargs):
+        # RetrieveModelMixin을 상속
         instance = self.get_object()
         serializer = self.get_serializer(instance)
+        # 출력 형식을 일정하게 만들기 위해 커스텀
         data = {
             'owner': UserSerializer(instance.owner).data,
             'pet': serializer.data
@@ -230,6 +238,7 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
         return Response(data)
 
     def update(self, request, *args, **kwargs):
+        # UpdateModelMixin을 상속
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -241,6 +250,7 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
+        # 출력 형식을 일정하게 만들기 위해 커스텀
         data = {
             'owner': UserSerializer(instance.owner).data,
             'pet': serializer.data
