@@ -154,7 +154,7 @@ class PetAge(generics.GenericAPIView):
             # 입력값에서 birth_date를 가져온다
             raw_birth_date = serializer.data['birth_date']
             # 문자열 값인 raw_birth_date를 datetime 객체로 바꾼다
-            datetime_birth_date = datetime.strptime(raw_birth_date, '%Y-%M-%d').date()
+            datetime_birth_date = datetime.strptime(raw_birth_date, '%Y-%m-%d').date()
             return datetime_birth_date
 
         # 생년월일을 토대로 반려동물의 나이를 계산하는 함수
