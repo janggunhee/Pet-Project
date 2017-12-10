@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.test import APILiveServerTestCase, APIClient
+from rest_framework.test import APILiveServerTestCase
 
 from ..serializers import SignupSerializer
 from ..apis import Signup, Login, UserProfileUpdateDestroy, Logout
@@ -19,6 +19,7 @@ __all__ = (
 )
 
 
+# 자주 쓰는 메소드를 클래스로 정의
 class DummyUser:
     @staticmethod
     def create_user(email='dummy2@email.com'):
@@ -37,12 +38,13 @@ class DummyUser:
         )
 
 
+# 유저 회원가입 테스트
 class UserSignupTest(APILiveServerTestCase):
     # DB를 쓸 때는 LiveServerTestCase 사용
     def setUp(self):
         self.URL_API_SIGNUP_NAME = 'auth:signup'
         self.URL_API_SIGNUP = '/auth/signup/'
-        self.VIEW_CLASS = Signup
+        self.SIGNUP_VIEW_CLASS = Signup
 
     # 테스트 1. signup url이 reverse name과 매치되는가
     def test_signup_url_name_reverse(self):
@@ -57,7 +59,7 @@ class UserSignupTest(APILiveServerTestCase):
                          self.URL_API_SIGNUP_NAME)
         self.assertEqual(
             resolver_match.func.view_class,
-            self.VIEW_CLASS
+            self.SIGNUP_VIEW_CLASS
         )
 
     # 테스트 3. signup url로 user가 생성되는가
@@ -71,14 +73,13 @@ class UserSignupTest(APILiveServerTestCase):
 
         }
         # signup url에 더미 유저 데이터로 회원가입 요청
-        response = self.client.post(self.URL_API_SIGNUP, input_data)
+        response = self.client.post(self.URL_API_SIGNUP, data=input_data)
         # 회원가입이 201 코드로 성사되었는지 검사
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, 201)
         # 생성된 더미 유저
         dummy_user = User.objects.get(email=input_data['email'])
         # 더미 유저를 시리얼라이징
         serializer = SignupSerializer(dummy_user).data
-        tokens = Token.objects.all()
         # 토큰 가져오기
         dummy_token = Token.objects.get(user__email=input_data['email'])
         # 토큰 일치 검사
@@ -96,6 +97,7 @@ class UserSignupTest(APILiveServerTestCase):
         self.assertTrue(query.exists())
 
 
+# 유저 로그인 테스트
 class UserLoginTest(APILiveServerTestCase):
     def setUp(self):
         # URL
@@ -130,6 +132,7 @@ class UserLoginTest(APILiveServerTestCase):
         self.assertEqual(response.status_code, 200)
 
 
+# 유저 로그아웃 테스트
 class UserLogoutTest(APILiveServerTestCase):
     def setUp(self):
         # URL
@@ -164,6 +167,7 @@ class UserLogoutTest(APILiveServerTestCase):
         self.assertEqual(response.status_code, 200)
 
 
+# 유저 프로필 테스트 (디테일/정보 수정/삭제)
 class UserProfileTest(APILiveServerTestCase):
     def setUp(self):
         # URL
