@@ -21,6 +21,8 @@ class PetSpecies(models.Model):
     # choice 옵션으로 pet_type 선택
     pet_type = models.CharField(max_length=20, choices=CHOICE_TYPE)
 
+    USERNAME_FIELD = 'pet_type'
+
     # 매직 메소드: 품종이 출력되는 방식
     def __str__(self):
         return self.get_pet_type_display()
@@ -34,6 +36,8 @@ class PetBreed(models.Model):
         PetSpecies
     )
     breeds_name = models.CharField(max_length=50)
+
+    USERNAME_FIELD = 'breeds_name'
 
     def __str__(self):
         return self.breeds_name
@@ -52,6 +56,7 @@ class Pet(models.Model):
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        related_name='pets',
         on_delete=models.CASCADE)
 
     # 동물의 종류
@@ -71,7 +76,7 @@ class Pet(models.Model):
     # 성별
     CHOICE_GENDER = (
         ('male', '수컷'),
-        ('female', '암컷')
+        ('female', '암컷'),
     )
     gender = models.CharField(max_length=10, choices=CHOICE_GENDER)
     # 동물등록번호
@@ -93,6 +98,11 @@ class Pet(models.Model):
     is_active = models.BooleanField(
         default=True
     )
+
+    USERNAME_FIELD = 'name'
+
+    class Meta:
+        ordering = ('-pk', )
 
     def __str__(self):
         return self.name

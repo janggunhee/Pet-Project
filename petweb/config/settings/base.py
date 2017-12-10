@@ -44,6 +44,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'localhost:4200',
     '.elasticbeanstalk.com',
     '.wooltari.co.kr',
 ]

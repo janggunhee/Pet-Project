@@ -1,13 +1,16 @@
 from datetime import datetime
 
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 
-from utils import pagination, pet_age, permissions as custom_permissions
+from utils import pagination, pet_age, \
+    permissions as custom_permissions
 from ..models import Pet, PetSpecies, PetBreed
-from ..serializers import PetSerializer, EditPetSerializer
+from ..serializers import PetSerializer, PetCreateSerializer, UserSerializer
+
+User = get_user_model()
 
 __all__ = (
     'PetListCreate',
@@ -28,10 +31,10 @@ class PetListCreate(generics.GenericAPIView):
         method: post
 
     """
-    # 쿼리셋: 반려동물 쿼리셋 전체
-    queryset = Pet.objects.all()
-    # 시리얼라이저: 펫 시리얼라이저
-    serializer_class = PetSerializer
+    # # 쿼리셋: 반려동물 쿼리셋 전체
+    # queryset = Pet.objects.all()
+    # # 시리얼라이저: 펫 시리얼라이저
+    # serializer_class = PetSerializer
     # 페이지네이션: utils.pagination에 있는 pagination 사용
     pagination_class = pagination.StandardPetViewPagination
     # 권한: 소유주 이외에는 읽기만 가능
@@ -43,23 +46,31 @@ class PetListCreate(generics.GenericAPIView):
     def perform_create(self, serializer):
         # AbstractBaseUser가 is_active=False 로 설정되어 있어서
         # Pet도 이 설정을 그대로 상속받는 이슈가 있었다
-        # 그래서 시리얼라이저를 저장하기 전에 is_active=True 옵션을 강제로 준다
-        serializer.validated_data['is_active'] = True
-        # 커스텀 세팅: owner 값을 현재 로그인한 유저로 설정한다
+        # PetCreateSerializer에서 default=True로 설정하는 것으로 변경
         serializer.save(owner=self.request.user)
 
     # 쿼리셋에서 객체를 가져오는 메소드
     def get_object(self):
         # 커스텀 세팅: 반려동물 쿼리셋을 가져올 때 필터링 옵션을 준다
         # 동물 주인의 pk값과 url에 들어온 user_pk 값이 일치하는 동물들만 가져오도록!
-        filter_kwargs = {'owner_id': self.kwargs[self.lookup_url_kwarg]}
+        filter_kwargs = {'id': self.kwargs[self.lookup_url_kwarg]}
         # 필터링을 거친 쿼리셋을 리스트로 반환한다
-        obj = get_list_or_404(self.get_queryset(), **filter_kwargs)
+        obj = get_object_or_404(self.get_queryset(), **filter_kwargs)
 
         # 리스트의 권한을 체크한다
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+    def get_queryset(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return User.objects.all()
+        return Pet.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return UserSerializer
+        return PetCreateSerializer
 
     # 펫 리스트를 가져오는 뷰
     # method: get
@@ -67,18 +78,23 @@ class PetListCreate(generics.GenericAPIView):
         # 앞서 get_object 메소드로 가져온 instance 객체를 불러온다
         instance = self.get_object()
 
-        # instance 객체를 페이지네이션 된 쿼리셋으로 변환한다
-        page = self.paginate_queryset(instance)
-        # 쿼리셋의 숫자가 많아서 page가 생성된다면
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            # 페이지네이션 응답을 리턴한다
-            return self.get_paginated_response(serializer.data)
+        # # instance 객체를 페이지네이션 된 쿼리셋으로 변환한다
+        # page = self.paginate_queryset(instance)
+        # # 쿼리셋의 숫자가 많아서 page가 생성된다면
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     # 페이지네이션 응답을 리턴한다
+        #     return self.get_paginated_response(serializer.data)
 
         # 만일 쿼리셋의 숫자가 적어서 page가 만들어지지 않는다면
-        serializer = self.get_serializer(instance, many=True)
+        user_serializer = self.get_serializer(instance)
+        data = {
+            'owner': user_serializer.data,
+            'pets': PetSerializer(instance.pets, many=True, context={'request': request}).data
+        }
+
         # 일반 시리얼라이저 데이터를 리턴한다
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
     # 펫을 생성하는 뷰
     # method: post
@@ -107,17 +123,27 @@ class PetAge(generics.GenericAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
-    lookup_url_kwarg = 'user_pk'
+    lookup_field = ('owner_id', 'pk')
+    lookup_url_kwarg = ('user_pk', 'pet_pk')
 
     # 쿼리셋에서 객체를 가져오는 메소드
     def get_object(self):
         # 커스텀 세팅: 반려동물 쿼리셋을 가져올 때 필터링 옵션을 준다
         # 동물 주인의 pk값과 url에 들어온 user_pk 값이 일치하는 동물들만 가져오도록!
-        filter_kwargs = {'owner_id': self.kwargs[self.lookup_url_kwarg]}
-        # 필터링을 거친 쿼리셋을 반환한다
-        obj = self.queryset.filter(**filter_kwargs)
+        # 쿼리셋: 위에서 정의한 펫 쿼리셋
+        queryset = self.filter_queryset(self.get_queryset())
 
-        # 리스트의 권한을 체크한다
+        filter_kwargs = {
+            key: self.kwargs[value]
+            # lookup_field와 lookup_url_kwarg를 동시에 순회하면서
+            # key에는 lookup_field의 값을,
+            # value에는 전체 키워드 인자 묶음 중 lookup_url_kwarg를 key로 하는 값을 넣는다
+            for key, value in zip(self.lookup_field, self.lookup_url_kwarg)
+        }
+
+        # 쿼리셋과 키워드 인자 묶음으로 펫 인스턴스를 받는다
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        # 인스턴스의 권한을 체크한다
         self.check_object_permissions(self.request, obj)
 
         return obj
@@ -128,7 +154,7 @@ class PetAge(generics.GenericAPIView):
             # 입력값에서 birth_date를 가져온다
             raw_birth_date = serializer.data['birth_date']
             # 문자열 값인 raw_birth_date를 datetime 객체로 바꾼다
-            datetime_birth_date = datetime.strptime(raw_birth_date, '%Y-%M-%d').date()
+            datetime_birth_date = datetime.strptime(raw_birth_date, '%Y-%m-%d').date()
             return datetime_birth_date
 
         # 생년월일을 토대로 반려동물의 나이를 계산하는 함수
@@ -139,8 +165,8 @@ class PetAge(generics.GenericAPIView):
         # 반려동물이 사람으로 치면 몇 살인지를 계산하는 함수
         def human_age_conversion(serializer):
             # 입력값에서 species와 breed 값을 가져와 각 모델에서 객체를 꺼낸다
-            object_pet_type = PetSpecies.objects.get(pk=serializer.data['species'])
-            object_pet_breed = PetBreed.objects.get(pk=serializer.data['breeds'])
+            object_pet_type = PetSpecies.objects.get(pet_type=serializer.data['species'])
+            object_pet_breed = PetBreed.objects.get(breeds_name=serializer.data['breeds'])
             # 각 객체의 이름을 문자열로 꺼낸다
             str_pet_type = object_pet_type.pet_type
             str_pet_breed = object_pet_breed.breeds_name
@@ -150,20 +176,10 @@ class PetAge(generics.GenericAPIView):
 
         # user_pk에 맞는 펫 쿼리셋 호출
         instance = self.get_object()
-        # url에 입력된 pet_pk 넘버를 받아옴
-        pet_query = request.resolver_match.kwargs['pet_pk']
-        try:
-            # pet_query 값으로 instance에서 객체 하나를 구하려고 시도
-            pet_instance = instance.get(pk=pet_query)
-        except ObjectDoesNotExist:
-            # pet_query 값에 이상이 있어 객체가 생성되지 않으면 404에러를 발생시킴
-            data = {
-                "detail": "Not found"
-            }
-            return Response(data, status=status.HTTP_404_NOT_FOUND)
-
         # 이상 없으면 펫 객체 디테일을 생성
-        serializer = PetSerializer(pet_instance)
+        # PetSerializer가 HyperlinkedidentifyField를 갖게 되어서
+        # 시리얼라이저에 request를 전달해준다
+        serializer = PetSerializer(instance, context={'request': request})
         # 펫의 생년월일
         pet_birth_date = pet_datetime_birth_date(serializer)
         # 펫의 나이에서 개월 수 제외하고 년도만 출력
@@ -178,12 +194,13 @@ class PetAge(generics.GenericAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-# 펫 디테일 보기 뷰 / 펫 삭제
+# 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
 class PetProfile(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
     permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
-    lookup_url_kwarg = 'user_pk'
+    lookup_field = ('owner_id', 'pk')
+    lookup_url_kwarg = ('user_pk', 'pet_pk')
 
     # 쿼리셋에서 객체를 가져오는 메소드
     def get_object(self):
@@ -191,13 +208,15 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
         # 동물 주인의 pk값과 url에 들어온 user_pk 값이 일치하는 동물들만 가져오도록!
         # 쿼리셋: 위에서 정의한 펫 쿼리셋
         queryset = self.filter_queryset(self.get_queryset())
-        # 펫 쿼리: url에 담긴 pet_pk 값을 받는다
-        pet_query = self.request.resolver_match.kwargs['pet_pk']
-        # user_pk와 pet_pk를 필터링하는 키워드 인자 묶음
+        # 딕셔너리 컴프리헨션
         filter_kwargs = {
-            'owner_id': self.kwargs[self.lookup_url_kwarg],
-            'pk': pet_query,
+            key: self.kwargs[value]
+            # lookup_field와 lookup_url_kwarg를 동시에 순회하면서
+            # key에는 lookup_field의 값을,
+            # value에는 전체 키워드 인자 묶음 중 lookup_url_kwarg를 key로 하는 값을 넣는다
+            for key, value in zip(self.lookup_field, self.lookup_url_kwarg)
         }
+
         # 쿼리셋과 키워드 인자 묶음으로 펫 인스턴스를 받는다
         obj = get_object_or_404(queryset, **filter_kwargs)
         # 인스턴스의 권한을 체크한다
@@ -205,8 +224,35 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
-    # 메소드마다 시리얼라이저 다르게 선택하는 메소드
-    def get_serializer_class(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return PetSerializer
-        return EditPetSerializer
+    # 펫 디테일 보기 뷰
+    # method: get
+    def retrieve(self, request, *args, **kwargs):
+        # RetrieveModelMixin을 상속
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        # 출력 형식을 일정하게 만들기 위해 커스텀
+        data = {
+            'owner': UserSerializer(instance.owner).data,
+            'pet': serializer.data
+        }
+        return Response(data)
+
+    def update(self, request, *args, **kwargs):
+        # UpdateModelMixin을 상속
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        # 출력 형식을 일정하게 만들기 위해 커스텀
+        data = {
+            'owner': UserSerializer(instance.owner).data,
+            'pet': serializer.data
+        }
+        return Response(data)
