@@ -8,6 +8,8 @@ urlpatterns = [
 ]
 
 urlpatterns += [
+    # 펫 품종 뷰
+    url(r'^pet-breed-list/$', apis.PetBreedList.as_view(), name='pet-breed-list'),
     # 펫 리스트 / 펫 생성
     url(r'^(?P<user_pk>\d+)/pets/$', apis.PetListCreate.as_view(), name='pets'),
     # 펫 디테일 뷰

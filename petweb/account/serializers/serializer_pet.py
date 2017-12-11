@@ -17,6 +17,7 @@ __all__ = (
     'PetSerializer',
     'PetCreateSerializer',
     'PetEditSerializer',
+    'PetBreedSerializer',
 )
 
 
@@ -173,6 +174,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
         return data
 
 
+# 펫 정보를 수정하는 시리얼라이저
 class PetEditSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100)  # 이름
     # http://www.django-rest-framework.org/api-guide/fields/#datefield
@@ -269,3 +271,14 @@ class PetEditSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class PetBreedSerializer(serializers.ModelSerializer):
+    species = PetSpeciesField(write_only=True)
+
+    class Meta:
+        model = PetBreed
+        fields = (
+            'species',
+            'breeds_name',
+        )

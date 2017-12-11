@@ -31,25 +31,34 @@ class PetSpecies(models.Model):
         verbose_name_plural = "Pet species"
 
 
+class DogManager(models.Manager):
+    def get_queryset(self):
+        return super(DogManager, self).get_queryset().filter(
+            species=PetSpecies.objects.get(pet_type='dog')
+        )
+
+
+class CatManager(models.Manager):
+    def get_queryset(self):
+        return super(CatManager, self).get_queryset().filter(
+            species=PetSpecies.objects.get(pet_type='cat')
+        )
+
+
 class PetBreed(models.Model):
     species = models.ForeignKey(
         PetSpecies
     )
     breeds_name = models.CharField(max_length=50)
 
+    objects = models.Manager()
+    dogs = DogManager()
+    cats = CatManager()
+
     USERNAME_FIELD = 'breeds_name'
 
     def __str__(self):
         return self.breeds_name
-
-#
-# # 참고
-# # https://docs.djangoproject.com/ko/1.11/topics/db/managers/#calling-custom-queryset-methods-from-the-manager
-# class PetQuerySet(models.QuerySet):
-#     def dogs(self):
-#         return self.filter()
-#
-#
 
 
 class Pet(models.Model):

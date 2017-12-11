@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from utils import pagination, pet_age, \
     permissions as custom_permissions
 from ..models import Pet, PetSpecies, PetBreed
-from ..serializers import PetSerializer, PetCreateSerializer, UserSerializer, PetEditSerializer
+from ..serializers import *
 
 User = get_user_model()
 
@@ -16,6 +16,7 @@ __all__ = (
     'PetListCreate',
     'PetAge',
     'PetProfile',
+    'PetBreedList',
 )
 
 
@@ -243,3 +244,23 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
             'pet': serializer.data
         }
         return Response(data)
+
+
+class PetBreedList(generics.GenericAPIView):
+    serializer_class = PetBreedSerializer
+
+    def get_queryset(self):
+        if self.request.data['species'] == 'dog':
+            return PetBreed.dogs.all()
+        elif self.request.data['species'] == 'cat':
+            return PetBreed.cats.all()
+
+    def post(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        if queryset is None:
+            error_message = {
+                "detail": "Invalid or none value."
+            }
+            return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
