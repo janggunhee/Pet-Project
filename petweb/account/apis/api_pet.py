@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from utils import pagination, pet_age, \
     permissions as custom_permissions
 from ..models import Pet, PetSpecies, PetBreed
-from ..serializers import PetSerializer, PetCreateSerializer, UserSerializer
+from ..serializers import *
 
 User = get_user_model()
 
@@ -16,6 +16,7 @@ __all__ = (
     'PetListCreate',
     'PetAge',
     'PetProfile',
+    'PetBreedList',
 )
 
 
@@ -197,7 +198,6 @@ class PetAge(generics.GenericAPIView):
 # 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
 class PetProfile(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pet.objects.all()
-    serializer_class = PetSerializer
     permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
     lookup_field = ('owner_id', 'pk')
     lookup_url_kwarg = ('user_pk', 'pet_pk')
@@ -224,6 +224,14 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+    # 시리얼라이저 클래스 가져오는 메소드
+    def get_serializer_class(self):
+        # 세이프 메소드는 PetSerializer를 사용한다
+        if self.request.method in permissions.SAFE_METHODS:
+            return PetSerializer
+        # 나머지는 PetEditSerializer를 사용한다
+        return PetEditSerializer
+
     # 펫 디테일 보기 뷰
     # method: get
     def retrieve(self, request, *args, **kwargs):
@@ -237,22 +245,32 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
         }
         return Response(data)
 
-    def update(self, request, *args, **kwargs):
-        # UpdateModelMixin을 상속
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
+# 펫 품종 리스트 보기 뷰
+class PetBreedList(generics.GenericAPIView):
+    serializer_class = PetBreedSerializer
 
-        # 출력 형식을 일정하게 만들기 위해 커스텀
-        data = {
-            'owner': UserSerializer(instance.owner).data,
-            'pet': serializer.data
-        }
-        return Response(data)
+    def get_queryset(self):
+        # species 입력 값이 dog 라면
+        if self.request.data['species'] == 'dog':
+            # 강아지로 필터링된 쿼리셋을 가져온다
+            return PetBreed.dogs.all()
+        # 입력 값이 cat 이라면
+        elif self.request.data['species'] == 'cat':
+            # 고양이로 필터링된 쿼리셋을 가져온다
+            return PetBreed.cats.all()
+
+    # method: post
+    def post(self, request, *args, **kwargs):
+        # 쿼리셋을 불러온다
+        queryset = self.filter_queryset(self.get_queryset())
+        # 만일 쿼리셋이 비어 있다면 (species 입력이 잘못되었을 경우)
+        if queryset is None:
+            # 에러 메시지를 보낸다
+            error_message = {
+                "detail": "Invalid or none value."
+            }
+            return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+        # 이상 없다면 시리얼라이저를 만든다
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
