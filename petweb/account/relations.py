@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 
+# 출처(StackOverFlow): https://goo.gl/ZkVdwk
 class MultiplePKsHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     lookup_fields = ['pk']
 
