@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from utils import pagination, pet_age, \
     permissions as custom_permissions
 from ..models import Pet, PetSpecies, PetBreed
-from ..serializers import PetSerializer, PetCreateSerializer, UserSerializer
+from ..serializers import PetSerializer, PetCreateSerializer, UserSerializer, PetEditSerializer
 
 User = get_user_model()
 
@@ -197,7 +197,6 @@ class PetAge(generics.GenericAPIView):
 # 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
 class PetProfile(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pet.objects.all()
-    serializer_class = PetSerializer
     permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
     lookup_field = ('owner_id', 'pk')
     lookup_url_kwarg = ('user_pk', 'pet_pk')
@@ -224,32 +223,20 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+    # 시리얼라이저 클래스 가져오는 메소드
+    def get_serializer_class(self):
+        # 세이프 메소드는 PetSerializer를 사용한다
+        if self.request.method in permissions.SAFE_METHODS:
+            return PetSerializer
+        # 나머지는 PetEditSerializer를 사용한다
+        return PetEditSerializer
+
     # 펫 디테일 보기 뷰
     # method: get
     def retrieve(self, request, *args, **kwargs):
         # RetrieveModelMixin을 상속
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        # 출력 형식을 일정하게 만들기 위해 커스텀
-        data = {
-            'owner': UserSerializer(instance.owner).data,
-            'pet': serializer.data
-        }
-        return Response(data)
-
-    def update(self, request, *args, **kwargs):
-        # UpdateModelMixin을 상속
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
         # 출력 형식을 일정하게 만들기 위해 커스텀
         data = {
             'owner': UserSerializer(instance.owner).data,
