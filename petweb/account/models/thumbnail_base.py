@@ -5,6 +5,11 @@ from versatileimagefield.fields import VersatileImageField, PPOIField
 class ThumbnailBaseModel(models.Model):
     class Meta:
         abstract = True
+
+    class Meta:
+        verbose_name = 'thumbnail'
+        verbose_name_plural = 'thumbnail'
+
     image = VersatileImageField(
         'Image',
         upload_to='images/testimagemodel/',

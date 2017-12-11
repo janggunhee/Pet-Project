@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.settings import api_settings
+from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
@@ -53,6 +54,14 @@ class PetSerializer(serializers.ModelSerializer):
         lookup_fields=['owner_id', 'pk'],
         lookup_url_kwargs=['user_pk', 'pet_pk']
     )
+    image = VersatileImageFieldSerializer(
+        sizes=[
+            ('full_size', 'url'),
+            ('thumbnail', 'thumbnail__100x100'),
+            ('300_square_crop', 'crop__300x300'),
+            ('400_square_crop', 'crop__400x400'),
+        ]
+    )
 
     class Meta:
         model = Pet
@@ -68,6 +77,11 @@ class PetSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
+
+            'image', # thumbnail image
+            'ppoi', # 이미지의 중심점, default(0.5, 0.5)
+            'height', #이미지 높이
+            'width', # 이미지 너비
         )
         read_only_fields = (
             'pk',
