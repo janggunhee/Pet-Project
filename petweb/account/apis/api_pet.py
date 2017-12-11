@@ -246,21 +246,31 @@ class PetProfile(generics.RetrieveUpdateDestroyAPIView):
         return Response(data)
 
 
+# 펫 품종 리스트 보기 뷰
 class PetBreedList(generics.GenericAPIView):
     serializer_class = PetBreedSerializer
 
     def get_queryset(self):
+        # species 입력 값이 dog 라면
         if self.request.data['species'] == 'dog':
+            # 강아지로 필터링된 쿼리셋을 가져온다
             return PetBreed.dogs.all()
+        # 입력 값이 cat 이라면
         elif self.request.data['species'] == 'cat':
+            # 고양이로 필터링된 쿼리셋을 가져온다
             return PetBreed.cats.all()
 
+    # method: post
     def post(self, request, *args, **kwargs):
+        # 쿼리셋을 불러온다
         queryset = self.filter_queryset(self.get_queryset())
+        # 만일 쿼리셋이 비어 있다면 (species 입력이 잘못되었을 경우)
         if queryset is None:
+            # 에러 메시지를 보낸다
             error_message = {
                 "detail": "Invalid or none value."
             }
             return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
+        # 이상 없다면 시리얼라이저를 만든다
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -240,6 +240,7 @@ class PetEditSerializer(serializers.ModelSerializer):
 
         return result
 
+    # 업데이트 메소드 커스터마이징
     def update(self, instance, validated_data):
         # 원래 update 메소드를 긁어와서 커스텀
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -273,6 +274,7 @@ class PetEditSerializer(serializers.ModelSerializer):
         return instance
 
 
+# 사용자가 강아지/고양이를 선택하면 펫 품종을 보여주는 시리얼라이저
 class PetBreedSerializer(serializers.ModelSerializer):
     species = PetSpeciesField(write_only=True)
 
