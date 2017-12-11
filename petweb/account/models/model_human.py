@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
+from account.models import ThumbnailBaseModel
 
 __all__ = (
     'UserManager',
@@ -64,7 +65,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, ThumbnailBaseModel):
     # 소셜 유저 타입 정의
     USER_TYPE_FACEBOOK = 'f'
     USER_TYPE_GOOGLE = 'g'

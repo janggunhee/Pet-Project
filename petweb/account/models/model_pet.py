@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from account.models import ThumbnailBaseModel
+
 User = get_user_model()
 
 
@@ -51,8 +53,8 @@ class PetBreed(models.Model):
 #
 #
 
-
-class Pet(models.Model):
+# ThumnailBaseModel 상속 from account.models.thumbnail_base.py
+class Pet(models.Model, ThumbnailBaseModel):
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

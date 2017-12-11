@@ -2,7 +2,7 @@ from django.db import models
 from versatileimagefield.fields import VersatileImageField, PPOIField
 
 
-class ImageBaseModel(models.Model):
+class ThumbnailBaseModel(models.Model):
     class Meta:
         abstract = True
     image = VersatileImageField(
