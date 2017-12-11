@@ -25,7 +25,7 @@ class PetSpeciesSerializer(serializers.ModelSerializer):
 
     # pk값 대신 'dog/cat'으로 보일 수 있도록 커스텀
     def to_representation(self, instance):
-        return instance.pet_type
+        return instance.get_pet_type_display()
 
 
 # 펫 품종 시리얼라이저
