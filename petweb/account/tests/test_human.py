@@ -89,12 +89,12 @@ class UserSignupTest(APILiveServerTestCase):
         # 처음 입력한 닉네임과 DB에 저장된 닉네임이 일치하는지 검사
         self.assertEqual(serializer['user']['nickname'], input_data['nickname'])
 
-    # 테스트 4. 페이스북 유저가 생성되고 DB에 존재하는가
-    def test_facebook_user_is_exist(self):
-        dummy_facebook_user = DummyUser.create_facebook_user()
-        dummy_pk = dummy_facebook_user.pk
-        query = User.objects.filter(pk=dummy_pk)
-        self.assertTrue(query.exists())
+    # # 테스트 4. 페이스북 유저가 생성되고 DB에 존재하는가
+    # def test_facebook_user_is_exist(self):
+    #     dummy_facebook_user = DummyUser.create_facebook_user()
+    #     dummy_pk = dummy_facebook_user.pk
+    #     query = User.objects.filter(pk=dummy_pk)
+    #     self.assertTrue(query.exists())
 
 
 # 유저 로그인 테스트
