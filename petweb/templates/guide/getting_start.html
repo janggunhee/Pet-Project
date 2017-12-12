@@ -20,12 +20,12 @@
             <div class="ui teal horizontal label">step 3</div>
             테스트 펫 생성
         </a>
-        {#        <a class="item" href="#get-facebook-access-token">#}
-        {#            <div class="ui blue horizontal label">step 4</div>#}
-        {#            페이스북 액세스 토큰 얻기#}
-        {#        </a>#}
-        <a class="item" href="#facebook-login-with-postman">
+        <a class="item" href="#get-facebook-access-token">
             <div class="ui blue horizontal label">step 4</div>
+            페이스북 액세스 토큰 얻기
+        </a>
+        <a class="item" href="#facebook-login-with-postman">
+            <div class="ui violet horizontal label">step 5</div>
             포스트맨 사용하기
         </a>
     </div>
@@ -148,21 +148,23 @@
 
     <p>생성된 펫은 이곳에서 리스트로 나타납니다. 포스트맨으로 테스트하신 뒤 이곳에서 확인하시면 되겠습니다.</p>
 
-    {#    <h3 class="ui header" id="get-facebook-access-token">#}
-    {#        페이스북 엑세스 토큰 얻기#}
-    {#        <a class="ui tiny header" href="#get-facebook-access-token" title="제목 주소">¶</a>#}
-    {#    </h3>#}
-    {##}
-    {#    <p>페이스북 로그인을 경험하시려면 먼저 액세스 토큰을 얻으셔야 합니다. 정식 서비스에서는 프론트엔드에서 자바스크립트를 이용해 사용자의 id와 액세스 토큰을 받고 그 데이터를 백엔드로 보내주셔야 하는데요, 우선은 저희가 임시로 파이썬 스크립트로 id와 액세스 토큰을 얻는 뷰를 구현했습니다.</p>#}
-    {#    <div class="class ui olive message">#}
-    {#        <span><strong>참고: </strong></span><a href="https://developers.facebook.com/docs/facebook-login/web" target="_blank">페이스북 개발자 문서</a>#}
-    {#    </div>#}
-    {##}
-    {#    <p>메뉴바에 있는 'Get Facebook access token'을 누르시면 자동으로 페이스북 id와 액세스 토큰이 발급됩니다.</p>#}
-    {##}
-    {#    <img src="{% static 'guide/facebook_access_token.png' %}" alt="" class="ui centered huge image">#}
-    {##}
-    {#    <p>이 id와 액세스 토큰으로 포스트맨을 통해서 로그인해보도록 하겠습니다. 여기서부터는 포스트맨을 사용하시는 편이 훨씬 편리합니다.</p>#}
+    <h3 class="ui header" id="get-facebook-access-token">
+        페이스북 엑세스 토큰 얻기
+        <a class="ui tiny header" href="#get-facebook-access-token" title="제목 주소">¶</a>
+    </h3>
+
+    <p>페이스북 로그인을 경험하시려면 먼저 액세스 토큰을 얻으셔야 합니다. 정식 서비스에서는 프론트엔드에서 자바스크립트를 이용해 사용자의 id와 액세스 토큰을 받고 그 데이터를 백엔드로 보내주셔야 하는데요, 우선은 저희가 임시로 파이썬 스크립트로 id와 액세스 토큰을 얻는 뷰를 구현했습니다.</p>
+    <div class="class ui olive message">
+        <span><strong>참고: </strong></span><a href="https://developers.facebook.com/docs/facebook-login/web" target="_blank">페이스북 개발자 문서</a>
+    </div>
+
+    <p>이 기능을 이용하시려면 먼저 저에게 친구 신청을 하셔야 합니다! 페이스북 어플리케이션이 '개발 중' 상태이기 때문에 모든 유저에게 열려 있지 않거든요! 그래서 저와 친구를 맺으시면 제가 테스터로 등록해드릴 겁니다. 페이스북에서 <strong>'Lanark Seung'</strong>을 검색하시면 제가 나옵니다.</p>
+
+    <p>메뉴바에 있는 'Get Facebook access token'을 누르시면 자동으로 페이스북 id와 액세스 토큰이 발급됩니다.</p>
+
+    <img src="{% static 'guide/facebook_access_token.png' %}" alt="" class="ui centered huge image">
+
+    <p>이 id와 액세스 토큰으로 포스트맨을 통해서 로그인해보도록 하겠습니다. 여기서부터는 포스트맨을 사용하시는 편이 훨씬 편리합니다.</p>
 
     <h3 class="ui header" id="facebook-login-with-postman">
         포스트맨 사용하기
