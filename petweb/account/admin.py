@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .forms import UserChangeForm, UserCreationForm, PetChangeForm, PetSpeciesChangeForm, PetBreedChangeForm
+from .forms import UserChangeForm, UserCreationForm, PetChangeForm, PetSpeciesChangeForm, PetBreedChangeForm, \
+    PetBreedCreateForm
 from .models import User, PetSpecies, PetBreed, Pet
 
 
@@ -61,6 +62,7 @@ class PetSpeciesAdmin(BaseUserAdmin):
 
 # 관리자 페이지 펫 품종을 보여주는 클래스
 class PetBreedAdmin(BaseUserAdmin):
+    add_form = PetBreedCreateForm
     form = PetBreedChangeForm
     list_display = ['pk', 'breeds_name', 'species']
     list_display_links = ['breeds_name']

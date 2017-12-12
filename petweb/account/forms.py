@@ -94,6 +94,21 @@ class PetSpeciesChangeForm(forms.ModelForm):
         )
 
 
+# 펫 품종 생성 폼
+class PetBreedCreateForm(forms.ModelForm):
+    # https://docs.djangoproject.com/en/1.11/ref/forms/fields/#modelchoicefield
+    species = forms.ModelChoiceField(
+        label='Pet Species',
+        queryset=PetSpecies.objects.all(),
+        required=True
+    )
+    breeds_name = forms.CharField(
+        label='Breeds Name',
+        max_length=50,
+        required=True,
+    )
+
+
 # 펫 품종 수정 폼
 class PetBreedChangeForm(forms.ModelForm):
     class Meta:
