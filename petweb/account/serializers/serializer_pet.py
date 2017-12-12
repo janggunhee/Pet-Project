@@ -19,10 +19,9 @@ __all__ = (
 
 # 펫 종류 시리얼라이저
 class PetSpeciesSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = PetSpecies
-        fields = ('pet_type', )
+        fields = ('pet_type',)
 
     # pk값 대신 'dog/cat'으로 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -31,10 +30,9 @@ class PetSpeciesSerializer(serializers.ModelSerializer):
 
 # 펫 품종 시리얼라이저
 class PetBreedSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = PetBreed
-        fields = ('breeds_name', )
+        fields = ('breeds_name',)
 
     # pk값 대신 품종 이름이 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -54,19 +52,11 @@ class PetSerializer(serializers.ModelSerializer):
         lookup_fields=['owner_id', 'pk'],
         lookup_url_kwargs=['user_pk', 'pet_pk']
     )
-    image = VersatileImageFieldSerializer(
-        sizes=[
-            ('full_size', 'url'),
-            ('thumbnail', 'thumbnail__100x100'),
-            ('300_square_crop', 'crop__300x300'),
-            ('400_square_crop', 'crop__400x400'),
-        ]
-    )
 
     class Meta:
         model = Pet
         fields = (
-            'pk',    # 동물pk
+            'pk',  # 동물pk
             'species',  # 강아지/고양이
             'breeds',  # 품종
             'name',  # 이름
@@ -78,10 +68,10 @@ class PetSerializer(serializers.ModelSerializer):
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
 
-            'image', # thumbnail image
-            'ppoi', # 이미지의 중심점, default(0.5, 0.5)
-            'height', #이미지 높이
-            'width', # 이미지 너비
+            'image',  # thumbnail image
+            'ppoi',  # 이미지의 중심점, default(0.5, 0.5)
+            'height',  # 이미지 높이
+            'width',  # 이미지 너비
         )
         read_only_fields = (
             'pk',
@@ -97,7 +87,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/fields/#choicefield
     gender = serializers.ChoiceField(choices=Pet.CHOICE_GENDER)  # 성별
     body_color = serializers.ChoiceField(choices=Pet.CHOICE_COLOR)  # 색상
-    identified_number = serializers.CharField(max_length=20, allow_blank=True) # 동물등록번호
+    identified_number = serializers.CharField(max_length=20, allow_blank=True)  # 동물등록번호
     is_neutering = serializers.BooleanField(default=False)  # 중성화
     is_active = serializers.BooleanField(default=True)  # 활성화
     ages = MultiplePKsHyperlinkedIdentityField(

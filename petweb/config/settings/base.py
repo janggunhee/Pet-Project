@@ -135,11 +135,11 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     # Defaults to 70
     'jpeg_resize_quality': 70,
     # 잘려진 이미지를 저장할 디렉토리 이름
-    'sized_directory_name': '__sized__',
+    'sized_directory_name': '.media/__sized__',
     # 필터링한 이미지를 저장할 디렉토리 이름
-    'filtered_directory_name': '__filtered__',
+    'filtered_directory_name': '.media/__filtered__',
     # 이미지를 등록하지 않았을 경우 디폴트 이미지를 저장할 디렉토리 이름
-    'placeholder_directory_name': '__placeholder__',
+    'placeholder_directory_name': '.media/__placeholder__',
     # (자르고 필터링하는 등)요구한대로 이미지를 만들 것인지 여부
     # 이것을 False로 하면 이미지 처리 속도가 높아진다.
     'create_images_on_demand': True,
@@ -159,6 +159,24 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+VERSATILEIMAGEFIELD_RENDITION_KEY_SETS = {
+    '_': [
+        ('full_size', 'url'),
+        ('thumbnail', 'thumbnail__100x100'),
+        ('medium_square_crop', 'crop__400x400'),
+        ('small_square_crop', 'crop__50x50')
+    ]
+}
+
+# image = VersatileImageFieldSerializer(
+#         sizes=[
+#             ('full_size', 'url'),
+#             ('thumbnail', 'thumbnail__100x100'),
+#             ('300_square_crop', 'crop__300x300'),
+#             ('400_square_crop', 'crop__400x400'),
+#         ]
+#     )
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
