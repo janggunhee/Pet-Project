@@ -7,7 +7,7 @@ from versatileimagefield.placeholder import OnDiscPlaceholderImage
 
 class ThumbnailBaseModel(models.Model):
     image = VersatileImageField(
-        upload_to='thumbnails/',
+        upload_to='upload_to',
         width_field='width',
         height_field='height',
     )
@@ -20,16 +20,6 @@ class ThumbnailBaseModel(models.Model):
         blank=True,
         null=True
     )
-    optional_image = VersatileImageField(
-        upload_to='pet/optional/',
-        blank=True,
-        placeholder_image=OnDiscPlaceholderImage(
-            path=os.path.join(
-                settings.ROOT_DIR,
-                '.media',
-                'placeholder.gif'
-            )
-        )
-    )
+
     class Meta:
         abstract = True

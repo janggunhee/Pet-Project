@@ -41,17 +41,23 @@ class PetBreedSerializer(serializers.ModelSerializer):
 
 # 펫의 내용을 보여주는 시리얼라이저
 class PetSerializer(serializers.ModelSerializer):
+    # thumbnail 이미지 처리
+    image = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'crop__300x300'), ]
+    )
+
     # 펫 종류는 PetSpeciesSerializer로 가공된다
     species = PetSpeciesSerializer()
     # 펫 품종은 PetBreedSerializer로 가공된다
     breeds = PetBreedSerializer()
     # 펫 나이는 PetAge 뷰를 URL 값으로 보여주도록 설계
     # 여러 개의 키워드 인자 값을 받기 위해 필드를 커스텀
-    ages = MultiplePKsHyperlinkedIdentityField(
-        view_name='profile:pet-age',
-        lookup_fields=['owner_id', 'pk'],
-        lookup_url_kwargs=['user_pk', 'pet_pk']
-    )
+
+    # ages = MultiplePKsHyperlinkedIdentityField(
+    #     view_name='profile:pet-age',
+    #     lookup_fields=['owner_id', 'pk'],
+    #     lookup_url_kwargs=['user_pk', 'pet_pk']
+    # )
 
     class Meta:
         model = Pet
@@ -66,16 +72,15 @@ class PetSerializer(serializers.ModelSerializer):
             'identified_number',  # 동물등록번호
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
-            'ages',
-
-            'image',  # thumbnail image
-            'ppoi',  # 이미지의 중심점, default(0.5, 0.5)
-            'height',  # 이미지 높이
-            'width',  # 이미지 너비
+            # 'ages',
+        )
+        # 썸네일 이미지
+        fields += (
+            'image',
         )
         read_only_fields = (
             'pk',
-            'ages',
+            # 'ages',
         )
 
 

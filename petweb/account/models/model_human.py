@@ -71,6 +71,13 @@ class UserManager(BaseUserManager):
 
 
 class User(ThumbnailBaseModel, AbstractBaseUser, PermissionsMixin):
+    # 썸네일 저장 위치를 User/Pet으로 나눔
+    image = VersatileImageField(
+        upload_to='Users',
+        width_field='width',
+        height_field='height',
+    )
+
     # 소셜 유저 타입 정의
     USER_TYPE_FACEBOOK = 'f'
     USER_TYPE_GOOGLE = 'g'
