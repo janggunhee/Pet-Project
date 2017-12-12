@@ -12,7 +12,13 @@ __all__ = (
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, nickname, password=None):
+    def create_user(self,
+                    email,
+                    nickname,
+                    password=None,
+                    user_type='d',
+                    social_id='',
+                    device_token=''):
         """
         주어진 정보로 일반 User 인스턴스 생성
         """
@@ -24,24 +30,14 @@ class UserManager(BaseUserManager):
             # 유저에 들어갈 정보: 이메일, 닉네임
             email=self.normalize_email(email),
             nickname=nickname,
-        )
-        user.set_password(password)
-        # 패스워드 세팅
-        user.save(using=self._db)
-        # 유저를 DB에 세이브
-        return user
-
-    def create_facebook_user(self, email, nickname, user_type, social_id):
-        """
-        주어진 정보로 facebook_user 인스턴스 생성
-        """
-        user = self.model(
-            email=self.normalize_email(email),
-            nickname=nickname,
             user_type=user_type,
             social_id=social_id,
+            device_token=device_token,
         )
-        user.is_active = True
+
+        # 패스워드 세팅
+        user.set_password(password)
+        # 유저를 DB에 저장
         user.save(using=self._db)
         return user
 
@@ -56,11 +52,12 @@ class UserManager(BaseUserManager):
             nickname=nickname,
         )
 
-        user.is_superuser = True
         # 관리자 권한 부여
+        user.is_superuser = True
+        # 강제 활성화
         user.is_active = True
-        user.save(using=self._db)
         # DB에 저장
+        user.save(using=self._db)
         return user
 
 
@@ -82,6 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
         blank=True,
     )
+    # 소셜 아이디 필드
     social_id = models.CharField(
         verbose_name='social_id',
         max_length=255,
@@ -97,6 +95,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(
         verbose_name='is_active',
         default=False
+    )
+    # 디바이스 토큰 필드
+    device_token = models.CharField(
+        verbose_name='device_token',
+        max_length=160,
+        blank=True,
     )
     # 가입 날짜 필드
     date_joined = models.DateTimeField(
