@@ -1,10 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .forms import UserChangeForm, UserCreationForm, PetChangeForm
+from .forms import UserChangeForm, UserCreationForm, PetChangeForm, PetSpeciesChangeForm, PetBreedChangeForm
 from .models import User, PetSpecies, PetBreed, Pet
 
 
+# 관리자 페이지 유저 창을 보여주는 클래스
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
@@ -36,7 +37,9 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
+# 관리자 페이지 펫 종류(dog/cat)을 보여주는 클래스
 class PetSpeciesAdmin(BaseUserAdmin):
+    form = PetSpeciesChangeForm
     list_display = ['pk', 'pet_type']
     list_display_links = ['pet_type']
     list_filter = ['pet_type']
@@ -56,7 +59,9 @@ class PetSpeciesAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
+# 관리자 페이지 펫 품종을 보여주는 클래스
 class PetBreedAdmin(BaseUserAdmin):
+    form = PetBreedChangeForm
     list_display = ['pk', 'breeds_name', 'species']
     list_display_links = ['breeds_name']
     list_filter = ['breeds_name']
@@ -76,6 +81,7 @@ class PetBreedAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
+# 관리자 페이지 펫 객체를 보여주는 클래스
 class PetAdmin(BaseUserAdmin):
     form = PetChangeForm
     list_display = ['pk', 'name', 'owner', 'species', 'breeds']

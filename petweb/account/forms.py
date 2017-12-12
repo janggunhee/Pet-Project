@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import User, UserManager, Pet
+from .models import User, UserManager, Pet, PetSpecies, PetBreed
 
 
+# 사용자 생성 폼
 class UserCreationForm(forms.ModelForm):
-    # 사용자 생성 폼
     email = forms.EmailField(
         label='Email',
         required=True,
@@ -71,8 +71,8 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
+# 비밀번호 변경 폼
 class UserChangeForm(forms.ModelForm):
-    # 비밀번호 변경 폼
     password = ReadOnlyPasswordHashField(
         label='Password'
     )
@@ -85,16 +85,37 @@ class UserChangeForm(forms.ModelForm):
         return self.initial['password']
 
 
+# 펫 종류 수정 폼
+class PetSpeciesChangeForm(forms.ModelForm):
+    class Meta:
+        model = PetSpecies
+        fields = (
+            'pet_type',
+        )
+
+
+# 펫 품종 수정 폼
+class PetBreedChangeForm(forms.ModelForm):
+    class Meta:
+        model = PetBreed
+        fields = (
+            'species',
+            'breeds_name',
+        )
+
+
+# 펫 수정 폼
 class PetChangeForm(forms.ModelForm):
     class Meta:
         model = Pet
-        fields = ('owner',
-                  'name',
-                  'birth_date',
-                  'species',
-                  'breeds',
-                  'body_color',
-                  'identified_number',
-                  'is_neutering',
-                  'is_active',
-                  )
+        fields = (
+            'owner',
+            'name',
+            'birth_date',
+            'species',
+            'breeds',
+            'body_color',
+            'identified_number',
+            'is_neutering',
+            'is_active',
+        )
