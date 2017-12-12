@@ -210,15 +210,23 @@ class FacebookLogin(APIView):
         # 만일 유저가 있다면 serializer data를 리턴한다
         if not user:
             # 유저가 없다면 유저 생성
-            user = User.objects.create_facebook_user(
+            user = User.objects.create_user(
                 email=user_info.email,
                 nickname=user_info.name,
                 user_type=User.USER_TYPE_FACEBOOK,
                 social_id=user_info.id,
             )
+            # 유저 강제 활성화
+            user.is_active = True
+            user.save()
 
-        # 유저가 있다면 serialize 데터 전달
-        return Response(UserSerializer(user).data)
+        # 유저가 있다면 serialize 데이터 전달
+        data = {
+            'token': user.token,
+            'user': UserSerializer(user).data,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 # 로그아웃을 위한 클래스 뷰
