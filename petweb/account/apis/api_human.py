@@ -20,7 +20,6 @@ from utils.permissions import IsUserOrReadOnly
 from .. import tasks
 from ..serializers import *
 
-
 User = get_user_model()
 
 __all__ = (
@@ -265,7 +264,7 @@ class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     # 권한: utils.permissons.py에 작성한 커스텀 퍼미션
     # SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS') 외에는 본인만이 건드릴 수 있도록 권한 조정
-    permission_classes = (IsUserOrReadOnly, )
+    permission_classes = (IsUserOrReadOnly,)
     # url에서 받는 키워드 인자 값: 'user_pk'
     lookup_url_kwarg = 'user_pk'
 

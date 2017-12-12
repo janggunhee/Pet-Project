@@ -27,7 +27,7 @@ class PetSpeciesField(serializers.RelatedField):
 
     class Meta:
         model = PetSpecies
-        fields = ('pet_type', )
+        fields = ('pet_type',)
 
     # pk값 대신 'dog/cat'으로 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -60,7 +60,7 @@ class PetBreedField(serializers.RelatedField):
 
     class Meta:
         model = PetBreed
-        fields = ('breeds_name', )
+        fields = ('breeds_name',)
 
     # pk값 대신 품종 이름이 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -104,7 +104,7 @@ class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
         fields = (
-            'pk',    # 동물pk
+            'pk',  # 동물pk
             'species',  # 강아지/고양이
             'breeds',  # 품종
             'name',  # 이름
@@ -134,7 +134,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/fields/#choicefield
     gender = serializers.ChoiceField(choices=Pet.CHOICE_GENDER)  # 성별
     body_color = serializers.ChoiceField(choices=Pet.CHOICE_COLOR)  # 색상
-    identified_number = serializers.CharField(max_length=20, allow_blank=True) # 동물등록번호
+    identified_number = serializers.CharField(max_length=20, allow_blank=True)  # 동물등록번호
     is_neutering = serializers.BooleanField(default=False)  # 중성화
     is_active = serializers.BooleanField(default=True)  # 활성화
     ages = MultiplePKsHyperlinkedIdentityField(

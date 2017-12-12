@@ -4,7 +4,6 @@ from django.db import models
 
 User = get_user_model()
 
-
 __all__ = (
     'PetSpecies',
     'PetBreed',
@@ -126,7 +125,7 @@ class Pet(models.Model):
     USERNAME_FIELD = 'name'
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-pk',)
 
     def __str__(self):
         return self.name

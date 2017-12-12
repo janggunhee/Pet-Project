@@ -20,20 +20,20 @@ class UserAdmin(BaseUserAdmin):
     # 유저 보기 필드셋
     fieldsets = (
         (None, {'fields': ('email', 'password', 'social_id')}),
-        ('personal info', {'fields': ('nickname', )}),
-        ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type', )}),
+        ('personal info', {'fields': ('nickname',)}),
+        ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type',)}),
     )
     # 유저 가입 필드셋
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
+            'classes': ('wide',),
             'fields': ('email', 'nickname', 'password1', 'password2')}
          ),
     )
     # 검색창
     search_fields = ('email', 'nickname')
     # 순서 매기기
-    ordering = ('-date_joined', )
+    ordering = ('-date_joined',)
     # 이건 뭐지?
     filter_horizontal = ()
 
@@ -46,17 +46,17 @@ class PetSpeciesAdmin(BaseUserAdmin):
     list_filter = ['pet_type']
 
     fieldsets = (
-        (None, {'fields': ('pet_type', )}),
+        (None, {'fields': ('pet_type',)}),
     )
 
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
-            'fields': ('pet_type', )}
+            'classes': ('wide',),
+            'fields': ('pet_type',)}
          ),
     )
 
-    ordering = ('-pk', )
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 
@@ -74,12 +74,12 @@ class PetBreedAdmin(BaseUserAdmin):
 
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
+            'classes': ('wide',),
             'fields': ('species', 'breeds_name')}
          ),
     )
 
-    ordering = ('-pk', )
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 
@@ -94,19 +94,19 @@ class PetAdmin(BaseUserAdmin):
         (None, {'fields': ('owner', 'name')}),
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
-        ('activation', {'fields': ('is_active', )}),
+        ('activation', {'fields': ('is_active',)}),
     )
 
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
+            'classes': ('wide',),
             'fields': ('owner', 'name')}),
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active',)}),
     )
 
-    ordering = ('-pk', )
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 

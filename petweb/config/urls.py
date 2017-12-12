@@ -18,7 +18,6 @@ from django.contrib import admin
 
 from account import views
 
-
 # 메인 화면 및 관리자 페이지
 urlpatterns = [
     # 메인 페이지
@@ -36,4 +35,3 @@ urlpatterns += [
     # 회원 프로필, 정보(닉네임/비밀번호) 수정, 회원 삭제 기능 수행
     url(r'profile/', include('account.urls.url_profile', namespace='profile')),
 ]
-

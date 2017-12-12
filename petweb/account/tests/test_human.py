@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
-from rest_framework import status
+
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APILiveServerTestCase
 
@@ -8,7 +8,6 @@ from ..serializers import SignupSerializer
 from ..apis import Signup, Login, UserProfileUpdateDestroy, Logout
 
 User = get_user_model()
-
 
 __all__ = (
     'DummyUser',

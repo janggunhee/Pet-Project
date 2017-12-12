@@ -4,7 +4,6 @@ from django.db import models
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
-
 __all__ = (
     'UserManager',
     'User',
