@@ -31,7 +31,7 @@ class PetSpeciesField(serializers.RelatedField):
 
     # pk값 대신 'dog/cat'으로 보일 수 있도록 커스텀
     def to_representation(self, instance):
-        return instance.get_pet_type_display()
+        return instance.pet_type
 
     # 입력 형식을 커스텀
     def to_internal_value(self, data):
