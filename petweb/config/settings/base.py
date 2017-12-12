@@ -35,7 +35,7 @@ STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
 # Media paths
 MEDIA_URL = '/media/'
-MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 
 # Template paths
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
