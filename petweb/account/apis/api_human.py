@@ -106,6 +106,14 @@ class Login(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
+        # 유저가 인증 상태인지 아닌지 체크한다
+        check_is_active = User.objects.get(email=email).is_active
+        # 미인증 회원이면 다음과 같은 메시지를 보낸다
+        if not check_is_active:
+            data = {
+                'message': 'Please complete the member verification process.'
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
         # 장고가 기본으로 제공하는 authenticate
         user = authenticate(
             email=email,
