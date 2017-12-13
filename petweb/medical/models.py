@@ -57,7 +57,6 @@ class OperationInfo(models.Model):
     )
 
     chart = models.ImageField(
-
     )
     date = models.DateField(
 

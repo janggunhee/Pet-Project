@@ -4,10 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
-<<<<<<< HEAD
-=======
 from versatileimagefield.serializers import VersatileImageFieldSerializer
->>>>>>> origin/dev
 
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
@@ -102,10 +99,7 @@ class PetSerializer(serializers.ModelSerializer):
     species = PetSpeciesField()
     # 펫 품종은 PetBreedSerializer로 가공된다
     breeds = PetBreedField()
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/dev
     # 펫 나이는 PetAge 뷰를 URL 값으로 보여주도록 설계
     # 여러 개의 키워드 인자 값을 받기 위해 필드를 커스텀
 
