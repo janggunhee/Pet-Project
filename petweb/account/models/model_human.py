@@ -73,6 +73,7 @@ class User(ThumbnailBaseModel, AbstractBaseUser, PermissionsMixin):
         upload_to='Users',
         width_field='width',
         height_field='height',
+        null=True,
     )
 
     # 소셜 유저 타입 정의

@@ -84,6 +84,7 @@ class Pet(ThumbnailBaseModel, models.Model):
         upload_to='Pets',
         width_field='width',
         height_field='height',
+        null=True,
     )
 
     # 동물의 주인
