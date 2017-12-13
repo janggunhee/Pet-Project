@@ -1,9 +1,15 @@
+import os
+
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
+from versatileimagefield.fields import VersatileImageField
+from versatileimagefield.placeholder import OnDiscPlaceholderImage
 
+from account.models.thumbnail_base import ThumbnailBaseModel
 
 __all__ = (
     'UserManager',
@@ -61,7 +67,15 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(ThumbnailBaseModel, AbstractBaseUser, PermissionsMixin):
+    # 썸네일 저장 위치를 User/Pet으로 나눔
+    image = VersatileImageField(
+        upload_to='Users',
+        width_field='width',
+        height_field='height',
+        null=True,
+    )
+
     # 소셜 유저 타입 정의
     USER_TYPE_FACEBOOK = 'f'
     USER_TYPE_GOOGLE = 'g'

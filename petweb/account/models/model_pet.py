@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
+from versatileimagefield.fields import VersatileImageField
+
+from account.models.thumbnail_base import ThumbnailBaseModel
 
 User = get_user_model()
 
@@ -75,8 +78,15 @@ class PetBreed(models.Model):
         return self.breeds_name
 
 
-# 펫 모델
-class Pet(models.Model):
+class Pet(ThumbnailBaseModel, models.Model):
+    # 썸네일 저장 위치를 User/Pet으로 나눔
+    image = VersatileImageField(
+        upload_to='Pets',
+        width_field='width',
+        height_field='height',
+        null=True,
+    )
+
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
