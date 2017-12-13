@@ -12,20 +12,36 @@ class PetMedical(models.Model):
         primary_key=True
     )
 
+    create_date = models.DateTimeField(
+        auto_now_add=True, blank=True
+    )
+
 # 펫의 신체 정보
 class PetSize(models.Model):
 
-    pet_size = models.ForeignKey(PetMedical)
-
-    weight = models.IntegerField(null=True, blank=True)
-    height = models.IntegerField(null=True, blank=True)
-    chest = models.IntegerField(null=True, blank=True)
-    create_date = models.DateTimeField(
-        auto_now_add=True
+    pet_size = models.ForeignKey(
+        PetMedical
     )
+    # 펫의 몸무게
+    weight = models.IntegerField(null=True, blank=True)
+    # 펫의 몸길이
+    height = models.IntegerField(null=True, blank=True)
+    # 펫의 가슴둘레
+    chest = models.IntegerField(null=True, blank=True)
+    # 펫의 목둘레
+    neck = models.IntegerField(null=True, blank=True)
+
     def __str__(self):
         return str(self.pet_size)
 
 
 
+# 팻의 예방접종 정보
 
+class PetVaccine(models.Model):
+
+    # 백신 종류
+    CHOICE_VACCINE = (
+        ('')
+    )
+    pass
