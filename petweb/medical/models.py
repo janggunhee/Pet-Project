@@ -1,9 +1,9 @@
 from django.db import models
 
-from account.models import Pet
+from account.models import Pet, PetSpecies
 
 
-# Pet의 의료정보
+# Pet의 의료정보 모델
 class PetMedical(models.Model):
 
     pet = models.OneToOneField(
@@ -14,7 +14,7 @@ class PetMedical(models.Model):
     )
 
 
-# 펫의 신체 정보
+# 펫의 신체 정보 모델
 class PetSize(models.Model):
 
     pet_size = models.ForeignKey(
@@ -39,7 +39,7 @@ class PetSize(models.Model):
     pet_neck = models.IntegerField(
         null=True, blank=True
     )
-
+    # 펫 사이즈 생성일 기록
     create_date = models.DateTimeField(
         auto_now_add=True,
     )
@@ -48,36 +48,37 @@ class PetSize(models.Model):
         return str(self.pet_size)
 
 
-
-class OperationInfo(models.Model):
+# 펫의 수술 정보 모델
+class Operation(models.Model):
 
     operations = models.ForeignKey(
         PetMedical,
         related_name='operations',
     )
-
-    chart = models.ImageField(
+    # 수술 사진
+    image = models.ImageField(
+        upload_to=None,
+        max_length=100,
     )
-    date = models.DateField(
+    # 수술 날짜
+    date = models.DateField()
+    # 수술명
+    description = models.CharField(max_length=50)
+    # 수술 내용
+    comment = models.TextField(max_length=500, blank=True)
 
-    )
-    description = models.CharField()
-
-    comment = models.TextField()
 
 
-# 팻의 예방접종 정보
-
+# 팻의 예방접종 모델
 class PetVaccine(models.Model):
 
     pet_vaccine = models.ForeignKey(
         PetMedical,
         related_name='vaccines'
     )
-    # 백신 이름
-    name = models.CharField(
-        null=True,
-        blank=True,
+    # 백신 종류
+    vaccine_ = models.ForeignKey(
+        VaccineInfo
     )
     # 백신 회차
     turn = models.PositiveIntegerField(
@@ -93,11 +94,21 @@ class PetVaccine(models.Model):
         null=True,
         blank=True,
     )
-    due_date = models.DateField(
-        auto_now=False,
-    )
+    # 백신 예정일
+    due_date = models.DateField()
+    # 병원 이름
     hospital = models.CharField(
         null=True,
         blank=True,
     )
 
+
+# 펫의 예방접종 정보 모델
+class VaccineInfo(models.Model):
+    vaccine_info = models.ForeignKey(
+        PetSpecies,
+    )
+    # 예방 접종 이름
+    vaccine_name = models.CharField(max_length=20)
+    # 예방 접종의 회차
+    vaccine_turn = models.PositiveIntegerField(max_length=10)
