@@ -12,6 +12,7 @@ __all__ = (
 )
 
 
+# 펫 종류 (고양이/강아지) 모델
 class PetSpecies(models.Model):
     # 강아지, 고양이 품종을 고른다 (다른 동물 추가 가능)
     CHOICE_TYPE = (
@@ -31,27 +32,50 @@ class PetSpecies(models.Model):
         verbose_name_plural = "Pet species"
 
 
+# 펫 품종 중 강아지 쿼리셋 매니저
+# https://docs.djangoproject.com/en/1.11/topics/db/managers/#modifying-a-manager-s-initial-queryset
+class DogManager(models.Manager):
+    # 쿼리셋 호출 함수
+    def get_queryset(self):
+        # 펫 품종 모델의 쿼리셋에서 pet_type이 'dog'인 객체들만 리턴
+        return super(DogManager, self).get_queryset().filter(
+            species=PetSpecies.objects.get(pet_type='dog')
+        )
+
+
+# 펫 품종 중 고양이 쿼리셋 매니저
+class CatManager(models.Manager):
+    # 쿼리셋 호출 함수
+    def get_queryset(self):
+        # 펫 품종 모델의 쿼리셋에서 pet_type이 'cat'인 객체들만 리턴
+        return super(CatManager, self).get_queryset().filter(
+            species=PetSpecies.objects.get(pet_type='cat')
+        )
+
+
+# 펫 품종 모델
 class PetBreed(models.Model):
+    # 펫 종류
     species = models.ForeignKey(
         PetSpecies
     )
+    # 품종 이름
     breeds_name = models.CharField(max_length=50)
+
+    # 커스텀 매니저가 생겼기 때문에 원래 모델 매니저가 상속됨을 명시해 준다
+    objects = models.Manager()
+    # DogManager는 'dogs' attribute로 정의
+    dogs = DogManager()
+    # CatManager는 'cats' attribute로 정의
+    cats = CatManager()
 
     USERNAME_FIELD = 'breeds_name'
 
     def __str__(self):
         return self.breeds_name
 
-#
-# # 참고
-# # https://docs.djangoproject.com/ko/1.11/topics/db/managers/#calling-custom-queryset-methods-from-the-manager
-# class PetQuerySet(models.QuerySet):
-#     def dogs(self):
-#         return self.filter()
-#
-#
 
-
+# 펫 모델
 class Pet(models.Model):
     # 동물의 주인
     owner = models.ForeignKey(

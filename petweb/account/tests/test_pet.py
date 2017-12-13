@@ -86,8 +86,8 @@ class PetCreateListTest(APILiveServerTestCase):
             'birth_date': '2014-04-15',
             'gender': 'male',
             'body_color': 'gold',
-            'species': '1',
-            'breeds': '1',
+            'species': 'dog',
+            'breeds': '시츄',
             'identified_number': '1234',
             'is_neutering': 'true',
         }
