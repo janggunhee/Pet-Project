@@ -23,13 +23,13 @@ class PetSize(models.Model):
         PetMedical
     )
     # 펫의 몸무게
-    weight = models.IntegerField(null=True, blank=True)
+    pet_weight = models.IntegerField(null=True, blank=True)
     # 펫의 몸길이
-    height = models.IntegerField(null=True, blank=True)
+    pet_height = models.IntegerField(null=True, blank=True)
     # 펫의 가슴둘레
-    chest = models.IntegerField(null=True, blank=True)
+    pet_chest = models.IntegerField(null=True, blank=True)
     # 펫의 목둘레
-    neck = models.IntegerField(null=True, blank=True)
+    pet_neck = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return str(self.pet_size)
