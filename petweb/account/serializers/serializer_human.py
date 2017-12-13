@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 User = get_user_model()
 
@@ -13,6 +14,11 @@ __all__ = (
 
 
 class UserSerializer(serializers.ModelSerializer):
+    # thumbnail 이미지 처리
+    image = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'crop__300x300'), ]
+    )
+
     # 유저 로그인 시 결과 필드를 보여주는 모델 시리얼라이저
     class Meta:
         # 유저 모델을 참조한다
@@ -25,6 +31,10 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'is_active',
             'date_joined',
+        )
+        # 썸네일 이미지
+        fields += (
+            'image',
         )
 
 

@@ -4,6 +4,10 @@ from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
+<<<<<<< HEAD
+=======
+from versatileimagefield.serializers import VersatileImageFieldSerializer
+>>>>>>> origin/dev
 
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
@@ -27,11 +31,11 @@ class PetSpeciesField(serializers.RelatedField):
 
     class Meta:
         model = PetSpecies
-        fields = ('pet_type', )
+        fields = ('pet_type',)
 
     # pk값 대신 'dog/cat'으로 보일 수 있도록 커스텀
     def to_representation(self, instance):
-        return instance.get_pet_type_display()
+        return instance.pet_type
 
     # 입력 형식을 커스텀
     def to_internal_value(self, data):
@@ -60,7 +64,7 @@ class PetBreedField(serializers.RelatedField):
 
     class Meta:
         model = PetBreed
-        fields = ('breeds_name', )
+        fields = ('breeds_name',)
 
     # pk값 대신 품종 이름이 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -89,12 +93,22 @@ class PetBreedField(serializers.RelatedField):
 
 # 펫의 내용을 보여주는 시리얼라이저
 class PetSerializer(serializers.ModelSerializer):
+    # thumbnail 이미지 처리
+    image = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'crop__300x300'), ]
+    )
+
     # 펫 종류는 PetSpeciesSerializer로 가공된다
     species = PetSpeciesField()
     # 펫 품종은 PetBreedSerializer로 가공된다
     breeds = PetBreedField()
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/dev
     # 펫 나이는 PetAge 뷰를 URL 값으로 보여주도록 설계
     # 여러 개의 키워드 인자 값을 받기 위해 필드를 커스텀
+
     ages = MultiplePKsHyperlinkedIdentityField(
         view_name='profile:pet-age',
         lookup_fields=['owner_id', 'pk'],
@@ -104,7 +118,7 @@ class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
         fields = (
-            'pk',    # 동물pk
+            'pk',  # 동물pk
             'species',  # 강아지/고양이
             'breeds',  # 품종
             'name',  # 이름
@@ -115,6 +129,10 @@ class PetSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
+        )
+        # 썸네일 이미지
+        fields += (
+            'image',
         )
         read_only_fields = (
             'pk',
@@ -134,7 +152,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/fields/#choicefield
     gender = serializers.ChoiceField(choices=Pet.CHOICE_GENDER)  # 성별
     body_color = serializers.ChoiceField(choices=Pet.CHOICE_COLOR)  # 색상
-    identified_number = serializers.CharField(max_length=20, allow_blank=True) # 동물등록번호
+    identified_number = serializers.CharField(max_length=20, allow_blank=True)  # 동물등록번호
     is_neutering = serializers.BooleanField(default=False)  # 중성화
     is_active = serializers.BooleanField(default=True)  # 활성화
     ages = MultiplePKsHyperlinkedIdentityField(
