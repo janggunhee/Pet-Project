@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from versatileimagefield.forms import SizedImageCenterpointClickDjangoAdminField
+from versatileimagefield.widgets import SizedImageCenterpointClickDjangoAdminWidget
 
 from .models import User, UserManager, Pet, PetSpecies, PetBreed
 
@@ -48,10 +50,19 @@ class UserCreationForm(forms.ModelForm):
             }
         )
     )
+    image = SizedImageCenterpointClickDjangoAdminField(
+        label='thumbnail',
+        widget=SizedImageCenterpointClickDjangoAdminWidget(
+            attrs={
+                'class': 'form-control',
+                'required': 'False',
+            }
+        )
+    )
 
     class Meta:
         model = User
-        fields = ('email', 'nickname')
+        fields = ('email', 'nickname', 'image')
 
     def clean_password2(self):
         # 두 비밀번호 입력 일치 확인
@@ -116,6 +127,77 @@ class PetBreedChangeForm(forms.ModelForm):
         fields = (
             'species',
             'breeds_name',
+        )
+
+
+# 펫 생성 폼
+class PetCreateForm(forms.ModelForm):
+    owner = forms.ModelChoiceField(
+        label='Owner',
+        queryset=User.objects.all(),
+        required=True
+    )
+    species = forms.ModelChoiceField(
+        label='Pet Species',
+        queryset=PetSpecies.objects.all(),
+        required=True,
+    )
+    breeds = forms.ModelChoiceField(
+        label='Pet Breeds',
+        queryset=PetBreed.objects.all(),
+        required=True,
+    )
+    name = forms.CharField(
+        label='Name',
+        max_length=255,
+        required=True,
+    )
+    birth_date = forms.DateField(
+        label='Birth Date',
+        required=True,
+    )
+    gender = forms.ChoiceField(
+        label='Gender',
+        choices=Pet.CHOICE_GENDER,
+        required=True,
+    )
+    identified_number = forms.CharField(
+        label='Identified Number',
+        max_length=20,
+        required=False,
+    )
+    is_neutering = forms.BooleanField(
+        label='Is Neutering',
+        required=False,
+    )
+    body_color = forms.ChoiceField(
+        label='Body Color',
+        choices=Pet.CHOICE_COLOR,
+        required=True,
+    )
+    image = SizedImageCenterpointClickDjangoAdminField(
+        label='thumbnail',
+        widget=SizedImageCenterpointClickDjangoAdminWidget(
+            attrs={
+                'class': 'form-control',
+                'required': 'False',
+            }
+        )
+    )
+
+    class Meta:
+        model = Pet
+        fields = (
+            'owner',
+            'species',
+            'breeds',
+            'name',
+            'birth_date',
+            'gender',
+            'identified_number',
+            'is_neutering',
+            'body_color',
+            'image',
         )
 
 

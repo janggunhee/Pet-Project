@@ -16,7 +16,8 @@ __all__ = (
 class UserSerializer(serializers.ModelSerializer):
     # thumbnail 이미지 처리
     image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ]
+        sizes=[('thumbnail', 'crop__300x300'), ],
+        allow_empty_file=True,
     )
 
     # 유저 로그인 시 결과 필드를 보여주는 모델 시리얼라이저
@@ -31,9 +32,6 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'is_active',
             'date_joined',
-        )
-        # 썸네일 이미지
-        fields += (
             'image',
         )
 
@@ -44,8 +42,17 @@ class SignupSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
+    nickname = serializers.CharField(
+        max_length=50,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
+    # thumbnail 이미지 처리
+    image = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'crop__300x300'), ],
+        allow_empty_file=True,
+    )
 
     class Meta:
         # 유저 모델을 참조한다
@@ -60,6 +67,7 @@ class SignupSerializer(serializers.ModelSerializer):
             'password2',
             'is_active',
             'date_joined',
+            'image',
         )
 
     # 기본 모델 시리얼라이저는 password1, 2에 대한 validate가 없으므로 만들어준다
@@ -74,6 +82,7 @@ class SignupSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             nickname=validated_data['nickname'],
             password=validated_data['password1'],
+            image=validated_data.get('image', None),
         )
 
     # 출력되는 json을 우리가 원하는 형태로 커스터마이징

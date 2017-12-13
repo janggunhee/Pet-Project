@@ -92,7 +92,8 @@ class PetBreedField(serializers.RelatedField):
 class PetSerializer(serializers.ModelSerializer):
     # thumbnail 이미지 처리
     image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ]
+        sizes=[('thumbnail', 'crop__300x300'), ],
+        allow_empty_file=True,
     )
 
     # 펫 종류는 PetSpeciesSerializer로 가공된다
