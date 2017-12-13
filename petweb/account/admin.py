@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .forms import UserChangeForm, UserCreationForm, PetChangeForm, PetSpeciesChangeForm, PetBreedChangeForm, \
-    PetBreedCreateForm
+from .forms import *
 from .models import User, PetSpecies, PetBreed, Pet
 
 
@@ -19,15 +18,15 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ['is_superuser', 'is_active']
     # 유저 보기 필드셋
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'social_id')}),
-        ('personal info', {'fields': ('nickname',)}),
+        ('member image', {'fields': ('image',)}),
+        ('member info', {'fields': ('email', 'password', 'social_id', 'nickname',)}),
         ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type',)}),
     )
     # 유저 가입 필드셋
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'nickname', 'password1', 'password2')}
+            'fields': ('email', 'nickname', 'password1', 'password2', 'image',)}
          ),
     )
     # 검색창
@@ -85,22 +84,23 @@ class PetBreedAdmin(BaseUserAdmin):
 
 # 관리자 페이지 펫 객체를 보여주는 클래스
 class PetAdmin(BaseUserAdmin):
+    add_form = PetCreateForm
     form = PetChangeForm
     list_display = ['pk', 'name', 'owner', 'species', 'breeds']
     list_display_links = ['name']
     list_filter = ['name', 'owner']
 
     fieldsets = (
-        (None, {'fields': ('owner', 'name')}),
+        ('owner info', {'fields': ('owner', 'name', 'image')}),
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active',)}),
     )
 
     add_fieldsets = (
-        (None, {
+        ('owner info', {
             'classes': ('wide',),
-            'fields': ('owner', 'name')}),
+            'fields': ('owner', 'name', 'image')}),
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active',)}),

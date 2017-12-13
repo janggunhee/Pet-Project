@@ -3,6 +3,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
+from versatileimagefield.fields import VersatileImageField, PPOIField
 
 __all__ = (
     'UserManager',
@@ -15,6 +16,7 @@ class UserManager(BaseUserManager):
                     email,
                     nickname,
                     password=None,
+                    image=None,
                     user_type='d',
                     social_id='',
                     device_token=''):
@@ -29,6 +31,7 @@ class UserManager(BaseUserManager):
             # 유저에 들어갈 정보: 이메일, 닉네임
             email=self.normalize_email(email),
             nickname=nickname,
+            image=image,
             user_type=user_type,
             social_id=social_id,
             device_token=device_token,
@@ -61,6 +64,17 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    # 썸네일 저장 위치를 User/Pet으로 나눔
+    image = VersatileImageField(
+        'thumbnail',
+        upload_to='Users',
+        ppoi_field='thumbnail_ppoi',
+        null=True,
+        blank=True,
+    )
+
+    thumbnail_ppoi = PPOIField()
+
     # 소셜 유저 타입 정의
     USER_TYPE_FACEBOOK = 'f'
     USER_TYPE_GOOGLE = 'g'

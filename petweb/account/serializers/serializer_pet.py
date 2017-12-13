@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
+from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
@@ -89,12 +90,19 @@ class PetBreedField(serializers.RelatedField):
 
 # 펫의 내용을 보여주는 시리얼라이저
 class PetSerializer(serializers.ModelSerializer):
+    # thumbnail 이미지 처리
+    image = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'crop__300x300'), ]
+    )
+
     # 펫 종류는 PetSpeciesSerializer로 가공된다
     species = PetSpeciesField()
     # 펫 품종은 PetBreedSerializer로 가공된다
     breeds = PetBreedField()
+
     # 펫 나이는 PetAge 뷰를 URL 값으로 보여주도록 설계
     # 여러 개의 키워드 인자 값을 받기 위해 필드를 커스텀
+
     ages = MultiplePKsHyperlinkedIdentityField(
         view_name='profile:pet-age',
         lookup_fields=['owner_id', 'pk'],
@@ -115,6 +123,10 @@ class PetSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
+        )
+        # 썸네일 이미지
+        fields += (
+            'image',
         )
         read_only_fields = (
             'pk',
