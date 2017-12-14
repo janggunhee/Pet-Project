@@ -69,8 +69,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         'thumbnail',
         upload_to='Users',
         ppoi_field='thumbnail_ppoi',
-        null=True,
+        default='placeholder/placeholder_human.png',
         blank=True,
+        null=True,
     )
 
     thumbnail_ppoi = PPOIField()

@@ -51,7 +51,7 @@ class SignupSerializer(serializers.ModelSerializer):
     # thumbnail 이미지 처리
     image = VersatileImageFieldSerializer(
         sizes=[('thumbnail', 'crop__300x300'), ],
-        allow_empty_file=True,
+        default='placeholder/placeholder_human.png',
     )
 
     class Meta:
@@ -108,6 +108,10 @@ class EditSerializer(serializers.ModelSerializer):
     # 반드시 입력될 필요는 없음(allow_blank=True)
     password1 = serializers.CharField(write_only=True, allow_blank=True)
     password2 = serializers.CharField(write_only=True, allow_blank=True)
+    image = VersatileImageFieldSerializer(
+        sizes=[('thumbnail', 'crop__300x300'), ],
+        default='placeholder/placeholder_human.png',
+    )
 
     class Meta:
         model = User
@@ -120,6 +124,7 @@ class EditSerializer(serializers.ModelSerializer):
             'password2',
             'is_active',
             'date_joined',
+            'image',
         )
 
     def validate(self, data):
@@ -130,16 +135,21 @@ class EditSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # 업데이트 함수
-        # 닉네임을 user 인스턴스에 반영한다
-        new_nickname = validated_data.get('nickname')
+        # 닉네임이 변경되었다면 user 인스턴스에 반영한다
+        new_nickname = validated_data.get('nickname', None)
         if new_nickname:
             instance.nickname = new_nickname
         # 패스워드는 입력될 수도 있고 안될 수도 있기 때문에 get으로 받아서 변수 'password'에 담아둔다
-        new_password = validated_data.get('password1')
+        new_password = validated_data.get('password1', None)
         # 만일 변경된 패스워드가 입력되었다면
         if new_password:
             # user 인스턴스에 변경된 패스워드를 hash값으로 변환해 입력한다
             instance.set_password(new_password)
+        # 이미지가 변경되었다면
+        new_image = validated_data.get('image', None)
+        # 새 이미지를 입력한다
+        if new_image:
+            instance.image = new_image
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance

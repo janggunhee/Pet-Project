@@ -81,8 +81,9 @@ class Pet(models.Model):
         'thumbnail',
         upload_to='Pets',
         ppoi_field='thumbnail_ppoi',
-        null=True,
+        default='placeholder/placeholder_pet.png',
         blank=True,
+        null=True,
     )
 
     thumbnail_ppoi = PPOIField()
