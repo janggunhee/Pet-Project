@@ -123,6 +123,8 @@ INSTALLED_APPS = [
     'versatileimagefield',
     # User app
     'account',
+    # Pet medical app
+    'medical',
 ]
 
 VERSATILEIMAGEFIELD_SETTINGS = {
