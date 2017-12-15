@@ -18,7 +18,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ['is_superuser', 'is_active']
     # 유저 보기 필드셋
     fieldsets = (
-        ('member image', {'fields': ('image',)}),
+        # ('member image', {'fields': ('image',)}),
         ('member info', {'fields': ('email', 'password', 'social_id', 'nickname',)}),
         ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type',)}),
     )
@@ -26,7 +26,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'nickname', 'password1', 'password2', 'image',)}
+            'fields': ('email', 'nickname', 'password1', 'password2')}
          ),
     )
     # 검색창
@@ -91,7 +91,7 @@ class PetAdmin(BaseUserAdmin):
     list_filter = ['name', 'owner']
 
     fieldsets = (
-        ('owner info', {'fields': ('owner', 'name', 'image')}),
+        ('owner info', {'fields': ('owner', 'name')}),
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active',)}),
@@ -100,7 +100,7 @@ class PetAdmin(BaseUserAdmin):
     add_fieldsets = (
         ('owner info', {
             'classes': ('wide',),
-            'fields': ('owner', 'name', 'image')}),
+            'fields': ('owner', 'name')}),
         ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active',)}),

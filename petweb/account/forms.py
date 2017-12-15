@@ -50,19 +50,10 @@ class UserCreationForm(forms.ModelForm):
             }
         )
     )
-    image = SizedImageCenterpointClickDjangoAdminField(
-        label='thumbnail',
-        widget=SizedImageCenterpointClickDjangoAdminWidget(
-            attrs={
-                'class': 'form-control',
-                'required': 'False',
-            }
-        )
-    )
 
     class Meta:
         model = User
-        fields = ('email', 'nickname', 'image')
+        fields = ('email', 'nickname')
 
     def clean_password2(self):
         # 두 비밀번호 입력 일치 확인
@@ -175,15 +166,6 @@ class PetCreateForm(forms.ModelForm):
         choices=Pet.CHOICE_COLOR,
         required=True,
     )
-    image = SizedImageCenterpointClickDjangoAdminField(
-        label='thumbnail',
-        widget=SizedImageCenterpointClickDjangoAdminWidget(
-            attrs={
-                'class': 'form-control',
-                'required': 'False',
-            }
-        )
-    )
 
     class Meta:
         model = Pet
@@ -197,7 +179,6 @@ class PetCreateForm(forms.ModelForm):
             'identified_number',
             'is_neutering',
             'body_color',
-            'image',
         )
 
 

@@ -90,12 +90,6 @@ class PetBreedField(serializers.RelatedField):
 
 # 펫의 내용을 보여주는 시리얼라이저
 class PetSerializer(serializers.ModelSerializer):
-    # thumbnail 이미지 처리
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ],
-        allow_empty_file=True,
-    )
-
     # 펫 종류는 PetSpeciesSerializer로 가공된다
     species = PetSpeciesField()
     # 펫 품종은 PetBreedSerializer로 가공된다
@@ -124,7 +118,6 @@ class PetSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',  # 나이
-            'image',  # 이미지
         )
         read_only_fields = (
             'pk',
@@ -152,11 +145,6 @@ class PetCreateSerializer(serializers.ModelSerializer):
         lookup_fields=['owner_id', 'pk'],
         lookup_url_kwargs=['user_pk', 'pet_pk']
     )  # 나이
-    # thumbnail 이미지 처리
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ],
-        default='placeholder/placeholder_pet.png',
-    )
 
     class Meta:
         model = Pet
@@ -172,7 +160,6 @@ class PetCreateSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
-            'image',
         )
         read_only_fields = (
             'pk',
@@ -210,11 +197,6 @@ class PetEditSerializer(serializers.ModelSerializer):
         lookup_fields=['owner_id', 'pk'],
         lookup_url_kwargs=['user_pk', 'pet_pk']
     )  # 나이
-    # thumbnail 이미지 처리
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ],
-        default='placeholder/placeholder_pet.png',
-    )
 
     class Meta:
         model = Pet
@@ -230,7 +212,6 @@ class PetEditSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',  # 나이
-            'image',  # 이미지
         )
         read_only_fields = (
             'pk',

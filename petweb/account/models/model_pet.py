@@ -76,18 +76,6 @@ class PetBreed(models.Model):
 
 
 class Pet(models.Model):
-    # 썸네일 저장 위치를 User/Pet으로 나눔
-    image = VersatileImageField(
-        'thumbnail',
-        upload_to='Pets',
-        ppoi_field='thumbnail_ppoi',
-        default='placeholder/placeholder_pet.png',
-        blank=True,
-        null=True,
-    )
-
-    thumbnail_ppoi = PPOIField()
-
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

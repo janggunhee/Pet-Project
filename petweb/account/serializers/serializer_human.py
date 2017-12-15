@@ -14,12 +14,6 @@ __all__ = (
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # thumbnail 이미지 처리
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ],
-        allow_empty_file=True,
-    )
-
     # 유저 로그인 시 결과 필드를 보여주는 모델 시리얼라이저
     class Meta:
         # 유저 모델을 참조한다
@@ -32,7 +26,6 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'is_active',
             'date_joined',
-            'image',
         )
 
 
@@ -48,11 +41,6 @@ class SignupSerializer(serializers.ModelSerializer):
     )
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
-    # thumbnail 이미지 처리
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ],
-        default='placeholder/placeholder_human.png',
-    )
 
     class Meta:
         # 유저 모델을 참조한다
@@ -82,7 +70,6 @@ class SignupSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             nickname=validated_data['nickname'],
             password=validated_data['password1'],
-            image=validated_data.get('image', None),
         )
 
     # 출력되는 json을 우리가 원하는 형태로 커스터마이징
@@ -108,10 +95,6 @@ class EditSerializer(serializers.ModelSerializer):
     # 반드시 입력될 필요는 없음(allow_blank=True)
     password1 = serializers.CharField(write_only=True, allow_blank=True)
     password2 = serializers.CharField(write_only=True, allow_blank=True)
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ],
-        default='placeholder/placeholder_human.png',
-    )
 
     class Meta:
         model = User
@@ -145,11 +128,6 @@ class EditSerializer(serializers.ModelSerializer):
         if new_password:
             # user 인스턴스에 변경된 패스워드를 hash값으로 변환해 입력한다
             instance.set_password(new_password)
-        # 이미지가 변경되었다면
-        new_image = validated_data.get('image', None)
-        # 새 이미지를 입력한다
-        if new_image:
-            instance.image = new_image
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance
