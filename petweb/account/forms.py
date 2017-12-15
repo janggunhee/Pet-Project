@@ -1,9 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from versatileimagefield.forms import SizedImageCenterpointClickDjangoAdminField
-from versatileimagefield.widgets import SizedImageCenterpointClickDjangoAdminWidget
 
-from .models import User, UserManager, Pet, PetSpecies, PetBreed
+from .models import *
 
 
 # 사용자 생성 폼

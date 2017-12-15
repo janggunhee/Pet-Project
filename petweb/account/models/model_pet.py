@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
-from versatileimagefield.fields import VersatileImageField, PPOIField
+
+from utils import CustomImageField
 
 User = get_user_model()
 
@@ -76,6 +77,12 @@ class PetBreed(models.Model):
 
 
 class Pet(models.Model):
+    # 썸네일 필드
+    image = CustomImageField(
+        upload_to='thumbnail/pet',
+        blank=True,
+        default_static_image='placeholder/placeholder_pet.png',
+    )
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,

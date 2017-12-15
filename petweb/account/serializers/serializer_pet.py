@@ -4,7 +4,6 @@ from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
-from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
@@ -118,6 +117,7 @@ class PetSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',  # 나이
+            'image',
         )
         read_only_fields = (
             'pk',
@@ -160,6 +160,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
+            'image',
         )
         read_only_fields = (
             'pk',
@@ -212,6 +213,7 @@ class PetEditSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',  # 나이
+            'image',
         )
         read_only_fields = (
             'pk',

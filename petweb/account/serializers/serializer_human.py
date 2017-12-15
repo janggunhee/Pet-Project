@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 User = get_user_model()
 
@@ -26,6 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'is_active',
             'date_joined',
+            'image',
         )
 
 
@@ -70,6 +70,7 @@ class SignupSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             nickname=validated_data['nickname'],
             password=validated_data['password1'],
+            image=validated_data.get('image', None),
         )
 
     # 출력되는 json을 우리가 원하는 형태로 커스터마이징
@@ -128,6 +129,9 @@ class EditSerializer(serializers.ModelSerializer):
         if new_password:
             # user 인스턴스에 변경된 패스워드를 hash값으로 변환해 입력한다
             instance.set_password(new_password)
+        new_image = validated_data.get('image', None)
+        if new_image:
+            instance.image = new_image
         # 변경된 모든 데이터를 저장한다
         instance.save()
         return instance
