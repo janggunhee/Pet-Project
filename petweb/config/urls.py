@@ -38,8 +38,14 @@ urlpatterns += [
     url(r'profile/', include('account.urls.url_profile', namespace='profile')),
 ]
 
-# media
+# media_files
 urlpatterns += static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT,
+)
+
+# static_files
+urlpatterns += static(
+    settings.STATIC_URL,
+    document_root=settings.STATIC_ROOT,
 )
