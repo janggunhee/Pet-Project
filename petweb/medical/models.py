@@ -68,11 +68,14 @@ class PetOperation(models.Model):
     image = models.ImageField(
         upload_to=None,
         max_length=100,
+        blank=True,
     )
     # 수술 날짜
-    date = models.DateField()
+    date = models.DateField(
+        auto_now=False,
+    )
     # 수술 명
-    description = models.CharField(max_length=50)
+    description = models.CharField(max_length=50,)
     # 수술 내용
     comment = models.TextField(max_length=500, blank=True)
 
