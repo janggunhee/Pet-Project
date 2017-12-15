@@ -7,6 +7,7 @@ __all__ = (
     'PetSize',
     'PetVaccine',
     'VaccineInfo',
+    'PetOperation',
 )
 
 
@@ -26,7 +27,7 @@ class PetSize(models.Model):
     # 동물의 신체 사이즈 (몸무게, 몸길이, 가슴둘레, 목둘레)
     size = models.ForeignKey(
         PetMedical,
-        related_name='sizes',
+        related_name='size',
         on_delete=models.CASCADE,
     )
 
@@ -52,16 +53,16 @@ class PetSize(models.Model):
     )
 
     def __str__(self):
-        return str(self.pet_size)
+        return str(self.size)
 
 
 # 동물의 수술 정보 모델
-class Operation(models.Model):
+class PetOperation(models.Model):
 
-    operations = models.ForeignKey(
+    pet_operation = models.ForeignKey(
         PetMedical,
         on_delete=models.CASCADE,
-        related_name='operations',
+        related_name='pet_operations',
     )
     # 수술 상태 사진
     image = models.ImageField(
@@ -75,13 +76,15 @@ class Operation(models.Model):
     # 수술 내용
     comment = models.TextField(max_length=500, blank=True)
 
+    def __str__(self):
+        return str(self.description)
+
 
 # 예방접종 정보 모델
 class VaccineInfo(models.Model):
     vaccine_info = models.ForeignKey(
         PetSpecies,
         on_delete=models.CASCADE,
-        verbose_name='vaccine_info',
     )
     # 예방 접종 이름
     vaccine_name = models.CharField(
@@ -92,6 +95,12 @@ class VaccineInfo(models.Model):
     vaccine_turn = models.PositiveIntegerField(
         default=0,
     )
+    # # 예방 접종 주기
+    # vaccine_cycle = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.vaccine_info.pet_type + ': ' + self.vaccine_name
+
 
 
 # 동물의 예방접종 모델
@@ -127,3 +136,6 @@ class PetVaccine(models.Model):
         max_length=30,
         blank=True,
     )
+
+    def __str__(self):
+        return str(self.vaccine)
