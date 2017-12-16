@@ -13,13 +13,34 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 from django.contrib import admin
 
 from account import views
 
+
+# 메인 화면 및 관리자 페이지
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^account/', include('account.urls', namespace='account'))
+    # 메인 페이지
+    url(r'^$', views.index, name='main'),
+    # 어드민 페이지
+    url(r'^admin/', admin.site.urls, name='admin'),
 ]
+
+# 나머지 페이지의 시작 분기점
+urlpatterns += [
+    # 회원 관리 url → account.urls.url_auth로 연결됨
+    # 회원가입, 로그인, 페이스북 로그인 기능 수행
+    url(r'auth/', include('account.urls.url_auth', namespace='auth')),
+    # 회원 프로필 url → account.urls.url_profile로 연결됨
+    # 회원 프로필, 정보(닉네임/비밀번호) 수정, 회원 삭제 기능 수행
+    url(r'profile/', include('account.urls.url_profile', namespace='profile')),
+]
+
+# media
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT,
+)

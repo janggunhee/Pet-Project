@@ -3,6 +3,8 @@ import os
 from celery import Celery
 
 # celery가 초기 설정값을 config.settings에서 가져온다
+from config import settings
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE',
                       'config.settings')
 

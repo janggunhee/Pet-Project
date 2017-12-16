@@ -35,7 +35,7 @@ STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
 # Media paths
 MEDIA_URL = '/media/'
-MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 
 # Template paths
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -44,12 +44,20 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'localhost:4200',
     '.elasticbeanstalk.com',
+    '.wooltari.co.kr',
 ]
 
 # auth
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
+
+# facebook authentication 추가
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'account.backends.FacebookBackend',
+]
 
 # auth_password_validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -85,6 +93,20 @@ EMAIL_HOST_PASSWORD = config_secret_email['gmail']['password']
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Facebook
+# app_id (공개 키)
+FACEBOOK_APP_ID = config_secret_common['facebook']['app_id']
+# secret_code (암호화 키)
+FACEBOOK_APP_SECRET_CODE = config_secret_common['facebook']['secret_code']
+# 요청할 개인정보 범위
+# 참고: https://developers.facebook.com/docs/facebook-login/overview
+# 로그인 검수 : 검수 절차를 받지 않은 앱에서 사용자에게 요청할 수 있는 권한은 다음과 같습니다.
+FACEBOOK_SCOPE = [
+    'public_profile',
+    'email',
+    'user_friends',
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -98,18 +120,48 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
+    'versatileimagefield',
     # User app
     'account',
+    # Pet medical app
+    'medical',
 ]
+
+VERSATILEIMAGEFIELD_SETTINGS = {
+    # 이미지 캐시 저장기간(초):  2592000초 = 30일
+    'cache_length': 2592000,
+    # 이미지 캐시의 이름
+    'cache_name': 'versatileimagefield_cache',
+    # The save quality of modified JPEG images. More info here:
+    # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
+    # Defaults to 70
+    'jpeg_resize_quality': 85,
+    # 잘려진 이미지를 저장할 디렉토리 이름
+    'sized_directory_name': 'thumbnails',
+    # 필터링한 이미지를 저장할 디렉토리 이름
+    'filtered_directory_name': '__filtered__',
+    # 이미지를 등록하지 않았을 경우 디폴트 이미지를 저장할 디렉토리 이름
+    'placeholder_directory_name': '__placeholder__',
+    # (자르고 필터링하는 등)요구한대로 이미지를 만들 것인지 여부
+    # 이것을 False로 하면 이미지 처리 속도가 높아진다.
+    'create_images_on_demand': True,
+
+    'image_key_post_processor': None,
+    'progressive_jpeg': False
+}
+
 
 # rest_framework settings
 REST_FRAMEWORK = {
+    # test할 때 default 포맷을 json으로 세팅한다
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         # TokenAuthentication
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -146,7 +198,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
-LANGUAGE_CODE = 'ko-kr'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Asia/Seoul'
 
@@ -160,3 +212,29 @@ USE_TZ = True
 SECRET_KEY = config_secret_common['django']['secret_key']
 
 
+# AWS elasticbeanstalk HealthCheck
+def is_ec2_linux():
+    """Detect if we are running on an EC2 Linux Instance
+       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+    """
+    if os.path.isfile("/sys/hypervisor/uuid"):
+        with open("/sys/hypervisor/uuid") as f:
+            uuid = f.read()
+            return uuid.startswith("ec2")
+    return False
+
+
+def get_linux_ec2_private_ip():
+    """Get the private IP Address of the machine if running on an EC2 linux server"""
+    from urllib.request import urlopen
+    if not is_ec2_linux():
+        return None
+    try:
+        response = urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
+        ec2_ip = response.read().decode('utf-8')
+        if response:
+            response.close()
+        return ec2_ip
+    except Exception as e:
+        print(e)
+        return None
