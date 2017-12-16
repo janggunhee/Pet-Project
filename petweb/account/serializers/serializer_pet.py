@@ -178,7 +178,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
             if instance.image.name == 'placeholder/placeholder_pet.png':
                 return instance
             new_pet = Pet.objects.get(pk=instance.pk)
-            raw_image = new_pet.image.name
+            raw_image = new_pet.image.path
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)
 
@@ -326,7 +326,7 @@ class PetEditSerializer(serializers.ModelSerializer):
             elif '_thumb' in instance.image.name:
                 return instance
             new_pet = Pet.objects.get(pk=instance.pk)
-            raw_image = new_pet.image.name
+            raw_image = new_pet.image.path
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)
 
