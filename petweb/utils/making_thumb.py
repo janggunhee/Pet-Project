@@ -38,16 +38,16 @@ def making_thumbnail(instance):
     temp_thumb.seek(0)
 
     # # 파일 객체를 인스턴스에 저장
-    # instance.image.save(split_filename, ContentFile(temp_thumb.read()), save=True)
-    # temp_thumb.close()
+    instance.image.save(split_filename, ContentFile(temp_thumb.read()), save=True)
+    temp_thumb.close()
 
-    # Boto3를 이용해 S3 버킷에 썸네일 파일 저장
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket('fastcampus-wooltari-files')
-    bucket.Acl().put(ACL='public-read')
-    key = bucket.put_object(Key='media/' + split_filename, Body=ContentFile(temp_thumb.read()))
-    key.put(Metadata={'Content-Type': mime})
-    key.Acl().put(ACL='public-read')
-    instance.image = key
+    # # Boto3를 이용해 S3 버킷에 썸네일 파일 저장
+    # s3 = boto3.resource('s3')
+    # bucket = s3.Bucket('fastcampus-wooltari-files')
+    # bucket.Acl().put(ACL='public-read')
+    # key = bucket.put_object(Key='media/' + split_filename, Body=ContentFile(temp_thumb.read()))
+    # key.put(Metadata={'Content-Type': mime})
+    # key.Acl().put(ACL='public-read')
+    # instance.image = key
 
     return instance
