@@ -34,6 +34,7 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         # 유저를 DB에 저장
         user.save(using=self._db)
+
         return user
 
     def create_superuser(self, email, password=None):
@@ -69,6 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # 썸네일 필드
     image = CustomImageField(
         upload_to='thumbnail/user',
+        max_length=255,
         blank=True,
         default_static_image='placeholder/placeholder_human.png',
     )
