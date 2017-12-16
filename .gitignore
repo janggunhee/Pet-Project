@@ -4,6 +4,7 @@
 c.sh
 .media/
 .static_root/
+secret.tar
 # Front code
 /front/
 
