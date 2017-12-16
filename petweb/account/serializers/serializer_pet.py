@@ -318,7 +318,44 @@ class PetEditSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
 
-        return instance
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_pet.png':
+                return instance
+            elif '_thumb' in instance.image.name:
+                return instance
+            new_pet = Pet.objects.get(pk=instance.pk)
+            raw_image = new_pet.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_pet.image = ret[1]
+            new_pet.save()
+
+            return new_pet
+
+        thumbnail_pet = making_thumbnail(instance)
+
+        return thumbnail_pet
 
 
 # 사용자가 강아지/고양이를 선택하면 펫 품종을 보여주는 시리얼라이저

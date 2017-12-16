@@ -170,11 +170,50 @@ class EditSerializer(serializers.ModelSerializer):
             # user 인스턴스에 변경된 패스워드를 hash값으로 변환해 입력한다
             instance.set_password(new_password)
         new_image = validated_data.get('image', None)
+
         if new_image:
             instance.image = new_image
         # 변경된 모든 데이터를 저장한다
         instance.save()
-        return instance
+
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_human.png':
+                return instance
+            elif '_thumb' in instance.image.name:
+                return instance
+            new_user = User.objects.get(pk=instance.pk)
+            raw_image = new_user.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_user.image = ret[1]
+            new_user.save()
+
+            return new_user
+
+        thumbnail_user = making_thumbnail(instance)
+
+        return thumbnail_user
 
 
 class ResetPasswordSerializer(serializers.Serializer):
