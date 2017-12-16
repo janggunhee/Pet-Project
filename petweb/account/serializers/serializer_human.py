@@ -2,6 +2,7 @@ import os
 from PIL import Image
 
 from django.contrib.auth import get_user_model
+from django.core.files.storage import default_storage
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -82,11 +83,11 @@ class SignupSerializer(serializers.ModelSerializer):
             if instance.image.name == 'placeholder/placeholder_human.png':
                 return instance
             new_user = User.objects.get(pk=instance.pk)
-            raw_image = new_user.image.path
+            raw_image = default_storage.open(new_user.image.name, 'rb')
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)
 
-            image_filename, image_extension = os.path.splitext(raw_image)
+            image_filename, image_extension = os.path.splitext(raw_image.name)
             image_extension = image_extension.lower()
 
             thumb_filename = image_filename + '_thumb' + image_extension
@@ -184,11 +185,11 @@ class EditSerializer(serializers.ModelSerializer):
             elif '_thumb' in instance.image.name:
                 return instance
             new_user = User.objects.get(pk=instance.pk)
-            raw_image = new_user.image.path
+            raw_image = default_storage.open(new_user.image.name, 'rb')
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)
 
-            image_filename, image_extension = os.path.splitext(raw_image)
+            image_filename, image_extension = os.path.splitext(raw_image.name)
             image_extension = image_extension.lower()
 
             thumb_filename = image_filename + '_thumb' + image_extension
