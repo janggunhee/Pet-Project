@@ -58,7 +58,6 @@ class PetSize(models.Model):
 
 # 동물의 수술 정보 모델
 class PetOperation(models.Model):
-
     pet_operation = models.ForeignKey(
         PetMedical,
         on_delete=models.CASCADE,
@@ -75,7 +74,7 @@ class PetOperation(models.Model):
         auto_now=False,
     )
     # 수술 명
-    description = models.CharField(max_length=50,)
+    description = models.CharField(max_length=50, )
     # 수술 내용
     comment = models.TextField(max_length=500, blank=True)
 
@@ -98,6 +97,7 @@ class VaccineInfo(models.Model):
     vaccine_turn = models.PositiveIntegerField(
         default=0,
     )
+
     # # 예방 접종 주기
     # vaccine_cycle = models.PositiveIntegerField()
 
@@ -105,10 +105,8 @@ class VaccineInfo(models.Model):
         return self.vaccine_info.pet_type + ': ' + self.vaccine_name
 
 
-
 # 동물의 예방접종 모델
 class PetVaccine(models.Model):
-
     vaccine = models.ForeignKey(
         PetMedical,
         related_name='vaccines'
