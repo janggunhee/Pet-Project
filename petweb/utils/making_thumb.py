@@ -1,6 +1,8 @@
 # 썸네일 생성 함수
 import mimetypes
 import os
+
+import boto3
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -35,8 +37,17 @@ def making_thumbnail(instance):
     img.save(temp_thumb, file_type)
     temp_thumb.seek(0)
 
-    # 파일 객체를 인스턴스에 저장
-    instance.image.save(split_filename, ContentFile(temp_thumb.read()), save=True)
-    temp_thumb.close()
+    # # 파일 객체를 인스턴스에 저장
+    # instance.image.save(split_filename, ContentFile(temp_thumb.read()), save=True)
+    # temp_thumb.close()
+
+    # Boto3를 이용해 S3 버킷에 썸네일 파일 저장
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('fastcampus-wooltari-files')
+    bucket.Acl().put(ACL='public-read')
+    key = bucket.put_object(Key='media/' + split_filename, Body=ContentFile(temp_thumb.read()))
+    key.put(Metadata={'Content-Type': mime})
+    key.Acl().put(ACL='public-read')
+    instance.image = key
 
     return instance
