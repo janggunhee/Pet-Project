@@ -1,3 +1,5 @@
+import os
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
@@ -166,6 +168,46 @@ class PetCreateSerializer(serializers.ModelSerializer):
             'pk',
             'ages',
         )
+
+    def create(self, validated_data):
+        created_pet = Pet.objects.create(**validated_data)
+
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_pet.png':
+                return instance
+            new_pet = Pet.objects.get(pk=instance.pk)
+            raw_image = new_pet.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_pet.image = ret[1]
+            new_pet.save()
+
+            return new_pet
+
+        thumbnail_pet = making_thumbnail(created_pet)
+
+        return thumbnail_pet
 
     # 출력 형식을 커스터마이징
     def to_representation(self, instance):

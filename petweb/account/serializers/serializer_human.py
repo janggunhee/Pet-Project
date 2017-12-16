@@ -81,7 +81,7 @@ class SignupSerializer(serializers.ModelSerializer):
             # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
             if instance.image.name == 'placeholder/placeholder_human.png':
                 return instance
-            new_user = User.objects.get(email=instance.email)
+            new_user = User.objects.get(pk=instance.pk)
             raw_image = new_user.image.path
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)

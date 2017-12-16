@@ -56,8 +56,8 @@ class Signup(APIView):
                 message = render_to_string('user_activate_email.html', {
                     # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
                     'domain': current_site.domain,
-                    'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
-                    'token': urlsafe_base64_encode(force_bytes(user['token']))
+                    'uid': urlsafe_base64_encode(force_bytes(instance['user']['pk'])),
+                    'token': urlsafe_base64_encode(force_bytes(User.objects.get(pk=instance['user']['pk']).token))
                 })
                 # 이메일 전송 메소드
                 # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
