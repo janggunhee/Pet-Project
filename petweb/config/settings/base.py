@@ -122,6 +122,8 @@ INSTALLED_APPS = [
     'storages',
     # User app
     'account',
+    # Pet medical app
+    'medical',
 ]
 
 # rest_framework settings

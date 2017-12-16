@@ -1,8 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
+<< << << < HEAD
 
 from utils import CustomImageField
+== == == =
+>> >> >> > serverfix
 
 User = get_user_model()
 
