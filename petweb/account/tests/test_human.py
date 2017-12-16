@@ -79,10 +79,6 @@ class UserSignupTest(APILiveServerTestCase):
         dummy_user = User.objects.get(email=input_data['email'])
         # 더미 유저를 시리얼라이징
         serializer = SignupSerializer(dummy_user).data
-        # 토큰 가져오기
-        dummy_token = Token.objects.get(user__email=input_data['email'])
-        # 토큰 일치 검사
-        self.assertEqual(serializer['token'], dummy_token.key)
         # 처음 입력한 이메일과 DB에 저장된 이메일이 일치하는지 검사
         self.assertEqual(serializer['user']['email'], input_data['email'])
         # 처음 입력한 닉네임과 DB에 저장된 닉네임이 일치하는지 검사

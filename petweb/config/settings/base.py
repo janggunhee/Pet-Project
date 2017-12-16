@@ -53,6 +53,11 @@ ALLOWED_HOSTS = [
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
 
+# automatically createsuperuser
+SUPERUSER_EMAIL = config_secret_common['django']['superuser_email']
+SUPERUSER_PASSWORD = config_secret_common['django']['superuser_password']
+
+
 # facebook authentication 추가
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -122,6 +127,8 @@ INSTALLED_APPS = [
     'storages',
     # User app
     'account',
+    # Pet medical app
+    'medical',
 ]
 
 

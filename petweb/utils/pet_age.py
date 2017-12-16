@@ -10,49 +10,27 @@ __all__ = (
 )
 
 # dog_breed_type
-Large_dog = [
-    '대형견', '골든 리트리버', 'Golden Retriever', "그레이 하운드", 'Grey Hound', "그레이트 데인", 'Great Dane', "그레이트 피레니즈"
-    , 'Great Pyrenees', "뉴펀들랜드", 'Newfoundland', "달마시안", 'Dalmatian', "도고 아르헨티노", 'Dogo Argentino',
-    '도베르만 핀셔', 'Doberman Pinscher', "래브라도 리트리버", 'Labrador Retriever', "롯트와일러", 'Rottweiler', "마스티프", 'Mastiff',
-    "아프간 하운드", 'Afghan Hound', "알래스칸 맬러뮤트", 'Alaskan Malamute',
-]
-Middle_dog = [
-    '중형견', '바셋 하운드', "Basset Hound", "베들링턴 테리어", "Bedlington Terrier", "보더 콜리", 'Border Collie', "보스턴 테리어",
-    'Boston Terrier', '불 테리어', 'Bull Terrier', '불독', "Bulldog", '비글', "Beagle", '사모예드', "Samoyed", '셰틀랜드 쉽독',
-    "Shetland Sheepdog", '스코티시 테리어', "Scottish Terrier", "시베리안 허스키", 'Siberian Husky', "아메리칸 코카 스파니엘",
-    'American Cocker Spanie', '아메리칸 핏불 테리어', "America Pit Bull Terrier", '웨스트 하이랜드 화이트 테리어',
-    "West Highland White Terrier", '웰시코기', "Welsh Corgi", "잭 러셀 테리어", 'Jack Russel Terrier', "차우차우", 'Chowchow',
-    "차이니즈 샤페이", 'Chinese Shar-pei', '진돗개', '삽살개', '풍산개', '동경이', '댕견', '제주개',
-]
-Small_dog = [
-    '소형견', '미니핀', '미니어처 핀셔', 'Miniature Pinscher', "닥스훈트", 'Dachshund', "라사 압소", 'Lhasa Apso', "말티즈", 'Maltese',
-    '미니어처 슈나우저', "Miniature Schnauzer", '비숑 프리제', 'Bichon Frise', '시츄', "Shih Tzu", "오스트레일리안 실키 테리어",
-    'Australian silky terrier', "요크셔 테리어", 'Yorkshire Terrier', "치와와", 'Chihuahua', "카발리에킹찰스스패니얼",
-    'Cavalier King Charles Spaniel',
-    '토이푸들', "Toy Poodle", '파피용', 'Papillon', '퍼그', 'Pug', '페키니즈', 'Pekingese', "포메라니안", 'Pomeranian',
-]
+Large_dog = ['German Shepherd', 'Golden Retriever', 'Rottweiler', 'German Shorthaired Pointer', 'Doberman Pinscher',
+             'Bernese Mountain Dog', 'Collie', 'Cane Corso', 'Rhodesian Ridgeback', 'Chesapeake Bay Retriever', 'Akita',
+             'Bullmastiff', 'Bloodhound', 'Alaskan Malamute', 'Dogue de Bordeaux', 'Dalmatian', 'Old English Sheepdog',
+             'Irish Setter', 'Greater Swiss Mountain Dog', 'Bouvier des Flandres']
+Middle_dog = ['Labrador Retriever', 'Bulldog', 'Poodle', 'Boxer', 'Siberian Husky', 'Australian Shepherd', 'Brittany',
+              'English Springer Spaniel', 'American Cocker Spaniel', 'Vizsla', 'Weimaraner',
+              'Miniature American Shepherd', 'Border Collie', 'Basset Hound', 'Shiba Inu', 'Belgian Malinois',
+              'Soft Coated Wheaten Terrier', 'Portuguese Water Dog', 'Australian Cattle Dog', 'Airedale Terrier']
+Small_dog = ['Beagle', 'French Bulldog', 'Yorkshire Terrier', 'Dachshund', 'Miniature Schnauzer',
+             'Pembroke Welsh Corgi', 'Cavalier King Charles Spaniel', 'Shih Tzu', 'Boston Terrier', 'Pomeranian',
+             'Havanese', 'Shetland Sheepdog', 'Chihuahua', 'Pug', 'Maltese', 'West Highland White Terrier',
+             'Bichon Frise', 'Papillon', 'Scottish Terrier', 'Miniature Pinscher']
 
 # Cat_breed_type
-Small_cat = [
-    'American Curl', 'Bambino', 'Munchkin', 'Singapura',
-]
-Middle_cat = [
-    'Abyssinian', 'Aegean', 'American Polydactyl', 'Burmese', 'Balinese', 'Bombay',
-    'Cornish Rex', 'Colorpoint Shorthair', 'Chantilly-Tiffany', 'Devon Rex',
-    'Exotic Shorthair', 'Egyptian Mau', 'European Burmese', 'Havana Brown',
-    'Japanese Bobtail', 'Korat', 'LaPerm',
-    'Malayan', 'Nebelung', 'Oriental', 'Russian Blue', 'Sphynx', 'Siamese',
-    'Scottish Fold', 'Snowshoe', 'Tonkinese', 'Turkish Angora', 'Toyger',
-]
-Large_cat = [
-    'American Shorthair', 'American Bobtail', 'American Wirehair', 'Australian Mist',
-    'Arabian Mau', 'Asian Semi-longhair', 'British Shorthair', 'Birman',
-    'Burmilla', 'Bengal', 'Brazilian Shorthair', 'British Semi-longhair',
-    'Chartreux', 'California Spangled', 'Cymric', 'Chausie', 'Cheetoh',
-    'Cyprus', 'Himalayan', 'Maine Coon', 'Manx', 'Norwegian Forest Cat',
-    'Ocicat', 'Persian', 'Pixie-bob', 'Ragdoll', 'Ragamuffin', 'Selkirk Rex',
-    'Somali', 'Savannah',
-]
+Small_cat = ['Oriental', 'LaPerm', 'Munchkin', 'Bambino']
+Middle_cat = ['Exotic Shorthair', 'Persian', 'Abyssinian', 'Sphynx', 'Siamese', 'Scottish Fold', 'Cornish Rex',
+              'Devon Rex', 'Birman', 'Burmese', 'Tonkinese', 'Russian Blue', 'Egyptian Mau', 'Manx', 'Japanese Bobtail',
+              'Selkirk Rex', 'American Curl', 'Somali', 'Turkish Angora', 'Colorpoint Shorthair']
+Large_cat = ['British Shorthair', 'American Shorthair', 'Norwegian Forest Cat', 'Ocicat', 'Selkirk Rex', 'Chartreux',
+             'Ragamuffin', 'American Bobtail', 'Turkish Van', 'American Wirehair', 'Himalayan', 'Pixie-bob', 'Savannah',
+             'York Chocolate', 'British Semi-longhair', 'Cheetoh', 'Cyprus']
 
 num_dog = len(Small_dog) + len(Middle_dog) + len(Large_dog)
 num_cat = len(Small_cat) + len(Middle_cat) + len(Large_cat)

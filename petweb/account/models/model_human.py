@@ -37,7 +37,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password=None):
+    def create_superuser(self, email, password=None, **extra_fields):
         """
         주어진 정보로 관리자 권한 User 인스턴스 생성
         """
@@ -45,6 +45,7 @@ class UserManager(BaseUserManager):
             # create_user 함수를 호출해 user 생성
             email=email,
             password=password,
+            **extra_fields,
         )
 
         # 관리자 권한 부여
