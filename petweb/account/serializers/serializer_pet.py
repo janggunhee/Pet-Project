@@ -1,13 +1,12 @@
-import os
-from PIL import Image
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.storage import default_storage
 from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
 
+from utils.making_thumb import making_thumbnail
+from .. import tasks
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
 from . import UserSerializer
@@ -173,39 +172,6 @@ class PetCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         created_pet = Pet.objects.create(**validated_data)
 
-        # 썸네일 생성 함수
-        def making_thumbnail(instance):
-            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
-            if instance.image.name == 'placeholder/placeholder_pet.png':
-                return instance
-            new_pet = Pet.objects.get(pk=instance.pk)
-            raw_image = default_storage.open(new_pet.image.name, 'rb')
-            img = Image.open(raw_image)
-            img.thumbnail((300, 300), Image.ANTIALIAS)
-
-            image_filename, image_extension = os.path.splitext(raw_image.name)
-            image_extension = image_extension.lower()
-
-            thumb_filename = image_filename + '_thumb' + image_extension
-
-            if image_extension in ['.jpg', '.jpeg']:
-                file_type = 'JPEG',
-            elif image_extension == '.gif':
-                file_type = 'GIF'
-            elif image_extension == '.png':
-                file_type = 'PNG'
-            else:
-                return False
-
-            img.save(thumb_filename, file_type[0])
-
-            ret = thumb_filename.split('/.media/')
-
-            new_pet.image = ret[1]
-            new_pet.save()
-
-            return new_pet
-
         thumbnail_pet = making_thumbnail(created_pet)
 
         return thumbnail_pet
@@ -318,41 +284,6 @@ class PetEditSerializer(serializers.ModelSerializer):
             else:
                 setattr(instance, attr, value)
         instance.save()
-
-        # 썸네일 생성 함수
-        def making_thumbnail(instance):
-            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
-            if instance.image.name == 'placeholder/placeholder_pet.png':
-                return instance
-            elif '_thumb' in instance.image.name:
-                return instance
-            new_pet = Pet.objects.get(pk=instance.pk)
-            raw_image = default_storage.open(new_pet.image.name, 'rb')
-            img = Image.open(raw_image)
-            img.thumbnail((300, 300), Image.ANTIALIAS)
-
-            image_filename, image_extension = os.path.splitext(raw_image.name)
-            image_extension = image_extension.lower()
-
-            thumb_filename = image_filename + '_thumb' + image_extension
-
-            if image_extension in ['.jpg', '.jpeg']:
-                file_type = 'JPEG',
-            elif image_extension == '.gif':
-                file_type = 'GIF'
-            elif image_extension == '.png':
-                file_type = 'PNG'
-            else:
-                return False
-
-            img.save(thumb_filename, file_type[0])
-
-            ret = thumb_filename.split('/.media/')
-
-            new_pet.image = ret[1]
-            new_pet.save()
-
-            return new_pet
 
         thumbnail_pet = making_thumbnail(instance)
 
