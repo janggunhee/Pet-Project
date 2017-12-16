@@ -1,3 +1,5 @@
+import os
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
@@ -27,7 +29,7 @@ class PetSpeciesField(serializers.RelatedField):
 
     class Meta:
         model = PetSpecies
-        fields = ('pet_type', )
+        fields = ('pet_type',)
 
     # pk값 대신 'dog/cat'으로 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -60,7 +62,7 @@ class PetBreedField(serializers.RelatedField):
 
     class Meta:
         model = PetBreed
-        fields = ('breeds_name', )
+        fields = ('breeds_name',)
 
     # pk값 대신 품종 이름이 보일 수 있도록 커스텀
     def to_representation(self, instance):
@@ -93,8 +95,10 @@ class PetSerializer(serializers.ModelSerializer):
     species = PetSpeciesField()
     # 펫 품종은 PetBreedSerializer로 가공된다
     breeds = PetBreedField()
+
     # 펫 나이는 PetAge 뷰를 URL 값으로 보여주도록 설계
     # 여러 개의 키워드 인자 값을 받기 위해 필드를 커스텀
+
     ages = MultiplePKsHyperlinkedIdentityField(
         view_name='profile:pet-age',
         lookup_fields=['owner_id', 'pk'],
@@ -104,7 +108,7 @@ class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pet
         fields = (
-            'pk',    # 동물pk
+            'pk',  # 동물pk
             'species',  # 강아지/고양이
             'breeds',  # 품종
             'name',  # 이름
@@ -114,7 +118,8 @@ class PetSerializer(serializers.ModelSerializer):
             'identified_number',  # 동물등록번호
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
-            'ages',
+            'ages',  # 나이
+            'image',
         )
         read_only_fields = (
             'pk',
@@ -134,7 +139,7 @@ class PetCreateSerializer(serializers.ModelSerializer):
     # http://www.django-rest-framework.org/api-guide/fields/#choicefield
     gender = serializers.ChoiceField(choices=Pet.CHOICE_GENDER)  # 성별
     body_color = serializers.ChoiceField(choices=Pet.CHOICE_COLOR)  # 색상
-    identified_number = serializers.CharField(max_length=20, allow_blank=True) # 동물등록번호
+    identified_number = serializers.CharField(max_length=20, allow_blank=True)  # 동물등록번호
     is_neutering = serializers.BooleanField(default=False)  # 중성화
     is_active = serializers.BooleanField(default=True)  # 활성화
     ages = MultiplePKsHyperlinkedIdentityField(
@@ -157,11 +162,52 @@ class PetCreateSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
+            'image',
         )
         read_only_fields = (
             'pk',
             'ages',
         )
+
+    def create(self, validated_data):
+        created_pet = Pet.objects.create(**validated_data)
+
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_pet.png':
+                return instance
+            new_pet = Pet.objects.get(pk=instance.pk)
+            raw_image = new_pet.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_pet.image = ret[1]
+            new_pet.save()
+
+            return new_pet
+
+        thumbnail_pet = making_thumbnail(created_pet)
+
+        return thumbnail_pet
 
     # 출력 형식을 커스터마이징
     def to_representation(self, instance):
@@ -208,7 +254,8 @@ class PetEditSerializer(serializers.ModelSerializer):
             'identified_number',  # 동물등록번호
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
-            'ages',
+            'ages',  # 나이
+            'image',
         )
         read_only_fields = (
             'pk',
@@ -271,7 +318,44 @@ class PetEditSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
 
-        return instance
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_pet.png':
+                return instance
+            elif '_thumb' in instance.image.name:
+                return instance
+            new_pet = Pet.objects.get(pk=instance.pk)
+            raw_image = new_pet.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_pet.image = ret[1]
+            new_pet.save()
+
+            return new_pet
+
+        thumbnail_pet = making_thumbnail(instance)
+
+        return thumbnail_pet
 
 
 # 사용자가 강아지/고양이를 선택하면 펫 품종을 보여주는 시리얼라이저

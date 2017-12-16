@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
+from utils import CustomImageField
 
 __all__ = (
     'UserManager',
@@ -14,11 +15,8 @@ __all__ = (
 class UserManager(BaseUserManager):
     def create_user(self,
                     email,
-                    nickname,
                     password=None,
-                    user_type='d',
-                    social_id='',
-                    device_token=''):
+                    **extra_fields):
         """
         주어진 정보로 일반 User 인스턴스 생성
         """
@@ -29,19 +27,17 @@ class UserManager(BaseUserManager):
         user = self.model(
             # 유저에 들어갈 정보: 이메일, 닉네임
             email=self.normalize_email(email),
-            nickname=nickname,
-            user_type=user_type,
-            social_id=social_id,
-            device_token=device_token,
+            **extra_fields,
         )
 
         # 패스워드 세팅
         user.set_password(password)
         # 유저를 DB에 저장
         user.save(using=self._db)
+
         return user
 
-    def create_superuser(self, email, nickname, password=None):
+    def create_superuser(self, email, password=None):
         """
         주어진 정보로 관리자 권한 User 인스턴스 생성
         """
@@ -49,7 +45,6 @@ class UserManager(BaseUserManager):
             # create_user 함수를 호출해 user 생성
             email=email,
             password=password,
-            nickname=nickname,
         )
 
         # 관리자 권한 부여
@@ -72,6 +67,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         (USER_TYPE_DJANGO, 'django'),
     )
     user_type = models.CharField(max_length=1, choices=CHOICES_USER_TYPE, default=USER_TYPE_DJANGO)
+    # 썸네일 필드
+    image = CustomImageField(
+        upload_to='thumbnail/user',
+        max_length=255,
+        blank=True,
+        default_static_image='placeholder/placeholder_human.png',
+    )
     # 이메일 필드
     email = models.EmailField(
         verbose_name='email_address',

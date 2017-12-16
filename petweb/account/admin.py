@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .forms import UserChangeForm, UserCreationForm, PetChangeForm, PetSpeciesChangeForm, PetBreedChangeForm, \
-    PetBreedCreateForm
+from .forms import *
 from .models import User, PetSpecies, PetBreed, Pet
 
 
@@ -19,21 +18,21 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ['is_superuser', 'is_active']
     # 유저 보기 필드셋
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'social_id')}),
-        ('personal info', {'fields': ('nickname', )}),
-        ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type', )}),
+        ('member image', {'fields': ('image',)}),
+        ('member info', {'fields': ('email', 'password', 'social_id', 'nickname',)}),
+        ('permissions', {'fields': ('is_active', 'is_superuser', 'user_type',)}),
     )
     # 유저 가입 필드셋
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
-            'fields': ('email', 'nickname', 'password1', 'password2')}
+            'classes': ('wide',),
+            'fields': ('email', 'nickname', 'password1', 'password2', 'image')}
          ),
     )
     # 검색창
     search_fields = ('email', 'nickname')
     # 순서 매기기
-    ordering = ('-date_joined', )
+    ordering = ('-date_joined',)
     # 이건 뭐지?
     filter_horizontal = ()
 
@@ -46,17 +45,17 @@ class PetSpeciesAdmin(BaseUserAdmin):
     list_filter = ['pet_type']
 
     fieldsets = (
-        (None, {'fields': ('pet_type', )}),
+        (None, {'fields': ('pet_type',)}),
     )
 
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
-            'fields': ('pet_type', )}
+            'classes': ('wide',),
+            'fields': ('pet_type',)}
          ),
     )
 
-    ordering = ('-pk', )
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 
@@ -74,39 +73,40 @@ class PetBreedAdmin(BaseUserAdmin):
 
     add_fieldsets = (
         (None, {
-            'classes': ('wide', ),
+            'classes': ('wide',),
             'fields': ('species', 'breeds_name')}
          ),
     )
 
-    ordering = ('-pk', )
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 
 # 관리자 페이지 펫 객체를 보여주는 클래스
 class PetAdmin(BaseUserAdmin):
+    add_form = PetCreateForm
     form = PetChangeForm
     list_display = ['pk', 'name', 'owner', 'species', 'breeds']
     list_display_links = ['name']
     list_filter = ['name', 'owner']
 
     fieldsets = (
-        (None, {'fields': ('owner', 'name')}),
-        ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
-        ('medical info', {'fields': ('is_neutering', 'identified_number')}),
-        ('activation', {'fields': ('is_active', )}),
-    )
-
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide', ),
-            'fields': ('owner', 'name')}),
-        ('pet info', {'fields': ('species', 'breeds', 'birth_date', 'body_color', 'gender')}),
+        ('owner info', {'fields': ('owner', 'name')}),
+        ('pet info', {'fields': ('image', 'species', 'breeds', 'birth_date', 'body_color', 'gender')}),
         ('medical info', {'fields': ('is_neutering', 'identified_number')}),
         ('activation', {'fields': ('is_active',)}),
     )
 
-    ordering = ('-pk', )
+    add_fieldsets = (
+        ('owner info', {
+            'classes': ('wide',),
+            'fields': ('owner', 'name')}),
+        ('pet info', {'fields': ('image', 'species', 'breeds', 'birth_date', 'body_color', 'gender')}),
+        ('medical info', {'fields': ('is_neutering', 'identified_number')}),
+        ('activation', {'fields': ('is_active',)}),
+    )
+
+    ordering = ('-pk',)
     filter_horizontal = ()
 
 

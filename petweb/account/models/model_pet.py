@@ -2,8 +2,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 
-User = get_user_model()
+from utils import CustomImageField
 
+User = get_user_model()
 
 __all__ = (
     'PetSpecies',
@@ -75,8 +76,13 @@ class PetBreed(models.Model):
         return self.breeds_name
 
 
-# 펫 모델
 class Pet(models.Model):
+    # 썸네일 필드
+    image = CustomImageField(
+        upload_to='thumbnail/pet',
+        blank=True,
+        default_static_image='placeholder/placeholder_pet.png',
+    )
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -126,7 +132,7 @@ class Pet(models.Model):
     USERNAME_FIELD = 'name'
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-pk',)
 
     def __str__(self):
         return self.name

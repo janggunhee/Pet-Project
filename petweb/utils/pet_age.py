@@ -1,7 +1,6 @@
 from datetime import date
 from typing import NamedTuple
 
-
 __all__ = (
     'Age',
     'age_conversion',
@@ -9,7 +8,6 @@ __all__ = (
     'calculate_age',
     'dog_life_type',
 )
-
 
 # dog_breed_type
 Large_dog = [
@@ -36,19 +34,19 @@ Small_dog = [
 
 # Cat_breed_type
 Small_cat = [
- 'American Curl', 'Bambino', 'Munchkin', 'Singapura',
+    'American Curl', 'Bambino', 'Munchkin', 'Singapura',
 ]
 Middle_cat = [
-  'Abyssinian', 'Aegean', 'American Polydactyl', 'Burmese', 'Balinese', 'Bombay',
-  'Cornish Rex', 'Colorpoint Shorthair', 'Chantilly-Tiffany', 'Devon Rex',
-  'Exotic Shorthair', 'Egyptian Mau', 'European Burmese', 'Havana Brown',
-   'Japanese Bobtail', 'Korat', 'LaPerm',
-  'Malayan', 'Nebelung', 'Oriental', 'Russian Blue', 'Sphynx', 'Siamese',
-  'Scottish Fold',  'Snowshoe', 'Tonkinese', 'Turkish Angora', 'Toyger',
+    'Abyssinian', 'Aegean', 'American Polydactyl', 'Burmese', 'Balinese', 'Bombay',
+    'Cornish Rex', 'Colorpoint Shorthair', 'Chantilly-Tiffany', 'Devon Rex',
+    'Exotic Shorthair', 'Egyptian Mau', 'European Burmese', 'Havana Brown',
+    'Japanese Bobtail', 'Korat', 'LaPerm',
+    'Malayan', 'Nebelung', 'Oriental', 'Russian Blue', 'Sphynx', 'Siamese',
+    'Scottish Fold', 'Snowshoe', 'Tonkinese', 'Turkish Angora', 'Toyger',
 ]
 Large_cat = [
-    'American Shorthair', 'American Bobtail', 'American Wirehair','Australian Mist',
-    'Arabian Mau','Asian Semi-longhair','British Shorthair','Birman',
+    'American Shorthair', 'American Bobtail', 'American Wirehair', 'Australian Mist',
+    'Arabian Mau', 'Asian Semi-longhair', 'British Shorthair', 'Birman',
     'Burmilla', 'Bengal', 'Brazilian Shorthair', 'British Semi-longhair',
     'Chartreux', 'California Spangled', 'Cymric', 'Chausie', 'Cheetoh',
     'Cyprus', 'Himalayan', 'Maine Coon', 'Manx', 'Norwegian Forest Cat',
@@ -58,6 +56,7 @@ Large_cat = [
 
 num_dog = len(Small_dog) + len(Middle_dog) + len(Large_dog)
 num_cat = len(Small_cat) + len(Middle_cat) + len(Large_cat)
+
 
 # pet = Pet.objects.get(pk=pk)   ### import not yet
 # birth_date = pet.birth_date   ## models.Model.DateField << datetime.date

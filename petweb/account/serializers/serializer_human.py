@@ -1,3 +1,6 @@
+import os
+from PIL import Image
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -25,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'is_active',
             'date_joined',
+            'image',
         )
 
 
@@ -32,6 +36,10 @@ class SignupSerializer(serializers.ModelSerializer):
     # 유저 가입 시 필드를 생성하는 모델 시리얼라이저
     # 패스워드 1, 2는 추가로 설정해준다
     email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    nickname = serializers.CharField(
+        max_length=50,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
     password1 = serializers.CharField(write_only=True)
@@ -50,6 +58,7 @@ class SignupSerializer(serializers.ModelSerializer):
             'password2',
             'is_active',
             'date_joined',
+            'image',
         )
 
     # 기본 모델 시리얼라이저는 password1, 2에 대한 validate가 없으므로 만들어준다
@@ -60,11 +69,49 @@ class SignupSerializer(serializers.ModelSerializer):
 
     # 유저를 생성하는 메소드
     def create(self, validated_data):
-        return User.objects.create_user(
+        created_user = User.objects.create_user(
             email=validated_data['email'],
             nickname=validated_data['nickname'],
             password=validated_data['password1'],
+            image=validated_data.get('image', None),
         )
+
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_human.png':
+                return instance
+            new_user = User.objects.get(pk=instance.pk)
+            raw_image = new_user.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_user.image = ret[1]
+            new_user.save()
+
+            return new_user
+
+        thumbnail_user = making_thumbnail(created_user)
+
+        return thumbnail_user
 
     # 출력되는 json을 우리가 원하는 형태로 커스터마이징
     def to_representation(self, instance):
@@ -73,8 +120,8 @@ class SignupSerializer(serializers.ModelSerializer):
         # 회원가입할 때와 로그인할 때 유저 필드는 동일한 모습을 보여준다
         # views.py의 Login 클래스 참조
         data = {
-            # 모델에 property 값으로 token을 생성해두었다
-            'token': instance.token,
+            # 회원가입 인증 메일을 확인하라는 메시지를 띄운다
+            'message': "Please check a membership verification email from your account.",
             'user': ret,
         }
         return data
@@ -101,6 +148,7 @@ class EditSerializer(serializers.ModelSerializer):
             'password2',
             'is_active',
             'date_joined',
+            'image',
         )
 
     def validate(self, data):
@@ -111,19 +159,61 @@ class EditSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # 업데이트 함수
-        # 닉네임을 user 인스턴스에 반영한다
-        new_nickname = validated_data.get('nickname')
+        # 닉네임이 변경되었다면 user 인스턴스에 반영한다
+        new_nickname = validated_data.get('nickname', None)
         if new_nickname:
             instance.nickname = new_nickname
         # 패스워드는 입력될 수도 있고 안될 수도 있기 때문에 get으로 받아서 변수 'password'에 담아둔다
-        new_password = validated_data.get('password1')
+        new_password = validated_data.get('password1', None)
         # 만일 변경된 패스워드가 입력되었다면
         if new_password:
             # user 인스턴스에 변경된 패스워드를 hash값으로 변환해 입력한다
             instance.set_password(new_password)
+        new_image = validated_data.get('image', None)
+
+        if new_image:
+            instance.image = new_image
         # 변경된 모든 데이터를 저장한다
         instance.save()
-        return instance
+
+        # 썸네일 생성 함수
+        def making_thumbnail(instance):
+            # 참고: (StackOverFlow: https://goo.gl/d9G7V5)
+            if instance.image.name == 'placeholder/placeholder_human.png':
+                return instance
+            elif '_thumb' in instance.image.name:
+                return instance
+            new_user = User.objects.get(pk=instance.pk)
+            raw_image = new_user.image.path
+            img = Image.open(raw_image)
+            img.thumbnail((300, 300), Image.ANTIALIAS)
+
+            image_filename, image_extension = os.path.splitext(raw_image)
+            image_extension = image_extension.lower()
+
+            thumb_filename = image_filename + '_thumb' + image_extension
+
+            if image_extension in ['.jpg', '.jpeg']:
+                file_type = 'JPEG',
+            elif image_extension == '.gif':
+                file_type = 'GIF'
+            elif image_extension == '.png':
+                file_type = 'PNG'
+            else:
+                return False
+
+            img.save(thumb_filename, file_type[0])
+
+            ret = thumb_filename.split('/.media/')
+
+            new_user.image = ret[1]
+            new_user.save()
+
+            return new_user
+
+        thumbnail_user = making_thumbnail(instance)
+
+        return thumbnail_user
 
 
 class ResetPasswordSerializer(serializers.Serializer):

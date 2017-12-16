@@ -1,6 +1,5 @@
 from rest_framework import permissions
 
-
 __all__ = (
     'IsUserOrReadOnly',
     'IsOwnerOrReadOnly',

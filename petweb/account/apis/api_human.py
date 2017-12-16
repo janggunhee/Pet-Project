@@ -20,7 +20,6 @@ from utils.permissions import IsUserOrReadOnly
 from .. import tasks
 from ..serializers import *
 
-
 User = get_user_model()
 
 __all__ = (
@@ -42,30 +41,35 @@ class Signup(APIView):
         serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # 이메일 전송 프로세스의 시작
             # user = 시리얼라이저된 데이터
             user = serializer.data
-            # 현재 사이트의 메인 도메인을 가져온다
-            current_site = get_current_site(request)
-            # 이메일 수신자: 가입한 회원
-            to_email = user['user']['email']
-            # 이메일 제목
-            subject = '[Wooltari] 회원가입 인증 이메일'
-            # 이메일 내용: 템플릿을 렌더링해 전송한다
-            message = render_to_string('user_activate_email.html', {
-                # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
-                'token': urlsafe_base64_encode(force_bytes(user['token']))
-            })
-            # 이메일 전송 메소드
-            # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
-            tasks.send_mail_task.delay(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                to_email,
-            )
+
+            # 이메일 전송 함수
+            def sending_email(instance):
+                # 현재 사이트의 메인 도메인을 가져온다
+                current_site = get_current_site(request)
+                # 이메일 수신자: 가입한 회원
+                to_email = instance['user']['email']
+                # 이메일 제목
+                subject = '[Wooltari] 회원가입 인증 이메일'
+                # 이메일 내용: 템플릿을 렌더링해 전송한다
+                message = render_to_string('user_activate_email.html', {
+                    # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(instance['user']['pk'])),
+                    'token': urlsafe_base64_encode(force_bytes(User.objects.get(pk=instance['user']['pk']).token))
+                })
+                # 이메일 전송 메소드
+                # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
+                tasks.send_mail_task.delay(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    to_email,
+                )
+
+            sending_email(user)
+
             return Response(user, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -265,7 +269,7 @@ class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     # 권한: utils.permissons.py에 작성한 커스텀 퍼미션
     # SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS') 외에는 본인만이 건드릴 수 있도록 권한 조정
-    permission_classes = (IsUserOrReadOnly, )
+    permission_classes = (IsUserOrReadOnly,)
     # url에서 받는 키워드 인자 값: 'user_pk'
     lookup_url_kwarg = 'user_pk'
 
