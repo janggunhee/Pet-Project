@@ -82,7 +82,7 @@ class SignupSerializer(serializers.ModelSerializer):
             if instance.image.name == 'placeholder/placeholder_human.png':
                 return instance
             new_user = User.objects.get(pk=instance.pk)
-            raw_image = new_user.image.path
+            raw_image = new_user.image.name
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)
 
@@ -184,7 +184,7 @@ class EditSerializer(serializers.ModelSerializer):
             elif '_thumb' in instance.image.name:
                 return instance
             new_user = User.objects.get(pk=instance.pk)
-            raw_image = new_user.image.path
+            raw_image = new_user.image.name
             img = Image.open(raw_image)
             img.thumbnail((300, 300), Image.ANTIALIAS)
 
