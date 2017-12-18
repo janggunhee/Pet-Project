@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from medical.models import PetMedical, PetSize, PetVaccine, PetOperation, VaccineInfo
+from medical.models import PetMedical, PetSize, PetOperation, Vaccine, VaccineInoculation
 
 admin.site.register(PetMedical)
 admin.site.register(PetSize)
 admin.site.register(PetOperation)
-admin.site.register(PetVaccine)
-admin.site.register(VaccineInfo)
+admin.site.register(Vaccine)
+admin.site.register(VaccineInoculation)
