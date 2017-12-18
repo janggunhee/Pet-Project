@@ -109,6 +109,8 @@ class Login(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
+        # 입력되는 device_token 값을 저장하기 위해 프로세스 추가
+        device_token = request.data.get('device_token', '')
         # 유저가 인증 상태인지 아닌지 체크한다
         # check_is_active = User.objects.get(email=email).is_active
         # # 미인증 회원이면 다음과 같은 메시지를 보낸다
@@ -123,6 +125,10 @@ class Login(APIView):
             password=password,
         )
         if user:
+            # 로그인 시 디바이스 토큰이 들어왔다면 저장한다
+            if not device_token == '':
+                user.device_token = device_token
+                user.save()
             # authenticate가 완료되면 user 정보를 생성한다
             # 'token'키에는 유저가 지니고 있는 토큰 값을 넣는다
             # 튜플로 오기 때문에 'token'과 'token_created'로 언패킹해서 값을 담는다
