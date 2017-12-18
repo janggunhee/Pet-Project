@@ -1,12 +1,10 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
-from versatileimagefield.fields import VersatileImageField
 
-from account.models.thumbnail_base import ThumbnailBaseModel
+from utils import CustomImageField
 
 User = get_user_model()
-
 
 __all__ = (
     'PetSpecies',
@@ -78,15 +76,13 @@ class PetBreed(models.Model):
         return self.breeds_name
 
 
-class Pet(ThumbnailBaseModel, models.Model):
-    # 썸네일 저장 위치를 User/Pet으로 나눔
-    image = VersatileImageField(
-        upload_to='Pets',
-        width_field='width',
-        height_field='height',
-        null=True,
+class Pet(models.Model):
+    # 썸네일 필드
+    image = CustomImageField(
+        upload_to='thumbnail/pet',
+        blank=True,
+        default_static_image='placeholder/placeholder_pet.png',
     )
-
     # 동물의 주인
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -136,7 +132,7 @@ class Pet(ThumbnailBaseModel, models.Model):
     USERNAME_FIELD = 'name'
 
     class Meta:
-        ordering = ('-pk', )
+        ordering = ('-pk',)
 
     def __str__(self):
         return self.name

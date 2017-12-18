@@ -20,7 +20,6 @@ from django.contrib import admin
 
 from account import views
 
-
 # 메인 화면 및 관리자 페이지
 urlpatterns = [
     # 메인 페이지
@@ -39,8 +38,14 @@ urlpatterns += [
     url(r'profile/', include('account.urls.url_profile', namespace='profile')),
 ]
 
-# media
+# media_files
 urlpatterns += static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT,
+)
+
+# static_files
+urlpatterns += static(
+    settings.STATIC_URL,
+    document_root=settings.STATIC_ROOT,
 )
