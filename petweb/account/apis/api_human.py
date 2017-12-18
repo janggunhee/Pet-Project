@@ -205,6 +205,8 @@ class FacebookLogin(APIView):
         debug_token_info = get_debug_token_info(request.data['access_token'])
         # access_token 값으로 user_info 결과를 받아옴
         user_info = get_user_info(request.data['access_token'])
+        # device_token
+        device_token = request.data.get('device_token', '')
 
         # 페이스북이 전달한 user_id와 프론트에서 전달받은 user_id가 일치하지 않으면 오류 발생
         if debug_token_info.user_id != request.data['facebook_user_id']:
@@ -227,6 +229,11 @@ class FacebookLogin(APIView):
             )
             # 유저 강제 활성화
             user.is_active = True
+            user.save()
+
+        # 디바이스 토큰이 들어온다면 디바이스 토큰 값을 넣어준다
+        if not device_token == '':
+            user.device_token = device_token
             user.save()
 
         # 유저가 있다면 serialize 데이터 전달
