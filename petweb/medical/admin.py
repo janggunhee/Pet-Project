@@ -78,7 +78,6 @@ class VaccineAdmin(BaseUserAdmin):
 
     list_display = ['pk', 'name', 'turn', 'period', 'species']
     list_display_links = ['name']
-    list_editable = ['turn', 'period']
     list_filter = ['species', 'name']
 
     fieldsets = (
