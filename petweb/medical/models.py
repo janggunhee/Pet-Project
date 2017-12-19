@@ -51,9 +51,11 @@ class PetSize(models.Model):
         null=True, blank=True
     )
     # 동물의 사이즈 생성일
-    create_date = models.DateTimeField(
+    created_date = models.DateField(
         auto_now_add=True,
     )
+
+    USERNAME_FIELD = 'medical'
 
     def __str__(self):
         return self.medical.pet.name
@@ -149,10 +151,21 @@ class VaccineInoculation(models.Model):
         default=1,
     )
     # 백신 맞은 날짜
-    inoculated_date = models.DateField(
-        # 생성 일자 자동 기록
-        auto_now_add=True,
+    inoculated_date = models.DateTimeField(
+        blank=True,
+        null=True,
     )
+    # 백신 맞은 병원
+    hospital = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+    # 알람 체크 여부
+    is_alarm = models.BooleanField(
+        default=False,
+    )
+
+    USERNAME_FIELD = 'vaccine'
 
     def __str__(self):
         return f'{self.medical.pet.name}: {self.vaccine.name}'
