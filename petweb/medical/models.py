@@ -23,6 +23,8 @@ class PetMedical(models.Model):
         primary_key=True,
     )
 
+    USERNAME_FIELD = 'pet'
+
     def __str__(self):
         return self.pet.name
 
