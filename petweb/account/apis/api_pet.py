@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 
-from utils import pagination, pet_age, \
-    permissions as custom_permissions
+from utils.rest_framework import pagination, permissions as custom_permissions
+from utils.functions import pet_age
 from ..models import Pet, PetSpecies, PetBreed
 from ..serializers import *
 
