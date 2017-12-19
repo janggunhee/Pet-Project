@@ -17,7 +17,7 @@ class Command(BaseCommand):
                     species=PetSpecies.objects.get(pet_type=d.species),
                     name=d.name,
                     turn=d.turn,
-                    period=timedelta(weeks=d.period),
+                    period=timedelta(days=d.period),
                 )
             total_dog_vaccine = len(Vaccine.objects.filter(species__pet_type='dog'))
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
                     species=PetSpecies.objects.get(pet_type=c.species),
                     name=c.name,
                     turn=c.turn,
-                    period=timedelta(weeks=c.period),
+                    period=timedelta(days=c.period),
                 )
             total_cat_vaccine = len(Vaccine.objects.filter(species__pet_type='cat'))
 
