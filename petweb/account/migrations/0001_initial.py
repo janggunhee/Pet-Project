@@ -4,9 +4,8 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
 import django.utils.timezone
-import utils.custom_image_field
+import utils.django.custom_image_field
 
 
 class Migration(migrations.Migration):
@@ -26,7 +25,7 @@ class Migration(migrations.Migration):
                 ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
                 ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
                 ('user_type', models.CharField(choices=[('f', 'facebook'), ('g', 'google'), ('d', 'django')], default='d', max_length=1)),
-                ('image', utils.custom_image_field.CustomImageField(blank=True, max_length=255, upload_to='thumbnail/user')),
+                ('image', utils.django.custom_image_field.CustomImageField(blank=True, max_length=255, upload_to='thumbnail/user')),
                 ('email', models.EmailField(blank=True, max_length=255, unique=True, verbose_name='email_address')),
                 ('social_id', models.CharField(blank=True, max_length=255, verbose_name='social_id')),
                 ('nickname', models.CharField(max_length=255, unique=True, verbose_name='nickname')),
@@ -46,7 +45,7 @@ class Migration(migrations.Migration):
             name='Pet',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', utils.custom_image_field.CustomImageField(blank=True, upload_to='thumbnail/pet')),
+                ('image', utils.django.custom_image_field.CustomImageField(blank=True, upload_to='thumbnail/pet')),
                 ('name', models.CharField(max_length=100)),
                 ('birth_date', models.DateField()),
                 ('gender', models.CharField(choices=[('male', '수컷'), ('female', '암컷')], max_length=10)),

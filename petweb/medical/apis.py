@@ -1,4 +1,3 @@
-from django.shortcuts import get_list_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,6 +29,6 @@ class Hospital(APIView):
 
             return Response(data, status=status.HTTP_200_OK)
         result = {
-            "message": "병원 검색에 실패했습니다. 위도/경도 값을 확인해 주세요.",
+            "message": "The hospital search failed. Please check latitude / longitude value.",
         }
         return Response(result, status=status.HTTP_400_BAD_REQUEST)
