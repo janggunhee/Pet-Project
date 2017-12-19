@@ -36,6 +36,8 @@ urlpatterns += [
     # 회원 프로필 url → account.urls.url_profile로 연결됨
     # 회원 프로필, 정보(닉네임/비밀번호) 수정, 회원 삭제 기능 수행
     url(r'profile/', include('account.urls.url_profile', namespace='profile')),
+    # 펫 의료정보
+    url(r'medical/', include('medical.urls', namespace='medical')),
 ]
 
 # media_files
