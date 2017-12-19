@@ -5,9 +5,10 @@ import os
 import json
 
 from django.conf import settings
+from django.http import JsonResponse
 
 __all__ = [
-    'nearbysearch',
+    'near_by_search',
 ]
 
 # 실험값 :  모두 string으로 가정하지만  int, float에 대비하여
@@ -80,11 +81,11 @@ def get_distance(lat, lng, place_id):
     return distance
 
 
-# 찾으려는 장소
-keyword = "24시 동물병원"
+# # 찾으려는 장소
+# keyword = "24시 동물병원"
 
 
-def nearbysearch(lat, lng, keyword, num_of_searches=20):
+def near_by_search(lat, lng, num_of_searches=20):
     """
     사용자의 위치에서 가장 가까운 동물병원들을  찾기
     20개 묶음으로 리스트 형성됨 (20개 미만이면 그 숫자)
@@ -101,7 +102,7 @@ def nearbysearch(lat, lng, keyword, num_of_searches=20):
 
     params = {
         'location': lat + ',' + lng,
-        'keyword': keyword,
+        'keyword': "24시 동물병원",
         'rankby': "distance",
         'language': "ko",
         'key': key_place,
@@ -122,7 +123,7 @@ def nearbysearch(lat, lng, keyword, num_of_searches=20):
         phone = hospital_info.get('phone')
         # 거리 get_distance
         distance = get_distance(lat, lng, place_id)
-        print(name, address, phone, distance)
+        # print(name, address, phone, distance)
         data = {
             'name': name,
             'address': address,
@@ -132,5 +133,5 @@ def nearbysearch(lat, lng, keyword, num_of_searches=20):
             'h_lng': h_lng
         }
         result_list.append(SearchInfo(**data))
-    print('검색 개수:  ', len(res.json()['results']))
+    # print('검색 개수:  ', len(res.json()['results']))
     return result_list
