@@ -63,7 +63,7 @@ class PetSize(models.Model):
 # 참고 (장고 공식 문서):
 # https://docs.djangoproject.com/en/1.11/ref/models/fields/#django.db.models.FileField.upload_to
 def user_directory_path(instance, filename):
-    return f'pet_{instance.pet.id}/{filename}'
+    return f'operation/pet_{instance.medical.pet.id}/{filename}'
 
 
 # 동물의 수술 정보 모델
@@ -92,6 +92,8 @@ class PetOperation(models.Model):
         max_length=500,
         blank=True,
     )
+
+    USERNAME_FIELD = 'description'
 
     def __str__(self):
         return f'{self.medical.pet.name}: {self.description}'
@@ -123,6 +125,8 @@ class Vaccine(models.Model):
     period = models.DurationField(
         default=timedelta(weeks=4),
     )
+
+    USERNAME_FIELD = 'name'
 
     def __str__(self):
         return f'{self.species.pet_type}: {self.name}'
