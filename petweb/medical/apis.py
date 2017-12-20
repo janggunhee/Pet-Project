@@ -1,6 +1,5 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from utils import near_by_search
 from utils.rest_framework import pagination
@@ -10,9 +9,11 @@ from .serializers import HospitalSerializer
 
 # 주변 병원을 검색해주는 뷰
 class Hospital(generics.GenericAPIView):
+    pagination_class = pagination.StandardHospitalViewPagination
+
     def post(self, request, *args, **kwargs):
         serializer = HospitalSerializer(data=request.data)
-        pagination_class = pagination.StandardHospitalViewPagination
+
         if serializer.is_valid():
             result = near_by_search(
                 lat=serializer.data['lat'],
@@ -40,10 +41,8 @@ class Hospital(generics.GenericAPIView):
 
 # 펫이 맞은 백신을 검색해주는 뷰
 class PetVaccineInoculation(generics.RetrieveAPIView):
-
     def get_queryset(self):
         user = self.kwargs['user_pk']
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
         return instance.inoculation_set.all()
-
