@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from account.serializers import PetSpeciesField
 from .models import VaccineInoculation, Vaccine
 
 
@@ -11,6 +12,8 @@ class HospitalSerializer(serializers.Serializer):
 
 # 백신의 정보를 보여주는 시리얼라이저
 class VaccineInfoSerializer(serializers.ModelSerializer):
+    species = PetSpeciesField()
+
     class Meta:
         model = Vaccine
         fields = (
