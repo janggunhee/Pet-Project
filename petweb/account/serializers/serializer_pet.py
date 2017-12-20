@@ -4,8 +4,8 @@ from rest_framework import serializers
 from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
-from versatileimagefield.serializers import VersatileImageFieldSerializer
 
+from utils.functions.making_thumb import making_thumbnail
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
 from . import UserSerializer
@@ -90,11 +90,6 @@ class PetBreedField(serializers.RelatedField):
 
 # 펫의 내용을 보여주는 시리얼라이저
 class PetSerializer(serializers.ModelSerializer):
-    # thumbnail 이미지 처리
-    image = VersatileImageFieldSerializer(
-        sizes=[('thumbnail', 'crop__300x300'), ]
-    )
-
     # 펫 종류는 PetSpeciesSerializer로 가공된다
     species = PetSpeciesField()
     # 펫 품종은 PetBreedSerializer로 가공된다
@@ -122,10 +117,7 @@ class PetSerializer(serializers.ModelSerializer):
             'identified_number',  # 동물등록번호
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
-            'ages',
-        )
-        # 썸네일 이미지
-        fields += (
+            'ages',  # 나이
             'image',
         )
         read_only_fields = (
@@ -169,11 +161,19 @@ class PetCreateSerializer(serializers.ModelSerializer):
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
             'ages',
+            'image',
         )
         read_only_fields = (
             'pk',
             'ages',
         )
+
+    def create(self, validated_data):
+        created_pet = Pet.objects.create(**validated_data)
+
+        thumbnail_pet = making_thumbnail(created_pet)
+
+        return thumbnail_pet
 
     # 출력 형식을 커스터마이징
     def to_representation(self, instance):
@@ -220,7 +220,8 @@ class PetEditSerializer(serializers.ModelSerializer):
             'identified_number',  # 동물등록번호
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
-            'ages',
+            'ages',  # 나이
+            'image',
         )
         read_only_fields = (
             'pk',
@@ -283,7 +284,9 @@ class PetEditSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
 
-        return instance
+        thumbnail_pet = making_thumbnail(instance)
+
+        return thumbnail_pet
 
 
 # 사용자가 강아지/고양이를 선택하면 펫 품종을 보여주는 시리얼라이저

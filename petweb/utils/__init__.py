@@ -1,4 +1,3 @@
-from .pet_age import *
-from .pagination import *
-from .permissions import *
-from .search_hospital import *
+from .functions import *
+from .rest_framework import *
+from .django import *

@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 
-from utils import pagination, pet_age, \
-    permissions as custom_permissions
+from utils.rest_framework import pagination, permissions as custom_permissions
+from utils.functions import pet_age
 from ..models import Pet, PetSpecies, PetBreed
 from ..serializers import *
 
@@ -39,7 +39,7 @@ class PetListCreate(generics.GenericAPIView):
     # 페이지네이션: utils.pagination에 있는 pagination 사용
     pagination_class = pagination.StandardPetViewPagination
     # 권한: 소유주 이외에는 읽기만 가능
-    permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly,)
     # url 키워드 인자: user_pk
     lookup_url_kwarg = 'user_pk'
 
@@ -123,7 +123,7 @@ class PetListCreate(generics.GenericAPIView):
 class PetAge(generics.GenericAPIView):
     queryset = Pet.objects.all()
     serializer_class = PetSerializer
-    permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly,)
     lookup_field = ('owner_id', 'pk')
     lookup_url_kwarg = ('user_pk', 'pet_pk')
 
@@ -198,7 +198,7 @@ class PetAge(generics.GenericAPIView):
 # 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
 class PetProfile(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pet.objects.all()
-    permission_classes = (custom_permissions.IsOwnerOrReadOnly, )
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly,)
     lookup_field = ('owner_id', 'pk')
     lookup_url_kwarg = ('user_pk', 'pet_pk')
 

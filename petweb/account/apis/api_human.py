@@ -16,10 +16,9 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.permissions import IsUserOrReadOnly
+from utils.rest_framework.permissions import IsUserOrReadOnly
 from .. import tasks
 from ..serializers import *
-
 
 User = get_user_model()
 
@@ -30,7 +29,6 @@ __all__ = (
     'FacebookLogin',
     'Logout',
     'UserProfileUpdateDestroy',
-
     'ResetPassword',
 )
 
@@ -42,30 +40,35 @@ class Signup(APIView):
         serializer = SignupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # 이메일 전송 프로세스의 시작
             # user = 시리얼라이저된 데이터
             user = serializer.data
-            # 현재 사이트의 메인 도메인을 가져온다
-            current_site = get_current_site(request)
-            # 이메일 수신자: 가입한 회원
-            to_email = user['user']['email']
-            # 이메일 제목
-            subject = '[Wooltari] 회원가입 인증 이메일'
-            # 이메일 내용: 템플릿을 렌더링해 전송한다
-            message = render_to_string('user_activate_email.html', {
-                # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user['user']['pk'])),
-                'token': urlsafe_base64_encode(force_bytes(user['token']))
-            })
-            # 이메일 전송 메소드
-            # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
-            tasks.send_mail_task.delay(
-                subject,
-                message,
-                settings.EMAIL_HOST_USER,
-                to_email,
-            )
+
+            # 이메일 전송 함수
+            def sending_email(instance):
+                # 현재 사이트의 메인 도메인을 가져온다
+                current_site = get_current_site(request)
+                # 이메일 수신자: 가입한 회원
+                to_email = instance['user']['email']
+                # 이메일 제목
+                subject = '[Wooltari] 회원가입 인증 이메일'
+                # 이메일 내용: 템플릿을 렌더링해 전송한다
+                message = render_to_string('user_activate_email.html', {
+                    # 도메인, 바이트 단위로 암호화된 유저 primary key, token이 이메일에 담긴다
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(instance['user']['pk'])),
+                    'token': urlsafe_base64_encode(force_bytes(User.objects.get(pk=instance['user']['pk']).token))
+                })
+                # 이메일 전송 메소드
+                # celery tasks가 함수를 실행하도록 tasks.py에 옮겨둠
+                tasks.send_mail_task.delay(
+                    subject,
+                    message,
+                    settings.EMAIL_HOST_USER,
+                    to_email,
+                )
+
+            sending_email(user)
+
             return Response(user, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -106,20 +109,26 @@ class Login(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', '')
         password = request.data.get('password', '')
+        # 입력되는 device_token 값을 저장하기 위해 프로세스 추가
+        device_token = request.data.get('device_token', '')
         # 유저가 인증 상태인지 아닌지 체크한다
-        check_is_active = User.objects.get(email=email).is_active
-        # 미인증 회원이면 다음과 같은 메시지를 보낸다
-        if not check_is_active:
-            data = {
-                'message': 'Please complete the member verification process.'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        # check_is_active = User.objects.get(email=email).is_active
+        # # 미인증 회원이면 다음과 같은 메시지를 보낸다
+        # if not check_is_active:
+        #     data = {
+        #         'message': 'Please complete the member verification process.'
+        #     }
+        #     return Response(data, status=status.HTTP_400_BAD_REQUEST)
         # 장고가 기본으로 제공하는 authenticate
         user = authenticate(
             email=email,
             password=password,
         )
         if user:
+            # 로그인 시 디바이스 토큰이 들어왔다면 저장한다
+            if not device_token == '':
+                user.device_token = device_token
+                user.save()
             # authenticate가 완료되면 user 정보를 생성한다
             # 'token'키에는 유저가 지니고 있는 토큰 값을 넣는다
             # 튜플로 오기 때문에 'token'과 'token_created'로 언패킹해서 값을 담는다
@@ -196,6 +205,8 @@ class FacebookLogin(APIView):
         debug_token_info = get_debug_token_info(request.data['access_token'])
         # access_token 값으로 user_info 결과를 받아옴
         user_info = get_user_info(request.data['access_token'])
+        # device_token
+        device_token = request.data.get('device_token', '')
 
         # 페이스북이 전달한 user_id와 프론트에서 전달받은 user_id가 일치하지 않으면 오류 발생
         if debug_token_info.user_id != request.data['facebook_user_id']:
@@ -218,6 +229,11 @@ class FacebookLogin(APIView):
             )
             # 유저 강제 활성화
             user.is_active = True
+            user.save()
+
+        # 디바이스 토큰이 들어온다면 디바이스 토큰 값을 넣어준다
+        if not device_token == '':
+            user.device_token = device_token
             user.save()
 
         # 유저가 있다면 serialize 데이터 전달
@@ -265,7 +281,7 @@ class UserProfileUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     # 권한: utils.permissons.py에 작성한 커스텀 퍼미션
     # SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS') 외에는 본인만이 건드릴 수 있도록 권한 조정
-    permission_classes = (IsUserOrReadOnly, )
+    permission_classes = (IsUserOrReadOnly,)
     # url에서 받는 키워드 인자 값: 'user_pk'
     lookup_url_kwarg = 'user_pk'
 

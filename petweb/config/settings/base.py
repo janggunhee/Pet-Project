@@ -53,6 +53,11 @@ ALLOWED_HOSTS = [
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
 
+# automatically createsuperuser
+SUPERUSER_EMAIL = config_secret_common['django']['superuser_email']
+SUPERUSER_PASSWORD = config_secret_common['django']['superuser_password']
+
+
 # facebook authentication 추가
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -120,36 +125,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
-    'versatileimagefield',
     # User app
     'account',
     # Pet medical app
     'medical',
 ]
-
-VERSATILEIMAGEFIELD_SETTINGS = {
-    # 이미지 캐시 저장기간(초):  2592000초 = 30일
-    'cache_length': 2592000,
-    # 이미지 캐시의 이름
-    'cache_name': 'versatileimagefield_cache',
-    # The save quality of modified JPEG images. More info here:
-    # https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html#jpeg
-    # Defaults to 70
-    'jpeg_resize_quality': 85,
-    # 잘려진 이미지를 저장할 디렉토리 이름
-    'sized_directory_name': 'thumbnails',
-    # 필터링한 이미지를 저장할 디렉토리 이름
-    'filtered_directory_name': '__filtered__',
-    # 이미지를 등록하지 않았을 경우 디폴트 이미지를 저장할 디렉토리 이름
-    'placeholder_directory_name': '__placeholder__',
-    # (자르고 필터링하는 등)요구한대로 이미지를 만들 것인지 여부
-    # 이것을 False로 하면 이미지 처리 속도가 높아진다.
-    'create_images_on_demand': True,
-
-    'image_key_post_processor': None,
-    'progressive_jpeg': False
-}
-
 
 # rest_framework settings
 REST_FRAMEWORK = {
@@ -161,7 +141,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

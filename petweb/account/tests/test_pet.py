@@ -10,7 +10,6 @@ from ..apis import PetListCreate
 
 User = get_user_model()
 
-
 __all__ = (
     'PetCreateListTest',
     'PetProfileTest',
@@ -80,7 +79,7 @@ class PetCreateListTest(APILiveServerTestCase):
         token = dummy_user.token
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
 
-        #입력할 펫의 정보
+        # 입력할 펫의 정보
         input_data = {
             'name': 'dummy_pet',
             'birth_date': '2014-04-15',
@@ -123,7 +122,7 @@ class PetCreateListTest(APILiveServerTestCase):
         dummy_cat = Pet.objects.create(
             owner=dummy_user,
             name='cat_1',
-            birth_date= datetime.strptime('2017-01-01', '%Y-%m-%d').date(),
+            birth_date=datetime.strptime('2017-01-01', '%Y-%m-%d').date(),
             gender='male',
             body_color='brown',
             species=dummy_cat_species,
