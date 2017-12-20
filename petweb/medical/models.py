@@ -101,7 +101,7 @@ class PetOperation(models.Model):
         return f'{self.medical.pet.name}: {self.description}'
 
 
-# 예방접종 정보 모델
+# 예방접종 기본 정보 모델
 class Vaccine(models.Model):
     # 동물 종류 (dog/cat)
     species = models.ForeignKey(
@@ -134,6 +134,7 @@ class Vaccine(models.Model):
         return f'{self.species.pet_type}: {self.name}'
 
 
+# 펫의 예방접종 정보 모델
 class VaccineInoculation(models.Model):
     # 어떤 동물의 의학 정보인가
     medical = models.ForeignKey(

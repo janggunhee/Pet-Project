@@ -4,6 +4,7 @@ from . import apis
 
 # 의료정보 관련
 urlpatterns = [
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/$', apis.PetVaccineInoculation.as_view(), name='vaccine'),
 
 ]
 
