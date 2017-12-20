@@ -18,7 +18,7 @@ class PetMedical(models.Model):
     # account.model_pet의 Pet 모델에서 상속
     pet = models.OneToOneField(
         Pet,
-        related_name='pet',
+        related_name='pet_set',
         on_delete=models.CASCADE,
         primary_key=True,
     )
@@ -34,7 +34,7 @@ class PetSize(models.Model):
     # 동물의 신체 사이즈 (몸무게, 몸길이, 가슴둘레, 목둘레)
     medical = models.ForeignKey(
         PetMedical,
-        related_name='medical_size',
+        related_name='pet_size_set',
         on_delete=models.CASCADE,
     )
 
@@ -72,7 +72,7 @@ def user_directory_path(instance, filename):
 class PetOperation(models.Model):
     medical = models.ForeignKey(
         PetMedical,
-        related_name='medical_oper',
+        related_name='operation_set',
         on_delete=models.CASCADE,
     )
     # 수술 상태 사진
@@ -106,7 +106,7 @@ class Vaccine(models.Model):
     # 동물 종류 (dog/cat)
     species = models.ForeignKey(
         PetSpecies,
-        related_name='species',
+        related_name='species_set',
         on_delete=models.CASCADE,
     )
     # 의학 정보와 many-to-many relationship
@@ -145,6 +145,7 @@ class VaccineInoculation(models.Model):
     # 어떤 백신을 맞았는가
     vaccine = models.ForeignKey(
         Vaccine,
+        related_name='vaccine_set',
         on_delete=models.CASCADE,
     )
     # 백신 접종 횟수
