@@ -39,7 +39,6 @@ class VaccineInfoSerializer(serializers.ModelSerializer):
 
 # 동물이 맞은 백신 정보를 보여주는 시리얼라이저
 class VaccineInoculationSerializer(serializers.ModelSerializer):
-    medical = serializers.Model
     vaccine = VaccineInfoField()
     num_of_times = serializers.IntegerField()
     inoculated_date = serializers.DateTimeField(format=api_settings.DATETIME_FORMAT)
@@ -49,15 +48,11 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
     class Meta:
         model = VaccineInoculation
         fields = (
-            'medical',
             'vaccine',
             'num_of_times',
             'inoculated_date',
             'hospital',
             'is_alarm',
-        )
-        read_only_fields = (
-            'medical',
         )
 
     def to_representation(self, instance):
@@ -67,3 +62,18 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
             'inoculation_info': ret
         }
         return data
+
+
+# 동물 의료 정보 디테일 시리얼라이저
+class PetMedicalDetailSerializer(serializers.ModelSerializer):
+    pet = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    # inoculation_set = serializers.StringRelatedField(many=True)
+    inoculation_set = VaccineInoculationSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = PetMedical
+
+        fields = (
+            'pet',
+            'inoculation_set',
+        )

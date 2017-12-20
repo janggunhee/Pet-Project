@@ -5,7 +5,10 @@ from rest_framework.views import APIView
 from utils.functions import near_by_search
 from utils.rest_framework import permissions
 from .models import PetMedical, Vaccine
-from .serializers import HospitalSerializer, VaccineInoculationSerializer, VaccineInfoSerializer
+from .serializers import HospitalSerializer, \
+    VaccineInoculationSerializer, \
+    VaccineInfoSerializer, \
+    PetMedicalDetailSerializer
 
 
 # 주변 병원을 검색해주는 뷰
@@ -61,3 +64,14 @@ class PetVaccineInoculation(generics.ListCreateAPIView):
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
         return instance.inoculation_set.all()
+
+
+# 동물 의료 정보 디테일 뷰
+class PetMedicalDetail(generics.RetrieveAPIView):
+    serializer_class = PetMedicalDetailSerializer
+    lookup_field = 'pet_id'
+    lookup_url_kwarg = 'pet_pk'
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        return PetMedical.objects.filter(pet__owner_id=user)
