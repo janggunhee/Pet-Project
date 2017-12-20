@@ -5,8 +5,7 @@ from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
 
-from utils.making_thumb import making_thumbnail
-from .. import tasks
+from utils.functions.making_thumb import making_thumbnail
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
 from . import UserSerializer

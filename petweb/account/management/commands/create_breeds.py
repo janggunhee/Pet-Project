@@ -1,7 +1,7 @@
 from django.core.management import BaseCommand
 
 from ...models import PetBreed, PetSpecies
-from utils import pet_age
+from utils.functions import pet_age
 
 
 class Command(BaseCommand):

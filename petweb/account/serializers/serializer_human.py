@@ -2,8 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from utils.making_thumb import making_thumbnail
-from .. import tasks
+from utils.functions.making_thumb import making_thumbnail
 
 User = get_user_model()
 
