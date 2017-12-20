@@ -37,9 +37,13 @@ class PetSize(models.Model):
         related_name='pet_size_set',
         on_delete=models.CASCADE,
     )
+    # 목표 체중
+    goal_weight = models.FloatField(
+        null=True, blank=True,
+    )
 
     # 동물의 몸무게
-    weight = models.FloatField(
+    current_weight = models.FloatField(
         null=True, blank=True
     )
     # 동물의 가슴둘레

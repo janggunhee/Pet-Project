@@ -17,7 +17,8 @@ class PetSizeForm(forms.ModelForm):
         model = PetSize
         fields = (
             'medical',
-            'weight',
+            'goal_weight',
+            'current_weight',
             'chest',
             'neck',
         )

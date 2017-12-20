@@ -38,11 +38,11 @@ class PetSizeAdmin(BaseUserAdmin):
 
     fieldsets = (
         (None, {'fields': ('medical',)}),
-        ('size info', {'fields': ('weight', 'chest', 'neck')}),
+        ('size info', {'fields': ('goal_weight', 'current_weight', 'chest', 'neck')}),
     )
     add_fieldsets = (
         (None, {'fields': ('medical',)}),
-        ('size info', {'fields': ('weight', 'chest', 'neck')}),
+        ('size info', {'fields': ('goal_weight', 'current_weight', 'chest', 'neck')}),
     )
 
     ordering = ('-pk',)
