@@ -51,7 +51,7 @@ class VaccineInfoList(generics.GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# 펫이 맞은 백신을 검색해주는 뷰
+# 펫이 맞은 백신 리스트 / 생성 뷰
 class PetVaccineInoculation(generics.ListCreateAPIView):
     serializer_class = VaccineInoculationSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)

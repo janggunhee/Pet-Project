@@ -1,13 +1,26 @@
 from rest_framework import serializers
+from rest_framework.settings import api_settings
 
 from account.serializers import PetSpeciesField
-from .models import VaccineInoculation, Vaccine
+from .models import VaccineInoculation, Vaccine, PetMedical
 
 
 # 주변 병원 검색 시리얼라이저
 class HospitalSerializer(serializers.Serializer):
     lat = serializers.CharField()
     lng = serializers.CharField()
+
+
+# 백신 이름을 보여주는 관계 필드
+class VaccineInfoField(serializers.RelatedField):
+    queryset = Vaccine.objects.all()
+
+    def to_representation(self, instance):
+        return instance.name
+
+    def to_internal_value(self, data):
+        pet_type, vaccine_name = data.replace(' ', '').split(',')
+        return Vaccine.objects.filter(species__pet_type=pet_type).get(name=vaccine_name)
 
 
 # 백신의 정보를 보여주는 시리얼라이저
@@ -26,6 +39,13 @@ class VaccineInfoSerializer(serializers.ModelSerializer):
 
 # 동물이 맞은 백신 정보를 보여주는 시리얼라이저
 class VaccineInoculationSerializer(serializers.ModelSerializer):
+    medical = serializers.Model
+    vaccine = VaccineInfoField()
+    num_of_times = serializers.IntegerField()
+    inoculated_date = serializers.DateTimeField(format=api_settings.DATETIME_FORMAT)
+    hospital = serializers.CharField(allow_blank=True)
+    is_alarm = serializers.BooleanField(default=False)
+
     class Meta:
         model = VaccineInoculation
         fields = (
@@ -35,6 +55,9 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
             'inoculated_date',
             'hospital',
             'is_alarm',
+        )
+        read_only_fields = (
+            'medical',
         )
 
     def to_representation(self, instance):
