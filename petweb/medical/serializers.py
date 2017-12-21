@@ -76,6 +76,7 @@ class OperationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
         fields = (
+            'pk',
             'image',
             'date',
             'description',
@@ -93,6 +94,7 @@ class BodySizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BodySize
         fields = (
+            'pk',
             'goal_weight',
             'current_weight',
             'chest',

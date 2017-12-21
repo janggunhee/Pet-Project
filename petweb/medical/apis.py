@@ -109,7 +109,15 @@ class OperationListCreate(generics.ListCreateAPIView):
 
 # 펫의 수술 정보 디테일 / 수정 / 삭제 뷰
 class OperationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    pass
+    serializer_class = InoculationSerializer
+    permission_classes = (permissions.IsHealthInfoOwnerOrReadOnly,)
+    lookup_url_kwarg = 'oper_pk'
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        return instance.operation_set.all()
 
 
 # 펫의 신체 사이즈 리스트 / 생성 뷰
