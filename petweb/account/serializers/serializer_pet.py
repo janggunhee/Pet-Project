@@ -16,7 +16,7 @@ User = get_user_model()
 __all__ = (
     'PetSpeciesField',
     'PetBreedField',
-    'PetCreateSerializer',
+    'PetSerializer',
     'PetBreedSerializer',
 )
 
@@ -88,7 +88,7 @@ class PetBreedField(serializers.RelatedField):
 
 
 # 펫의 내용을 보여주는 시리얼라이저
-class PetCreateSerializer(serializers.ModelSerializer):
+class PetSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100)  # 이름
     # http://www.django-rest-framework.org/api-guide/fields/#datefield
     birth_date = serializers.DateField(format=api_settings.DATE_FORMAT)  # 생년월일

@@ -21,7 +21,7 @@ __all__ = (
 
 # 펫 리스트 / 생성 뷰
 class PetListCreate(generics.ListCreateAPIView):
-    serializer_class = PetCreateSerializer
+    serializer_class = PetSerializer
     permission_classes = (permissions.IsUserOrReadOnly,)
     pagination_class = pagination.StandardPetViewPagination
 
@@ -38,7 +38,7 @@ class PetListCreate(generics.ListCreateAPIView):
 
 # 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
 class PetProfile(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = PetCreateSerializer
+    serializer_class = PetSerializer
     permission_classes = (permissions.IsOwnerOrReadOnly,)
     lookup_url_kwarg = 'pet_pk'
 
@@ -86,7 +86,7 @@ class PetAge(generics.GenericAPIView):
         # 이상 없으면 펫 객체 디테일을 생성
         # PetSerializer가 HyperlinkedidentifyField를 갖게 되어서
         # 시리얼라이저에 request를 전달해준다
-        serializer = PetCreateSerializer(instance, context={'request': request})
+        serializer = PetSerializer(instance, context={'request': request})
         # 펫의 생년월일
         pet_birth_date = pet_datetime_birth_date(serializer)
         # 펫의 나이에서 개월 수 제외하고 년도만 출력
