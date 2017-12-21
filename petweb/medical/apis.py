@@ -6,9 +6,9 @@ from utils.functions import near_by_search
 from utils.rest_framework import permissions
 from .models import PetMedical, Vaccine
 from .serializers import HospitalSerializer, \
-    VaccineInoculationSerializer, \
+    InoculationSerializer, \
     VaccineInfoSerializer, \
-    PetMedicalDetailSerializer, PetOperationSerializer, PetSizeSerializer
+    PetMedicalDetailSerializer, OperationSerializer, BodySizeSerializer
 
 
 # 주변 병원을 검색해주는 뷰
@@ -55,8 +55,8 @@ class VaccineInfoList(generics.GenericAPIView):
 
 
 # 펫이 맞은 백신 리스트 / 생성 뷰
-class PetVaccineInoculation(generics.ListCreateAPIView):
-    serializer_class = VaccineInoculationSerializer
+class InoculationListCreate(generics.ListCreateAPIView):
+    serializer_class = InoculationSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
 
     def get_queryset(self):
@@ -75,8 +75,8 @@ class PetVaccineInoculation(generics.ListCreateAPIView):
 
 
 # 펫이 맞은 백신 디테일 / 수정 / 삭제 뷰
-class PetVaccineInoculationUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = VaccineInoculationSerializer
+class InoculationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = InoculationSerializer
     permission_classes = (permissions.IsHealthInfoOwnerOrReadOnly,)
     lookup_url_kwarg = 'ino_pk'
 
@@ -88,8 +88,8 @@ class PetVaccineInoculationUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 
 # 펫의 수술 정보 리스트 / 생성 뷰
-class PetOperation(generics.ListCreateAPIView):
-    serializer_class = PetOperationSerializer
+class OperationListCreate(generics.ListCreateAPIView):
+    serializer_class = OperationSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
 
     def get_queryset(self):
@@ -107,9 +107,14 @@ class PetOperation(generics.ListCreateAPIView):
         serializer.save(medical=instance)
 
 
+# 펫의 수술 정보 디테일 / 수정 / 삭제 뷰
+class OperationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    pass
+
+
 # 펫의 신체 사이즈 리스트 / 생성 뷰
-class PetSize(generics.ListCreateAPIView):
-    serializer_class = PetSizeSerializer
+class BodySize(generics.ListCreateAPIView):
+    serializer_class = BodySizeSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
 
     def get_queryset(self):

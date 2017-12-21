@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.settings import api_settings
 
 from account.serializers import PetSpeciesField
-from .models import VaccineInoculation, Vaccine, PetMedical, PetOperation, PetSize
+from .models import Inoculation, Vaccine, PetMedical, Operation, BodySize
 
 
 # 주변 병원 검색 시리얼라이저
@@ -38,7 +38,7 @@ class VaccineInfoSerializer(serializers.ModelSerializer):
 
 
 # 동물이 맞은 백신 정보를 보여주는 시리얼라이저
-class VaccineInoculationSerializer(serializers.ModelSerializer):
+class InoculationSerializer(serializers.ModelSerializer):
     medical = serializers.CharField(read_only=True)
     vaccine = VaccineInfoField()
     num_of_times = serializers.IntegerField()
@@ -47,7 +47,7 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
     is_alarm = serializers.BooleanField(default=False)
 
     class Meta:
-        model = VaccineInoculation
+        model = Inoculation
         fields = (
             'medical',
             'pk',
@@ -68,13 +68,13 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
 
 
 # 동물의 수술 정보를 보여줘는 시리얼라이저
-class PetOperationSerializer(serializers.ModelSerializer):
+class OperationSerializer(serializers.ModelSerializer):
     date = serializers.DateField(format=api_settings.DATE_FORMAT, allow_null=True)
     description = serializers.CharField(max_length=70, required=True)
     comment = serializers.CharField(max_length=500, allow_blank=True)
 
     class Meta:
-        model = PetOperation
+        model = Operation
         fields = (
             'image',
             'date',
@@ -84,14 +84,14 @@ class PetOperationSerializer(serializers.ModelSerializer):
 
 
 # 동물의 신체 사이즈를 보여주는 시리얼라이저
-class PetSizeSerializer(serializers.ModelSerializer):
+class BodySizeSerializer(serializers.ModelSerializer):
     goal_weight = serializers.FloatField(min_value=0)
     current_weight = serializers.FloatField(min_value=0)
     chest = serializers.IntegerField(min_value=0)
     neck = serializers.IntegerField(min_value=0)
 
     class Meta:
-        model = PetSize
+        model = BodySize
         fields = (
             'goal_weight',
             'current_weight',
@@ -104,9 +104,9 @@ class PetSizeSerializer(serializers.ModelSerializer):
 # 동물 의료 정보 디테일 시리얼라이저
 class PetMedicalDetailSerializer(serializers.ModelSerializer):
     pet = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    inoculation_set = VaccineInoculationSerializer(read_only=True, many=True)
-    operation_set = PetOperationSerializer(read_only=True, many=True)
-    pet_size_set = PetSizeSerializer(read_only=True, many=True)
+    inoculation_set = InoculationSerializer(read_only=True, many=True)
+    operation_set = OperationSerializer(read_only=True, many=True)
+    pet_size_set = BodySizeSerializer(read_only=True, many=True)
 
     class Meta:
         model = PetMedical

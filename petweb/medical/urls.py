@@ -7,14 +7,15 @@ urlpatterns = [
     # 백신 정보 리스트
     url(r'vaccine-list/$', apis.VaccineInfoList.as_view(), name='vaccine-list'),
     # 동물이 맞은 백신 정보 리스트 / 생성
-    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/inoculations/$', apis.PetVaccineInoculation.as_view(), name='vaccine'),
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/inoculations/$', apis.InoculationListCreate.as_view(),
+        name='inoculation'),
     # 동물이 맞은 백신 정보 수정 / 삭제
     url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/inoculations/(?P<ino_pk>\d+)/$',
-        apis.PetVaccineInoculationUpdateDestroy.as_view(), name='vaccine-detail'),
+        apis.InoculationRetrieveUpdateDestroy.as_view(), name='inoculation-detail'),
     # 수술 정보 리스트 / 생성 뷰
-    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/operations/$', apis.PetOperation.as_view(), name='operation'),
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/operations/$', apis.OperationListCreate.as_view(), name='operation'),
     # 신체 사이즈 리스트 / 생성 뷰
-    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes', apis.PetSize.as_view(), name='pet-size'),
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes', apis.BodySize.as_view(), name='pet-size'),
     # 의료 정보 디테일 뷰
     url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/$', apis.PetMedicalDetail.as_view(), name='detail')
 ]

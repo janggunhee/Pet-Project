@@ -6,10 +6,10 @@ from account.models import Pet, PetSpecies
 
 __all__ = (
     'PetMedical',
-    'PetSize',
-    'PetOperation',
+    'BodySize',
+    'Operation',
     'Vaccine',
-    'VaccineInoculation',
+    'Inoculation',
 )
 
 
@@ -30,7 +30,7 @@ class PetMedical(models.Model):
 
 
 # 동물의 신체 정보 모델
-class PetSize(models.Model):
+class BodySize(models.Model):
     # 동물의 신체 사이즈 (몸무게, 몸길이, 가슴둘레, 목둘레)
     medical = models.ForeignKey(
         PetMedical,
@@ -73,7 +73,7 @@ def user_directory_path(instance, filename):
 
 
 # 동물의 수술 정보 모델
-class PetOperation(models.Model):
+class Operation(models.Model):
     medical = models.ForeignKey(
         PetMedical,
         related_name='operation_set',
@@ -117,7 +117,7 @@ class Vaccine(models.Model):
     inoculations = models.ManyToManyField(
         PetMedical,
         # intermediate model 위치
-        through='VaccineInoculation',
+        through='Inoculation',
     )
     # 백신 이름
     name = models.CharField(
@@ -139,7 +139,7 @@ class Vaccine(models.Model):
 
 
 # 펫의 예방접종 정보 모델
-class VaccineInoculation(models.Model):
+class Inoculation(models.Model):
     # 어떤 동물의 의학 정보인가
     medical = models.ForeignKey(
         PetMedical,

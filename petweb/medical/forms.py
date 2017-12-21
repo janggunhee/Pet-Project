@@ -1,7 +1,7 @@
 from django import forms
 
 from account.models import Pet
-from .models import PetMedical, PetOperation, Vaccine, VaccineInoculation, PetSize
+from .models import PetMedical, Operation, Vaccine, Inoculation, BodySize
 
 
 class PetMedicalForm(forms.ModelForm):
@@ -12,9 +12,9 @@ class PetMedicalForm(forms.ModelForm):
         )
 
 
-class PetSizeForm(forms.ModelForm):
+class BodySizeForm(forms.ModelForm):
     class Meta:
-        model = PetSize
+        model = BodySize
         fields = (
             'medical',
             'goal_weight',
@@ -24,9 +24,9 @@ class PetSizeForm(forms.ModelForm):
         )
 
 
-class PetOperationForm(forms.ModelForm):
+class OperationForm(forms.ModelForm):
     class Meta:
-        model = PetOperation
+        model = Operation
         fields = (
             'medical',
             'image',
@@ -47,9 +47,9 @@ class VaccineForm(forms.ModelForm):
         )
 
 
-class VaccineInoculationForm(forms.ModelForm):
+class InoculationForm(forms.ModelForm):
     class Meta:
-        model = VaccineInoculation
+        model = Inoculation
         fields = (
             'medical',
             'vaccine',
