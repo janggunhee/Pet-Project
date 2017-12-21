@@ -21,7 +21,7 @@ urlpatterns = [
 
     # 신체 사이즈 리스트 / 생성
     url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes', apis.BodySize.as_view(), name='pet-size'),
-    
+
     # 의료 정보 디테일 뷰
     url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/$', apis.PetMedicalDetail.as_view(), name='detail')
 ]

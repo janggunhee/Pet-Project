@@ -11,6 +11,8 @@ from .serializers import HospitalSerializer, \
     PetMedicalDetailSerializer, OperationSerializer, BodySizeSerializer
 
 
+# ---------- 병원 ---------- #
+
 # 주변 병원을 검색해주는 뷰
 class Hospital(APIView):
     def post(self, request, *args, **kwargs):
@@ -39,6 +41,8 @@ class Hospital(APIView):
         }
         return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
+
+# ---------- 백신 ---------- #
 
 # 백신 정보를 보여주는 뷰
 class VaccineInfoList(generics.GenericAPIView):
@@ -87,6 +91,8 @@ class InoculationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         return instance.inoculation_set.all()
 
 
+# ---------- 수술 ---------- #
+
 # 펫의 수술 정보 리스트 / 생성 뷰
 class OperationListCreate(generics.ListCreateAPIView):
     serializer_class = OperationSerializer
@@ -120,6 +126,8 @@ class OperationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         return instance.operation_set.all()
 
 
+# ---------- 사이즈 ---------- #
+
 # 펫의 신체 사이즈 리스트 / 생성 뷰
 class BodySize(generics.ListCreateAPIView):
     serializer_class = BodySizeSerializer
@@ -139,6 +147,8 @@ class BodySize(generics.ListCreateAPIView):
         self.check_object_permissions(self.request, instance)
         serializer.save(medical=instance)
 
+
+# ---------- 종합 ---------- #
 
 # 동물 의료 정보 디테일 뷰
 class PetMedicalDetail(generics.RetrieveAPIView):

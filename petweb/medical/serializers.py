@@ -5,11 +5,15 @@ from account.serializers import PetSpeciesField
 from .models import Inoculation, Vaccine, PetMedical, Operation, BodySize
 
 
+# ---------- 병원 ---------- #
+
 # 주변 병원 검색 시리얼라이저
 class HospitalSerializer(serializers.Serializer):
     lat = serializers.CharField()
     lng = serializers.CharField()
 
+
+# ---------- 백신 ---------- #
 
 # 백신 이름을 보여주는 관계 필드
 class VaccineInfoField(serializers.RelatedField):
@@ -67,6 +71,8 @@ class InoculationSerializer(serializers.ModelSerializer):
         return data
 
 
+# ---------- 수술 ---------- #
+
 # 동물의 수술 정보를 보여줘는 시리얼라이저
 class OperationSerializer(serializers.ModelSerializer):
     date = serializers.DateField(format=api_settings.DATE_FORMAT, allow_null=True)
@@ -84,6 +90,7 @@ class OperationSerializer(serializers.ModelSerializer):
         )
 
 
+# ---------- 사이즈 ---------- #
 # 동물의 신체 사이즈를 보여주는 시리얼라이저
 class BodySizeSerializer(serializers.ModelSerializer):
     goal_weight = serializers.FloatField(min_value=0)
@@ -103,6 +110,7 @@ class BodySizeSerializer(serializers.ModelSerializer):
         )
 
 
+# ---------- 종합 ---------- #
 # 동물 의료 정보 디테일 시리얼라이저
 class PetMedicalDetailSerializer(serializers.ModelSerializer):
     pet = serializers.SlugRelatedField(read_only=True, slug_field='name')
