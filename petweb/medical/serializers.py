@@ -50,6 +50,7 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
         model = VaccineInoculation
         fields = (
             'medical',
+            'pk',
             'vaccine',
             'num_of_times',
             'inoculated_date',

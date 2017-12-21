@@ -7,7 +7,10 @@ urlpatterns = [
     # 백신 정보 리스트
     url(r'vaccine-list/$', apis.VaccineInfoList.as_view(), name='vaccine-list'),
     # 동물이 맞은 백신 정보 리스트 / 생성
-    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/vaccines/$', apis.PetVaccineInoculation.as_view(), name='vaccine'),
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/inoculations/$', apis.PetVaccineInoculation.as_view(), name='vaccine'),
+    # 동물이 맞은 백신 정보 수정 / 삭제
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/inoculations/(?P<ino_pk>\d+)/$',
+        apis.PetVaccineInoculationUpdateDestroy.as_view(), name='vaccine-detail'),
     # 수술 정보 리스트 / 생성 뷰
     url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/operations/$', apis.PetOperation.as_view(), name='operation'),
     # 신체 사이즈 리스트 / 생성 뷰

@@ -1,4 +1,4 @@
-from rest_framework import status, generics
+from rest_framework import status, generics, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -72,6 +72,19 @@ class PetVaccineInoculation(generics.ListCreateAPIView):
         # May raise a permission denied
         self.check_object_permissions(self.request, instance)
         serializer.save(medical=instance)
+
+
+# 펫이 맞은 백신 디테일 / 수정 / 삭제 뷰
+class PetVaccineInoculationUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = VaccineInoculationSerializer
+    permission_classes = (permissions.IsHealthInfoOwnerOrReadOnly,)
+    lookup_url_kwarg = 'ino_pk'
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        return instance.inoculation_set.all()
 
 
 # 펫의 수술 정보 리스트 / 생성 뷰
