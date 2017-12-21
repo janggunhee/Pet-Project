@@ -129,7 +129,7 @@ class OperationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 # ---------- 사이즈 ---------- #
 
 # 펫의 신체 사이즈 리스트 / 생성 뷰
-class BodySize(generics.ListCreateAPIView):
+class BodySizeListCreate(generics.ListCreateAPIView):
     serializer_class = BodySizeSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
 
@@ -146,6 +146,19 @@ class BodySize(generics.ListCreateAPIView):
         # May raise a permission denied
         self.check_object_permissions(self.request, instance)
         serializer.save(medical=instance)
+
+
+# 펫의 신체 사이즈 디테일 / 수정 / 삭제 뷰
+class BodySizeRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = InoculationSerializer
+    permission_classes = (permissions.IsHealthInfoOwnerOrReadOnly,)
+    lookup_url_kwarg = 'body_pk'
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        return instance.pet_size_set.all()
 
 
 # ---------- 종합 ---------- #
