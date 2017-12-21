@@ -37,6 +37,17 @@ class PetListCreate(generics.ListCreateAPIView):
         serializer.save(owner=instance)
 
 
+# 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
+class PetProfile(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = PetCreateSerializer
+    permission_classes = (custom_permissions.IsOwnerOrReadOnly,)
+    lookup_url_kwarg = 'pet_pk'
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        return Pet.objects.filter(owner_id=user)
+
+
 # 펫 사람 나이 환산 뷰
 class PetAge(generics.GenericAPIView):
     queryset = Pet.objects.all()
@@ -111,57 +122,6 @@ class PetAge(generics.GenericAPIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
-
-
-# 펫 디테일 보기 뷰 / 정보 수정 / 펫 삭제
-class PetProfile(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Pet.objects.all()
-    permission_classes = (custom_permissions.IsOwnerOrReadOnly,)
-    lookup_field = ('owner_id', 'pk')
-    lookup_url_kwarg = ('user_pk', 'pet_pk')
-
-    # 쿼리셋에서 객체를 가져오는 메소드
-    def get_object(self):
-        # 커스텀 세팅: 반려동물 쿼리셋을 가져올 때 필터링 옵션을 준다
-        # 동물 주인의 pk값과 url에 들어온 user_pk 값이 일치하는 동물들만 가져오도록!
-        # 쿼리셋: 위에서 정의한 펫 쿼리셋
-        queryset = self.filter_queryset(self.get_queryset())
-        # 딕셔너리 컴프리헨션
-        filter_kwargs = {
-            key: self.kwargs[value]
-            # lookup_field와 lookup_url_kwarg를 동시에 순회하면서
-            # key에는 lookup_field의 값을,
-            # value에는 전체 키워드 인자 묶음 중 lookup_url_kwarg를 key로 하는 값을 넣는다
-            for key, value in zip(self.lookup_field, self.lookup_url_kwarg)
-        }
-
-        # 쿼리셋과 키워드 인자 묶음으로 펫 인스턴스를 받는다
-        obj = get_object_or_404(queryset, **filter_kwargs)
-        # 인스턴스의 권한을 체크한다
-        self.check_object_permissions(self.request, obj)
-
-        return obj
-
-    # 시리얼라이저 클래스 가져오는 메소드
-    def get_serializer_class(self):
-        # 세이프 메소드는 PetSerializer를 사용한다
-        if self.request.method in permissions.SAFE_METHODS:
-            return PetSerializer
-        # 나머지는 PetEditSerializer를 사용한다
-        return PetEditSerializer
-
-    # 펫 디테일 보기 뷰
-    # method: get
-    def retrieve(self, request, *args, **kwargs):
-        # RetrieveModelMixin을 상속
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        # 출력 형식을 일정하게 만들기 위해 커스텀
-        data = {
-            'owner': UserSerializer(instance.owner).data,
-            'pet': serializer.data
-        }
-        return Response(data)
 
 
 # 펫 품종 리스트 보기 뷰
