@@ -68,7 +68,6 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
 
 # 동물의 수술 정보를 보여줘는 시리얼라이저
 class PetOperationSerializer(serializers.ModelSerializer):
-    # image = serializers.ImageField(allow_null=True, allow_empty_file=True)
     date = serializers.DateField(format=api_settings.DATE_FORMAT, allow_null=True)
     description = serializers.CharField(max_length=70, required=True)
     comment = serializers.CharField(max_length=500, allow_blank=True)
@@ -85,6 +84,11 @@ class PetOperationSerializer(serializers.ModelSerializer):
 
 # 동물의 신체 사이즈를 보여주는 시리얼라이저
 class PetSizeSerializer(serializers.ModelSerializer):
+    goal_weight = serializers.FloatField(min_value=0)
+    current_weight = serializers.FloatField(min_value=0)
+    chest = serializers.IntegerField(min_value=0)
+    neck = serializers.IntegerField(min_value=0)
+
     class Meta:
         model = PetSize
         fields = (

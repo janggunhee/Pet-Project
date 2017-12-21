@@ -8,7 +8,7 @@ from .models import PetMedical, Vaccine
 from .serializers import HospitalSerializer, \
     VaccineInoculationSerializer, \
     VaccineInfoSerializer, \
-    PetMedicalDetailSerializer, PetOperationSerializer
+    PetMedicalDetailSerializer, PetOperationSerializer, PetSizeSerializer
 
 
 # 주변 병원을 검색해주는 뷰
@@ -69,6 +69,8 @@ class PetVaccineInoculation(generics.ListCreateAPIView):
         user = self.kwargs['user_pk']
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        # May raise a permission denied
+        self.check_object_permissions(self.request, instance)
         serializer.save(medical=instance)
 
 
@@ -87,6 +89,28 @@ class PetOperation(generics.ListCreateAPIView):
         user = self.kwargs['user_pk']
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        # May raise a permission denied
+        self.check_object_permissions(self.request, instance)
+        serializer.save(medical=instance)
+
+
+# 펫의 신체 사이즈 리스트 / 생성 뷰
+class PetSize(generics.ListCreateAPIView):
+    serializer_class = PetSizeSerializer
+    permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        return instance.pet_size_set.all()
+
+    def perform_create(self, serializer):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        # May raise a permission denied
+        self.check_object_permissions(self.request, instance)
         serializer.save(medical=instance)
 
 
