@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.settings import api_settings
 
 from account.serializers import PetSpeciesField
-from .models import VaccineInoculation, Vaccine, PetMedical
+from .models import VaccineInoculation, Vaccine, PetMedical, PetOperation, PetSize
 
 
 # 주변 병원 검색 시리얼라이저
@@ -39,6 +39,7 @@ class VaccineInfoSerializer(serializers.ModelSerializer):
 
 # 동물이 맞은 백신 정보를 보여주는 시리얼라이저
 class VaccineInoculationSerializer(serializers.ModelSerializer):
+    medical = serializers.CharField(read_only=True)
     vaccine = VaccineInfoField()
     num_of_times = serializers.IntegerField()
     inoculated_date = serializers.DateTimeField(format=api_settings.DATETIME_FORMAT)
@@ -48,6 +49,7 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
     class Meta:
         model = VaccineInoculation
         fields = (
+            'medical',
             'vaccine',
             'num_of_times',
             'inoculated_date',
@@ -64,16 +66,48 @@ class VaccineInoculationSerializer(serializers.ModelSerializer):
         return data
 
 
+# 동물의 수술 정보를 보여줘는 시리얼라이저
+class PetOperationSerializer(serializers.ModelSerializer):
+    # image = serializers.ImageField(allow_null=True, allow_empty_file=True)
+    date = serializers.DateField(format=api_settings.DATE_FORMAT, allow_null=True)
+    description = serializers.CharField(max_length=70, required=True)
+    comment = serializers.CharField(max_length=500, allow_blank=True)
+
+    class Meta:
+        model = PetOperation
+        fields = (
+            'image',
+            'date',
+            'description',
+            'comment',
+        )
+
+
+# 동물의 신체 사이즈를 보여주는 시리얼라이저
+class PetSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetSize
+        fields = (
+            'goal_weight',
+            'current_weight',
+            'chest',
+            'neck',
+            'created_date',
+        )
+
+
 # 동물 의료 정보 디테일 시리얼라이저
 class PetMedicalDetailSerializer(serializers.ModelSerializer):
     pet = serializers.SlugRelatedField(read_only=True, slug_field='name')
-    # inoculation_set = serializers.StringRelatedField(many=True)
     inoculation_set = VaccineInoculationSerializer(read_only=True, many=True)
+    operation_set = PetOperationSerializer(read_only=True, many=True)
+    pet_size_set = PetSizeSerializer(read_only=True, many=True)
 
     class Meta:
         model = PetMedical
-
         fields = (
             'pet',
             'inoculation_set',
+            'operation_set',
+            'pet_size_set',
         )

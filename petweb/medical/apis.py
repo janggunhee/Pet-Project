@@ -8,7 +8,7 @@ from .models import PetMedical, Vaccine
 from .serializers import HospitalSerializer, \
     VaccineInoculationSerializer, \
     VaccineInfoSerializer, \
-    PetMedicalDetailSerializer
+    PetMedicalDetailSerializer, PetOperationSerializer
 
 
 # 주변 병원을 검색해주는 뷰
@@ -64,6 +64,30 @@ class PetVaccineInoculation(generics.ListCreateAPIView):
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
         return instance.inoculation_set.all()
+
+    def perform_create(self, serializer):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        serializer.save(medical=instance)
+
+
+# 펫의 수술 정보 리스트 / 생성 뷰
+class PetOperation(generics.ListCreateAPIView):
+    serializer_class = PetOperationSerializer
+    permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
+
+    def get_queryset(self):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        return instance.operation_set.all()
+
+    def perform_create(self, serializer):
+        user = self.kwargs['user_pk']
+        pet = self.kwargs['pet_pk']
+        instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
+        serializer.save(medical=instance)
 
 
 # 동물 의료 정보 디테일 뷰
