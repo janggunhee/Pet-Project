@@ -129,21 +129,15 @@ class PetBreedList(generics.GenericAPIView):
     serializer_class = PetBreedSerializer
 
     def get_queryset(self):
-        # species 입력 값이 dog 라면
-        if self.request.data['species'] == 'dog':
-            # 강아지로 필터링된 쿼리셋을 가져온다
-            return PetBreed.dogs.all()
-        # 입력 값이 cat 이라면
-        elif self.request.data['species'] == 'cat':
-            # 고양이로 필터링된 쿼리셋을 가져온다
-            return PetBreed.cats.all()
+        pet_type = self.request.data['species']
+        return PetBreed.objects.filter(species__pet_type=pet_type)
 
     # method: post
     def post(self, request, *args, **kwargs):
         # 쿼리셋을 불러온다
         queryset = self.filter_queryset(self.get_queryset())
         # 만일 쿼리셋이 비어 있다면 (species 입력이 잘못되었을 경우)
-        if queryset is None:
+        if len(queryset) == 0:
             # 에러 메시지를 보낸다
             error_message = {
                 "detail": "Invalid or none value."
