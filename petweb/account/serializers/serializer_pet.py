@@ -5,6 +5,7 @@ from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
 from rest_framework.utils import model_meta
 
+from medical.models import PetMedical
 from utils.functions.making_thumb import making_thumbnail
 from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
@@ -168,11 +169,15 @@ class PetCreateSerializer(serializers.ModelSerializer):
             'ages',
         )
 
+    # 펫 생성
     def create(self, validated_data):
+        # 펫 생성
         created_pet = Pet.objects.create(**validated_data)
-
+        # 펫 의료정보 생성
+        PetMedical.objects.create(pet=created_pet)
+        # 썸네일 생성
         thumbnail_pet = making_thumbnail(created_pet)
-
+        # 썸네일 생성된 펫 리턴
         return thumbnail_pet
 
     # 출력 형식을 커스터마이징

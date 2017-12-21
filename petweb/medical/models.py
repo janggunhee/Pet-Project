@@ -34,7 +34,7 @@ class BodySize(models.Model):
     # 동물의 신체 사이즈 (몸무게, 몸길이, 가슴둘레, 목둘레)
     medical = models.ForeignKey(
         PetMedical,
-        related_name='pet_size_set',
+        related_name='body_size_set',
         on_delete=models.CASCADE,
     )
     # 목표 체중

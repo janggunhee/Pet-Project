@@ -137,7 +137,7 @@ class BodySizeListCreate(generics.ListCreateAPIView):
         user = self.kwargs['user_pk']
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
-        return instance.pet_size_set.all()
+        return instance.body_size_set.all()
 
     def perform_create(self, serializer):
         user = self.kwargs['user_pk']
@@ -158,7 +158,7 @@ class BodySizeRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         user = self.kwargs['user_pk']
         pet = self.kwargs['pet_pk']
         instance = PetMedical.objects.filter(pet__owner_id=user).get(pet_id=pet)
-        return instance.pet_size_set.all()
+        return instance.body_size_set.all()
 
 
 # ---------- 종합 ---------- #

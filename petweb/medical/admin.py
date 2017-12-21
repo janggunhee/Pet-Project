@@ -24,7 +24,7 @@ class PetMedicalAdmin(BaseUserAdmin):
         (None, {'fields': ('pet',)}),
     )
 
-    ordering = ('-pk',)
+    ordering = ('pk',)
     filter_horizontal = ()
 
 
