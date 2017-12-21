@@ -116,7 +116,7 @@ class PetMedicalDetailSerializer(serializers.ModelSerializer):
     pet = serializers.SlugRelatedField(read_only=True, slug_field='name')
     inoculation_set = InoculationSerializer(read_only=True, many=True)
     operation_set = OperationSerializer(read_only=True, many=True)
-    pet_size_set = BodySizeSerializer(read_only=True, many=True)
+    body_size_set = BodySizeSerializer(read_only=True, many=True)
 
     class Meta:
         model = PetMedical
@@ -124,5 +124,5 @@ class PetMedicalDetailSerializer(serializers.ModelSerializer):
             'pet',
             'inoculation_set',
             'operation_set',
-            'pet_size_set',
+            'body_size_set',
         )
