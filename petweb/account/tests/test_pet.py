@@ -153,12 +153,12 @@ class PetCreateListTest(APILiveServerTestCase):
         # 응답 코드 확인
         self.assertEqual(response.status_code, 200)
         # 응답 데이터의 유저가 더미 유저와 같은가
-        self.assertEqual(response.data['owner']['pk'], dummy_user.pk)
+        self.assertEqual(response.data['results'][0]['owner']['pk'], dummy_user.pk)
         # 응답 데이터의 0번째 펫이 'dog_1'인가
         # (ordering을 '-pk'로 해서 최근에 생성된 펫이 가장 앞 순서 인덱스를 갖는다)
-        self.assertEqual(response.data['pets'][0]['name'], 'dog_1')
+        self.assertEqual(response.data['results'][0]['pet']['name'], 'dog_1')
         # 응답 데이터의 1번째 펫이 'cat_1'인가
-        self.assertEqual(response.data['pets'][1]['name'], 'cat_1')
+        self.assertEqual(response.data['results'][1]['pet']['name'], 'cat_1')
 
 
 # 펫 프로필 테스트 (디테일/정보 수정/삭제)
