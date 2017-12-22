@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .forms import PetMedicalForm, PetOperationForm, VaccineForm, VaccineInoculationForm, PetSizeForm
+from .forms import PetMedicalForm, OperationForm, VaccineForm, InoculationForm, BodySizeForm
 from .models import PetMedical, \
-    PetSize, \
-    PetOperation, \
+    BodySize, \
+    Operation, \
     Vaccine, \
-    VaccineInoculation
+    Inoculation
 
 
 class PetMedicalAdmin(BaseUserAdmin):
@@ -24,13 +24,13 @@ class PetMedicalAdmin(BaseUserAdmin):
         (None, {'fields': ('pet',)}),
     )
 
-    ordering = ('-pk',)
+    ordering = ('pk',)
     filter_horizontal = ()
 
 
 class PetSizeAdmin(BaseUserAdmin):
-    add_form = PetSizeForm
-    form = PetSizeForm
+    add_form = BodySizeForm
+    form = BodySizeForm
 
     list_display = ['pk', 'medical', 'created_date']
     list_display_links = ['medical']
@@ -38,11 +38,11 @@ class PetSizeAdmin(BaseUserAdmin):
 
     fieldsets = (
         (None, {'fields': ('medical',)}),
-        ('size info', {'fields': ('weight', 'chest', 'neck')}),
+        ('size info', {'fields': ('goal_weight', 'current_weight', 'chest', 'neck')}),
     )
     add_fieldsets = (
         (None, {'fields': ('medical',)}),
-        ('size info', {'fields': ('weight', 'chest', 'neck')}),
+        ('size info', {'fields': ('goal_weight', 'current_weight', 'chest', 'neck')}),
     )
 
     ordering = ('-pk',)
@@ -50,8 +50,8 @@ class PetSizeAdmin(BaseUserAdmin):
 
 
 class PetOperationAdmin(BaseUserAdmin):
-    add_form = PetOperationForm
-    form = PetOperationForm
+    add_form = OperationForm
+    form = OperationForm
 
     list_display = ['pk', 'medical', 'description', 'date']
     list_display_links = ['medical']
@@ -95,8 +95,8 @@ class VaccineAdmin(BaseUserAdmin):
 
 
 class VaccineInoculationAdmin(BaseUserAdmin):
-    form = VaccineInoculationForm
-    add_form = VaccineInoculationForm
+    form = InoculationForm
+    add_form = InoculationForm
 
     list_display = ['pk', 'medical', 'vaccine', 'num_of_times', 'inoculated_date', 'hospital', 'is_alarm']
     list_display_links = ['medical']
@@ -120,7 +120,7 @@ class VaccineInoculationAdmin(BaseUserAdmin):
 
 
 admin.site.register(PetMedical, PetMedicalAdmin)
-admin.site.register(PetSize, PetSizeAdmin)
-admin.site.register(PetOperation, PetOperationAdmin)
+admin.site.register(BodySize, PetSizeAdmin)
+admin.site.register(Operation, PetOperationAdmin)
 admin.site.register(Vaccine, VaccineAdmin)
-admin.site.register(VaccineInoculation, VaccineInoculationAdmin)
+admin.site.register(Inoculation, VaccineInoculationAdmin)

@@ -85,7 +85,7 @@ def get_distance(lat, lng, place_id):
 # keyword = "24시 동물병원"
 
 
-def near_by_search(lat, lng, num_of_searches=20):
+def near_by_search(input_lat, input_lng, num_of_searches=20):
     """
     사용자의 위치에서 가장 가까운 동물병원들을  찾기
     20개 묶음으로 리스트 형성됨 (20개 미만이면 그 숫자)
@@ -95,8 +95,8 @@ def near_by_search(lat, lng, num_of_searches=20):
               num_of_searches  검색시간이 걸리므로 검색량 제한하는 인자
       return list of NamedTuple  [ NamedTuple0, NamedTuple1, ..., ]
    """
-    lat = str(lat)
-    lng = str(lng)
+    lat = str(input_lat)
+    lng = str(input_lng)
 
     url = URL_base + 'place/nearbysearch/json'
 
