@@ -35,7 +35,7 @@ STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 
 # Media paths
 MEDIA_URL = '/media/'
-MEDIA_DIR = os.path.join(ROOT_DIR, '.media')
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 
 # Template paths
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -44,6 +44,7 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'localhost:4200',
     '.elasticbeanstalk.com',
     '.wooltari.co.kr',
 ]
@@ -51,6 +52,11 @@ ALLOWED_HOSTS = [
 # auth
 # auth_user_model 정의
 AUTH_USER_MODEL = 'account.User'
+
+# automatically createsuperuser
+SUPERUSER_EMAIL = config_secret_common['django']['superuser_email']
+SUPERUSER_PASSWORD = config_secret_common['django']['superuser_password']
+
 
 # facebook authentication 추가
 AUTHENTICATION_BACKENDS = [
@@ -121,6 +127,8 @@ INSTALLED_APPS = [
     'storages',
     # User app
     'account',
+    # Pet medical app
+    'medical',
 ]
 
 # rest_framework settings
@@ -181,3 +189,31 @@ USE_TZ = True
 
 # Secret_key
 SECRET_KEY = config_secret_common['django']['secret_key']
+
+
+# AWS elasticbeanstalk HealthCheck
+def is_ec2_linux():
+    """Detect if we are running on an EC2 Linux Instance
+       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+    """
+    if os.path.isfile("/sys/hypervisor/uuid"):
+        with open("/sys/hypervisor/uuid") as f:
+            uuid = f.read()
+            return uuid.startswith("ec2")
+    return False
+
+
+def get_linux_ec2_private_ip():
+    """Get the private IP Address of the machine if running on an EC2 linux server"""
+    from urllib.request import urlopen
+    if not is_ec2_linux():
+        return None
+    try:
+        response = urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
+        ec2_ip = response.read().decode('utf-8')
+        if response:
+            response.close()
+        return ec2_ip
+    except Exception as e:
+        print(e)
+        return None

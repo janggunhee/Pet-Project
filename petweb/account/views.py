@@ -57,7 +57,7 @@ class FrontFacebookLogin(View):
             redirect_uri = '{scheme}://{host}{relative_url}'.format(
                 scheme=request.scheme,
                 host=request.META['HTTP_HOST'],
-                relative_url=reverse('account:front-facebook-login'),
+                relative_url=reverse('auth:front-facebook-login'),
             )
             # 액세스 토큰을 요청하기 위한 엔드포인트
             url_access_token = 'https://graph.facebook.com/v2.11/oauth/access_token'

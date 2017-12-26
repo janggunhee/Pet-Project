@@ -1,6 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+</head>
+<body>
 
-회원가입 인증 절차를 위해 아래 링크를 클릭해주세요.
+<h2>[Wooltari] 회원 가입 인증 이메일</h2>
 
-http://{{ domain }}{% url 'account:activate' uidb64=uid token=token %}
+<p>회원가입 인증 절차를 위해 아래 링크를 클릭해주세요.</p>
+
+<a type="button" href="http://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}">Activate</a>
+
+</body>
+</html>
+
 
 

@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import User, UserManager
+from .models import *
 
 
+# 사용자 생성 폼
 class UserCreationForm(forms.ModelForm):
-    # 사용자 생성 폼
     email = forms.EmailField(
         label='Email',
         required=True,
@@ -71,8 +71,8 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
+# 비밀번호 변경 폼
 class UserChangeForm(forms.ModelForm):
-    # 비밀번호 변경 폼
     password = ReadOnlyPasswordHashField(
         label='Password'
     )
@@ -83,3 +83,115 @@ class UserChangeForm(forms.ModelForm):
 
     def clean_password(self):
         return self.initial['password']
+
+
+# 펫 종류 수정 폼
+class PetSpeciesChangeForm(forms.ModelForm):
+    class Meta:
+        model = PetSpecies
+        fields = (
+            'pet_type',
+        )
+
+
+# 펫 품종 생성 폼
+class PetBreedCreateForm(forms.ModelForm):
+    # https://docs.djangoproject.com/en/1.11/ref/forms/fields/#modelchoicefield
+    species = forms.ModelChoiceField(
+        label='Pet Species',
+        queryset=PetSpecies.objects.all(),
+        required=True
+    )
+    breeds_name = forms.CharField(
+        label='Breeds Name',
+        max_length=50,
+        required=True,
+    )
+
+
+# 펫 품종 수정 폼
+class PetBreedChangeForm(forms.ModelForm):
+    class Meta:
+        model = PetBreed
+        fields = (
+            'species',
+            'breeds_name',
+        )
+
+
+# 펫 생성 폼
+class PetCreateForm(forms.ModelForm):
+    owner = forms.ModelChoiceField(
+        label='Owner',
+        queryset=User.objects.all(),
+        required=True
+    )
+    species = forms.ModelChoiceField(
+        label='Pet Species',
+        queryset=PetSpecies.objects.all(),
+        required=True,
+    )
+    breeds = forms.ModelChoiceField(
+        label='Pet Breeds',
+        queryset=PetBreed.objects.all(),
+        required=True,
+    )
+    name = forms.CharField(
+        label='Name',
+        max_length=255,
+        required=True,
+    )
+    birth_date = forms.DateField(
+        label='Birth Date',
+        required=True,
+    )
+    gender = forms.ChoiceField(
+        label='Gender',
+        choices=Pet.CHOICE_GENDER,
+        required=True,
+    )
+    identified_number = forms.CharField(
+        label='Identified Number',
+        max_length=20,
+        required=False,
+    )
+    is_neutering = forms.BooleanField(
+        label='Is Neutering',
+        required=False,
+    )
+    body_color = forms.ChoiceField(
+        label='Body Color',
+        choices=Pet.CHOICE_COLOR,
+        required=True,
+    )
+
+    class Meta:
+        model = Pet
+        fields = (
+            'owner',
+            'species',
+            'breeds',
+            'name',
+            'birth_date',
+            'gender',
+            'identified_number',
+            'is_neutering',
+            'body_color',
+        )
+
+
+# 펫 수정 폼
+class PetChangeForm(forms.ModelForm):
+    class Meta:
+        model = Pet
+        fields = (
+            'owner',
+            'name',
+            'birth_date',
+            'species',
+            'breeds',
+            'body_color',
+            'identified_number',
+            'is_neutering',
+            'is_active',
+        )
