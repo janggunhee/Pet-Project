@@ -23,7 +23,6 @@ __all__ = (
 class PetListCreate(generics.ListCreateAPIView):
     serializer_class = PetSerializer
     permission_classes = (permissions.IsUserOrReadOnly,)
-    pagination_class = pagination.StandardPetViewPagination
 
     def get_queryset(self):
         user = self.kwargs['user_pk']

@@ -54,6 +54,13 @@ class VaccineInfoList(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+        # 만일 쿼리셋이 비어 있다면 (species 입력이 잘못되었을 경우)
+        if len(queryset) == 0:
+            # 에러 메시지를 보낸다
+            error_message = {
+                "detail": "Invalid or none value."
+            }
+            return Response(error_message, status=status.HTTP_400_BAD_REQUEST)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -115,7 +122,7 @@ class OperationListCreate(generics.ListCreateAPIView):
 
 # 펫의 수술 정보 디테일 / 수정 / 삭제 뷰
 class OperationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = InoculationSerializer
+    serializer_class = OperationSerializer
     permission_classes = (permissions.IsHealthInfoOwnerOrReadOnly,)
     lookup_url_kwarg = 'oper_pk'
 
@@ -150,7 +157,7 @@ class BodySizeListCreate(generics.ListCreateAPIView):
 
 # 펫의 신체 사이즈 디테일 / 수정 / 삭제 뷰
 class BodySizeRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = InoculationSerializer
+    serializer_class = BodySizeSerializer
     permission_classes = (permissions.IsHealthInfoOwnerOrReadOnly,)
     lookup_url_kwarg = 'body_pk'
 

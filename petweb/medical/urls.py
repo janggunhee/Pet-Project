@@ -20,9 +20,9 @@ urlpatterns = [
         apis.OperationRetrieveUpdateDestroy.as_view(), name='operation-detail'),
 
     # 신체 사이즈 리스트 / 생성
-    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes', apis.BodySizeListCreate.as_view(), name='body-size'),
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes/$', apis.BodySizeListCreate.as_view(), name='body-size'),
     # 신체 사이즈 디테일 / 수정 /삭제
-    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes/(?P<body_pk>\d+)/', apis.BodySizeRetrieveUpdateDestroy.as_view(),
+    url(r'(?P<user_pk>\d+)/pets/(?P<pet_pk>\d+)/sizes/(?P<body_pk>\d+)/$', apis.BodySizeRetrieveUpdateDestroy.as_view(),
         name='body-size-detail'),
 
     # 의료 정보 디테일 뷰
