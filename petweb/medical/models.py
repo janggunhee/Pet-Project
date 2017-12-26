@@ -6,10 +6,10 @@ from account.models import Pet, PetSpecies
 
 __all__ = (
     'PetMedical',
-    'PetSize',
-    'PetOperation',
+    'BodySize',
+    'Operation',
     'Vaccine',
-    'VaccineInoculation',
+    'Inoculation',
 )
 
 
@@ -18,7 +18,7 @@ class PetMedical(models.Model):
     # account.model_pet의 Pet 모델에서 상속
     pet = models.OneToOneField(
         Pet,
-        related_name='pet',
+        related_name='pet_set',
         on_delete=models.CASCADE,
         primary_key=True,
     )
@@ -30,16 +30,20 @@ class PetMedical(models.Model):
 
 
 # 동물의 신체 정보 모델
-class PetSize(models.Model):
+class BodySize(models.Model):
     # 동물의 신체 사이즈 (몸무게, 몸길이, 가슴둘레, 목둘레)
     medical = models.ForeignKey(
         PetMedical,
-        related_name='medical_size',
+        related_name='body_size_set',
         on_delete=models.CASCADE,
+    )
+    # 목표 체중
+    goal_weight = models.FloatField(
+        null=True, blank=True,
     )
 
     # 동물의 몸무게
-    weight = models.FloatField(
+    current_weight = models.FloatField(
         null=True, blank=True
     )
     # 동물의 가슴둘레
@@ -69,10 +73,10 @@ def user_directory_path(instance, filename):
 
 
 # 동물의 수술 정보 모델
-class PetOperation(models.Model):
+class Operation(models.Model):
     medical = models.ForeignKey(
         PetMedical,
-        related_name='medical_oper',
+        related_name='operation_set',
         on_delete=models.CASCADE,
     )
     # 수술 상태 사진
@@ -101,19 +105,19 @@ class PetOperation(models.Model):
         return f'{self.medical.pet.name}: {self.description}'
 
 
-# 예방접종 정보 모델
+# 예방접종 기본 정보 모델
 class Vaccine(models.Model):
     # 동물 종류 (dog/cat)
     species = models.ForeignKey(
         PetSpecies,
-        related_name='species',
+        related_name='species_set',
         on_delete=models.CASCADE,
     )
     # 의학 정보와 many-to-many relationship
     inoculations = models.ManyToManyField(
         PetMedical,
         # intermediate model 위치
-        through='VaccineInoculation',
+        through='Inoculation',
     )
     # 백신 이름
     name = models.CharField(
@@ -134,7 +138,8 @@ class Vaccine(models.Model):
         return f'{self.species.pet_type}: {self.name}'
 
 
-class VaccineInoculation(models.Model):
+# 펫의 예방접종 정보 모델
+class Inoculation(models.Model):
     # 어떤 동물의 의학 정보인가
     medical = models.ForeignKey(
         PetMedical,
@@ -144,6 +149,7 @@ class VaccineInoculation(models.Model):
     # 어떤 백신을 맞았는가
     vaccine = models.ForeignKey(
         Vaccine,
+        related_name='vaccine_set',
         on_delete=models.CASCADE,
     )
     # 백신 접종 횟수

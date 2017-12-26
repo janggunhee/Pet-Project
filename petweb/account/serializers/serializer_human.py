@@ -16,6 +16,8 @@ __all__ = (
 
 class UserSerializer(serializers.ModelSerializer):
     # 유저 로그인 시 결과 필드를 보여주는 모델 시리얼라이저
+    user_type = serializers.SerializerMethodField()
+
     class Meta:
         # 유저 모델을 참조한다
         model = User
@@ -30,9 +32,13 @@ class UserSerializer(serializers.ModelSerializer):
             'image',
         )
 
+    def get_user_type(self, obj):
+        return obj.get_user_type_display()
+
 
 class SignupSerializer(serializers.ModelSerializer):
     # 유저 가입 시 필드를 생성하는 모델 시리얼라이저
+    user_type = serializers.SerializerMethodField()
     # 패스워드 1, 2는 추가로 설정해준다
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all())]
@@ -79,6 +85,9 @@ class SignupSerializer(serializers.ModelSerializer):
 
         return thumbnail_user
 
+    def get_user_type(self, obj):
+        return obj.get_user_type_display()
+
     # 출력되는 json을 우리가 원하는 형태로 커스터마이징
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -95,6 +104,7 @@ class SignupSerializer(serializers.ModelSerializer):
 
 class EditSerializer(serializers.ModelSerializer):
     # 유저 정보 수정을 도와주는 모델 시리얼라이저
+    user_type = serializers.SerializerMethodField()
     # 닉네임 수정: 반드시 입력될 필요는 없음(allow_blank=True)
     nickname = serializers.CharField(allow_blank=True)
     # 패스워드 수정
@@ -145,6 +155,9 @@ class EditSerializer(serializers.ModelSerializer):
         thumbnail_user = making_thumbnail(instance)
 
         return thumbnail_user
+
+    def get_user_type(self, obj):
+        return obj.get_user_type_display()
 
 
 class ResetPasswordSerializer(serializers.Serializer):
