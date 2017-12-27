@@ -8,6 +8,7 @@ class FacebookBackend(object):
     """
     페이스북 로그인 시 페이스북 아이디를 검증하는 클래스
     """
+
     def authenticate(self, request, facebook_user_id):
         try:
             return User.objects.get(social_id=facebook_user_id)

@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
+from utils import CustomImageField
 
 __all__ = (
     'UserManager',
@@ -12,7 +13,10 @@ __all__ = (
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, nickname, password=None):
+    def create_user(self,
+                    email,
+                    password=None,
+                    **extra_fields):
         """
         주어진 정보로 일반 User 인스턴스 생성
         """
@@ -23,29 +27,17 @@ class UserManager(BaseUserManager):
         user = self.model(
             # 유저에 들어갈 정보: 이메일, 닉네임
             email=self.normalize_email(email),
-            nickname=nickname,
+            **extra_fields,
         )
-        user.set_password(password)
+
         # 패스워드 세팅
+        user.set_password(password)
+        # 유저를 DB에 저장
         user.save(using=self._db)
-        # 유저를 DB에 세이브
+
         return user
 
-    def create_facebook_user(self, email, nickname, user_type, social_id):
-        """
-        주어진 정보로 facebook_user 인스턴스 생성
-        """
-        user = self.model(
-            email=self.normalize_email(email),
-            nickname=nickname,
-            user_type=user_type,
-            social_id=social_id,
-        )
-        user.is_active = True
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, nickname, password=None):
+    def create_superuser(self, email, password=None, **extra_fields):
         """
         주어진 정보로 관리자 권한 User 인스턴스 생성
         """
@@ -53,14 +45,15 @@ class UserManager(BaseUserManager):
             # create_user 함수를 호출해 user 생성
             email=email,
             password=password,
-            nickname=nickname,
+            **extra_fields,
         )
 
-        user.is_superuser = True
         # 관리자 권한 부여
+        user.is_superuser = True
+        # 강제 활성화
         user.is_active = True
-        user.save(using=self._db)
         # DB에 저장
+        user.save(using=self._db)
         return user
 
 
@@ -75,6 +68,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         (USER_TYPE_DJANGO, 'django'),
     )
     user_type = models.CharField(max_length=1, choices=CHOICES_USER_TYPE, default=USER_TYPE_DJANGO)
+    # 썸네일 필드
+    image = CustomImageField(
+        upload_to='thumbnail/user',
+        max_length=255,
+        blank=True,
+        default_static_image='placeholder/placeholder_human.png',
+    )
     # 이메일 필드
     email = models.EmailField(
         verbose_name='email_address',
@@ -82,6 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
         blank=True,
     )
+    # 소셜 아이디 필드
     social_id = models.CharField(
         verbose_name='social_id',
         max_length=255,
@@ -97,6 +98,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(
         verbose_name='is_active',
         default=False
+    )
+    # 디바이스 토큰 필드
+    device_token = models.CharField(
+        verbose_name='device_token',
+        max_length=160,
+        blank=True,
     )
     # 가입 날짜 필드
     date_joined = models.DateTimeField(
