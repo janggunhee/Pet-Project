@@ -1,13 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
-from rest_framework.serializers import raise_errors_on_nested_writes
 from rest_framework.settings import api_settings
-from rest_framework.utils import model_meta
 
 from medical.models import PetMedical
+from utils.functions import pet_age
 from utils.functions.making_thumb import making_thumbnail
-from ..relations import MultiplePKsHyperlinkedIdentityField
 from ..models import Pet, PetSpecies, PetBreed
 from . import UserSerializer
 
@@ -102,11 +100,6 @@ class PetSerializer(serializers.ModelSerializer):
     identified_number = serializers.CharField(max_length=20, allow_blank=True)  # 동물등록번호
     is_neutering = serializers.BooleanField(default=False)  # 중성화
     is_active = serializers.BooleanField(default=True)  # 활성화
-    ages = MultiplePKsHyperlinkedIdentityField(
-        view_name='profile:pet-age',
-        lookup_fields=['owner_id', 'pk'],
-        lookup_url_kwargs=['user_pk', 'pet_pk']
-    )  # 나이
 
     class Meta:
         model = Pet
@@ -121,12 +114,10 @@ class PetSerializer(serializers.ModelSerializer):
             'identified_number',  # 동물등록번호
             'is_neutering',  # 중성화
             'is_active',  # 활성화여부(동물사망/양도/입양)
-            'ages',
             'image',
         )
         read_only_fields = (
             'pk',
-            'ages',
         )
 
     # 펫 생성
@@ -142,10 +133,32 @@ class PetSerializer(serializers.ModelSerializer):
 
     # 출력 형식을 커스터마이징
     def to_representation(self, instance):
+        # 생년월일을 토대로 반려동물의 나이를 계산하는 함수
+        def calculate_pet_age(birth_date):
+            # birth_date를 입력받아 나이를 리턴한다
+            return pet_age.calculate_age(birth_date)
+
+        # 반려동물이 사람으로 치면 몇 살인지를 계산하는 함수
+        def human_age_conversion(instance):
+            # 입력값에서 species와 breed 값을 가져와 각 모델에서 객체를 꺼낸다
+            # 각 객체의 이름을 문자열로 꺼낸다
+            str_pet_type = instance.species.pet_type
+            str_pet_breed = instance.breeds
+            birth_date = instance.birth_date
+            conversed_age = pet_age.age_conversion(str_pet_type, str_pet_breed, birth_date)
+            return conversed_age
+
+        pet_birth_date = instance.birth_date
+        result_pet_age = calculate_pet_age(pet_birth_date).years
+        ages = {
+            'pet_age': result_pet_age,
+            'conversed_age': human_age_conversion(instance)
+        }
         ret = super().to_representation(instance)
         data = {
             'owner': UserSerializer(instance.owner).data,
-            'pet': ret
+            'pet': ret,
+            'ages': ages,
         }
 
         return data

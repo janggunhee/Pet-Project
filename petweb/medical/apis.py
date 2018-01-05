@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.functions import near_by_search
-from utils.rest_framework import permissions
+from utils.rest_framework import permissions, pagination
 from .models import PetMedical, Vaccine
 from .serializers import HospitalSerializer, \
     InoculationSerializer, \
@@ -69,6 +69,7 @@ class VaccineInfoList(generics.GenericAPIView):
 class InoculationListCreate(generics.ListCreateAPIView):
     serializer_class = InoculationSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
+    pagination_class = pagination.StandardPetViewPagination
 
     def get_queryset(self):
         user = self.kwargs['user_pk']
@@ -104,6 +105,7 @@ class InoculationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 class OperationListCreate(generics.ListCreateAPIView):
     serializer_class = OperationSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
+    pagination_class = pagination.StandardPetViewPagination
 
     def get_queryset(self):
         user = self.kwargs['user_pk']
@@ -139,6 +141,7 @@ class OperationRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 class BodySizeListCreate(generics.ListCreateAPIView):
     serializer_class = BodySizeSerializer
     permission_classes = (permissions.IsMedicalOwnerOrReadOnly,)
+    pagination_class = pagination.StandardPetViewPagination
 
     def get_queryset(self):
         user = self.kwargs['user_pk']
