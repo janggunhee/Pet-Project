@@ -48,6 +48,7 @@ INSTALLED_APPS += [
 # 프론트에서 요청이 들어올 때 장고가 허용해주는 도메인들
 CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
+    'localhose:8080',
     'localhost:4200',
     'wooltari-test-server-dev.ap-northeast-2.elasticbeanstalk.com',
     'wooltari.co.kr',
