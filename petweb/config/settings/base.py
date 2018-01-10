@@ -45,6 +45,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'localhost:4200',
+    'localhost:8080',
     '.elasticbeanstalk.com',
     '.wooltari.co.kr',
 ]
