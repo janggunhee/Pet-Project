@@ -17,7 +17,7 @@ django-extensions==1.9.7
 django-jet==1.0.6
 django-storages==1.6.5
 django-versatileimagefield==1.8.1
-djangorestframework==3.7.3
+djangorestframework==3.11.2
 docker-py==1.7.2
 dockerpty==0.4.1
 docopt==0.6.2
