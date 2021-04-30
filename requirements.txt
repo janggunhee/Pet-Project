@@ -51,7 +51,7 @@ pytz==2017.3
 PyYAML==3.12
 redis==2.10.6
 requests==2.9.1
-rsa==3.4.2
+rsa==4.7
 s3transfer==0.1.11
 selenium==3.6.0
 semantic-version==2.5.0
