@@ -25,7 +25,7 @@ docutils==0.14
 google-api-python-client==1.6.4
 httplib2==0.10.3
 idna==2.6
-ipython==6.2.1
+ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.11.0
 jmespath==0.9.3
